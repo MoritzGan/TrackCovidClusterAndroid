@@ -8,11 +8,10 @@ class MainActivityViewModel @Inject constructor(
     val mUserStorageSource: UserStorageSource
 ) : ViewModel() {
 
-    fun checkUser() {
-        if (!mUserStorageSource.isUserExisting()) {
-            mUserStorageSource.createUser()
-        }
-    }
+    fun isFirstTimeUser(): Boolean =
+        !mUserStorageSource.isUserExisting()
+
+    fun createUser() = mUserStorageSource.createUser()
 }
 
 
