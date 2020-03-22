@@ -1,5 +1,55 @@
 <resources>
     <string name="app_name">TrackCovidCluster</string>
-    <string name="start">macht micht!</string>
-    <string name="intro_text">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</string>
+    <string name="start">Macht micht und rette Leben</string>
+    <string name="intro_title">Wieso mitmachen?</string>
+    <string name="anonymous">Das mitmchen ist zu jeder Zeit Anonym</string>
+    <string name="intro_text">Thomas muss an diesem Tag für
+seinen wöchentlichen Einkauf das
+Haus verlassen.\n
+Beim Verlassen der Wohnung trifft er
+den Briefträger an der Haustür.
+Auf dem Weg holt er sich sein
+Frühstück in der Bäckerei und an der
+Ampel muss er kurz mit weiteren
+Personen warten. Danach wird er
+beim Überqueren der Straße von
+Fahrradfahrern überholt.
+Im Supermarkt begegnet er weiteren
+Personen.\n
+Wieder zuhause angekommen trifft
+Thomas eine Nachbarin im
+Waschkeller des Hauses.
+Alleine an diesem kurzen Tag hat
+Thomas 20 Personen in einem
+Abstand von 2 Metern getroffen.\n\n
+
+Eine Woche später hat Thomas
+grippeartige Symptome und bekommt
+hohes Fieber. Sein Corona Test ist
+positiv. In seiner App erfasst Thomas,
+das Testergebnis.\n
+Alle Kontaktpersonen seit diesem
+Samstag erhalten daraufhin durch
+ihre TrackCovidCluster App eine
+anonymisierte Warnung und einen
+verschlüsselten Code, dass sie mit
+einer Corona-infizierten Person im
+Kontakt waren.\n
+Die Warnung und der Code lässt
+keine Rückschlüsse zu, wann und wo
+sie einer infizierten Person begegnet
+sind. Sie wissen lediglich, dass sie
+das Risiko haben, ebenfalls infiziert
+worden zu sein.\n
+Mit dem erhaltenen Code können sie
+sich bei der Gesundheitsbehörde
+melden und einen Test durchführen
+oder sicherheitshalber in häusliche
+Quarantäne gehen.\n\n
+
+Die Anonymität von Thomas ist zu
+jedem Zeitpunkt geschützt. Trotzdem
+werden Kontaktpersonen
+schnellstmöglich über ein
+Ansteckungsrisiko informiert.</string>
 </resources>
