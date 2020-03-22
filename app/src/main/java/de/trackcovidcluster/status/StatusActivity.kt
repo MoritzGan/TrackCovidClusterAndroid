@@ -1,12 +1,13 @@
-package de.trackcovidcluster
+package de.trackcovidcluster.status
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import de.trackcovidcluster.R
 
-class MainActivity : AppCompatActivity() {
+class StatusActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_status)
     }
 }
