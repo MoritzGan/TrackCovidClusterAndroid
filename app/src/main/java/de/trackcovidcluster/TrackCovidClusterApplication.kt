@@ -19,6 +19,7 @@ class TrackCovidClusterApplication : Application(), HasActivityInjector {
     override fun onCreate() {
         super.onCreate()
         DaggerTrackCovidClusterComponent.builder()
+            .app(this)
             .build()
             .inject(this)
     }
