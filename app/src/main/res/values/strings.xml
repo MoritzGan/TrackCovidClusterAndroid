@@ -53,7 +53,7 @@ werden Kontaktpersonen
 schnellstmöglich über ein
 Ansteckungsrisiko informiert.</string>
     <string name="test_positive">Positiv getester worden?</string>
-    <string name="not_infected">nich infiziert</string>
+    <string name="not_infected">nicht infiziert</string>
     <string name="maybe_infected">möglicherweise infiziert</string>
     <string name="infected_text">du hast gemeldet infiziert zu sein</string>
     <string name="status">Status</string>
@@ -64,4 +64,6 @@ Ansteckungsrisiko informiert.</string>
     <string name="future_status_subtitle_2">ändern!</string>
     <string name="save_lives">Ja, ich möchte Leben retten</string>
     <string name="change_status_reminder">Es ist nicht notwendig seinen Status wieder zu ändern. Nach der errechneten Zeit wird dein Status wieder automatisch zurückgesetzt. Falls es ein versehen war kannst du es hier dennoch tun</string>
+    <string name="report">Jemand hat sich positiv testen lassen! Melde dich bei deinem Gesundheitsamt unter der Nummer: 0049 0431 9999999</string>
+    <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
 </resources>

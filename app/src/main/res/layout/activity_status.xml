@@ -92,28 +92,59 @@
             app:layout_constraintStart_toEndOf="@id/maybeInfectedImage"
             app:layout_constraintTop_toTopOf="@id/maybeInfectedImage" />
 
-        <ImageView
-            android:id="@+id/currentStausImage"
+        <TextView
+            android:id="@+id/reportTop"
+            style="@style/body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/not_infected_big"
+            android:text="@string/report"
+            app:layout_constraintBottom_toTopOf="@id/currentStatusContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/currentStatusContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/positiveButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/maybeInfectedImage"/>
+            app:layout_constraintTop_toBottomOf="@id/maybeInfectedImage">
+
+            <ImageView
+                android:id="@+id/currentStausImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/not_infected_big"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/currentStatusText"
+                style="@style/body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/not_infected"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/currentStausImage"
+                app:layout_constraintStart_toEndOf="@id/currentStausImage"
+                app:layout_constraintTop_toTopOf="@id/currentStausImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/currentStatusText"
+            android:id="@+id/reportBottom"
             style="@style/body"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
-            android:text="@string/not_infected"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/currentStausImage"
-            app:layout_constraintStart_toEndOf="@id/currentStausImage"
-            app:layout_constraintTop_toTopOf="@id/currentStausImage" />
+            android:text="@string/report_2"
+            app:layout_constraintTop_toBottomOf="@id/currentStatusContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
 
         <Button
             android:id="@+id/positiveButton"
