@@ -23,7 +23,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".status.StatusActivity"></activity>
+        <activity android:name=".ChnageStatusActivity"></activity>
+        <activity android:name=".ChangeStatusActivity" />
+        <activity android:name=".status.StatusActivity" />
         <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
