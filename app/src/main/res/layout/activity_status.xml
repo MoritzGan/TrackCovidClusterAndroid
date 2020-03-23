@@ -35,62 +35,91 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/statusTitle" />
 
-        <ImageView
-            android:id="@+id/notInfectedImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/not_infected_small"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/statusBody" />
-
-        <TextView
-            android:id="@+id/notInfectedText"
-            style="@style/body"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/notInfectedContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/not_infected"
-            app:layout_constraintStart_toEndOf="@id/notInfectedImage"
-            app:layout_constraintTop_toTopOf="@id/notInfectedImage" />
-
-        <ImageView
-            android:id="@+id/infectedImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:src="@drawable/infected_small"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notInfectedImage" />
+            app:layout_constraintTop_toBottomOf="@id/statusBody">
 
-        <TextView
-            android:id="@+id/infectedText"
-            style="@style/body"
+            <ImageView
+                android:id="@+id/notInfectedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/not_infected_big"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/notInfectedText"
+                style="@style/body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_infected"
+                app:layout_constraintBottom_toBottomOf="@id/notInfectedImage"
+                app:layout_constraintStart_toEndOf="@id/notInfectedImage"
+                app:layout_constraintTop_toTopOf="@id/notInfectedImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/infectedContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/infected_text"
-            app:layout_constraintStart_toEndOf="@id/infectedImage"
-            app:layout_constraintTop_toTopOf="@id/infectedImage" />
-
-        <ImageView
-            android:id="@+id/maybeInfectedImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:src="@drawable/maybe_infected_small"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/infectedImage" />
+            app:layout_constraintTop_toBottomOf="@id/notInfectedContainer">
 
-        <TextView
-            android:id="@+id/maybeInfectedText"
-            style="@style/body"
+            <ImageView
+                android:id="@+id/infectedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/infected_big"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/infectedText"
+                style="@style/body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/infected_text"
+                app:layout_constraintBottom_toBottomOf="@id/infectedImage"
+                app:layout_constraintStart_toEndOf="@id/infectedImage"
+                app:layout_constraintTop_toTopOf="@id/infectedImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/maybeInfectedContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/maybe_infected"
-            app:layout_constraintStart_toEndOf="@id/maybeInfectedImage"
-            app:layout_constraintTop_toTopOf="@id/maybeInfectedImage" />
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/infectedContainer">
+
+            <ImageView
+                android:id="@+id/maybeInfectedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/maybe_infected_big"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/maybeInfectedText"
+                style="@style/body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/maybe_infected"
+                app:layout_constraintBottom_toBottomOf="@id/maybeInfectedImage"
+                app:layout_constraintStart_toEndOf="@id/maybeInfectedImage"
+                app:layout_constraintTop_toTopOf="@id/maybeInfectedImage" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/reportTop"
@@ -98,10 +127,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/report"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@id/currentStatusContainer"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/currentStatusContainer"
@@ -109,14 +138,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/positiveButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/maybeInfectedImage">
+            app:layout_constraintTop_toBottomOf="@id/maybeInfectedContainer">
 
             <ImageView
                 android:id="@+id/currentStausImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/not_infected_big"
+                android:src="@drawable/not_infected_small"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -141,10 +170,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/report_2"
-            app:layout_constraintTop_toBottomOf="@id/currentStatusContainer"
-            app:layout_constraintStart_toStartOf="parent"
             android:visibility="invisible"
-            tools:visibility="visible"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/currentStatusContainer"
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/positiveButton"
