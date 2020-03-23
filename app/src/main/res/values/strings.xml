@@ -58,4 +58,6 @@ Ansteckungsrisiko informiert.</string>
     <string name="infected_text">du hast gemeldet infiziert zu sein</string>
     <string name="status">Status</string>
     <string name="status_body">Hier wird dir der Status angezeigt. Falls sich eine Person als Infiziert meldet, die sich in den letzten Tagen in deiner unmittelbaren Nähe auffand, wirst du benachrichtigt.</string>
+    <string name="report">Jemand hat sich positiv testen lassen! Melde dich bei deinem Gesundheitsamt unter der Nummer: 0049 0431 9999999</string>
+    <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
 </resources>
