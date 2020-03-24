@@ -15,5 +15,4 @@ abstract class StatusModule {
     @IntoMap
     @ViewModelKey(ChangeStatusViewModel::class)
     abstract fun bindViewModel(mainViewModel: ChangeStatusViewModel): ViewModel
-
 }

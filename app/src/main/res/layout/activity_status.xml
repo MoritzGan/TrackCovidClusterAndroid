@@ -141,7 +141,7 @@
             app:layout_constraintTop_toBottomOf="@id/maybeInfectedContainer">
 
             <ImageView
-                android:id="@+id/currentStausImage"
+                android:id="@+id/currentStatusImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -158,9 +158,9 @@
                 android:text="@string/not_infected"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/currentStausImage"
-                app:layout_constraintStart_toEndOf="@id/currentStausImage"
-                app:layout_constraintTop_toTopOf="@id/currentStausImage" />
+                app:layout_constraintBottom_toBottomOf="@id/currentStatusImage"
+                app:layout_constraintStart_toEndOf="@id/currentStatusImage"
+                app:layout_constraintTop_toTopOf="@id/currentStatusImage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
