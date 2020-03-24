@@ -91,9 +91,9 @@ class StatusActivity : AppCompatActivity() {
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
             when (status) {
-                INFECTED -> R.drawable.infected_small
-                MAYBE_INFECTED -> R.drawable.maybe_infected_small
-                else -> R.drawable.not_infected_small
+                INFECTED -> R.drawable.infected_big
+                MAYBE_INFECTED -> R.drawable.maybe_infected_big
+                else -> R.drawable.not_infected_big
             }
         )
         mCurrentStatusText.text =

@@ -56,7 +56,7 @@
                 android:id="@+id/futureStausImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/not_infected_small"
+                android:src="@drawable/not_infected_big"
                 app:layout_constraintBottom_toTopOf="@+id/futureStatusTitleBottom"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/futureStatusTitleTop" />

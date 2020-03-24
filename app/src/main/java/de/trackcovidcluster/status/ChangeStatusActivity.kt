@@ -53,8 +53,8 @@ class ChangeStatusActivity : AppCompatActivity() {
     private fun getNextStatus(status: Int) {
         futureStausImage.setImageResource(
             when (status) {
-                Constants.INFECTED -> R.drawable.infected_small
-                Constants.MAYBE_INFECTED -> R.drawable.maybe_infected_small
+                Constants.INFECTED -> R.drawable.infected_big
+                Constants.MAYBE_INFECTED -> R.drawable.maybe_infected_big
                 else -> R.drawable.not_infected_small
             }
         )
