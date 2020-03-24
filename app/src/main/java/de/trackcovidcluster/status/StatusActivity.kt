@@ -62,7 +62,7 @@ class StatusActivity : AppCompatActivity() {
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
                         STATUS_KEY,
-                        Constants.INFECTED
+                        INFECTED
                     )
             )
         }
@@ -73,6 +73,16 @@ class StatusActivity : AppCompatActivity() {
                     .putExtra(
                         STATUS_KEY,
                         NOT_INFECTED
+                    )
+            )
+        }
+
+        positiveButton.setOnClickListener {
+            startActivity(
+                Intent(this, ChangeStatusActivity::class.java)
+                    .putExtra(
+                        STATUS_KEY,
+                        INFECTED
                     )
             )
         }
