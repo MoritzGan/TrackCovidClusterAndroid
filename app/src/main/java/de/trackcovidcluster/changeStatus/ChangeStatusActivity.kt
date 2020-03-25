@@ -1,4 +1,4 @@
-package de.trackcovidcluster.status
+package de.trackcovidcluster.changeStatus
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
+import de.trackcovidcluster.status.Constants
 import de.trackcovidcluster.status.Constants.STATUS_KEY
+import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
 import javax.inject.Inject
 
@@ -31,7 +33,9 @@ class ChangeStatusActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
 
-        val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
+        val status = this.intent.getIntExtra(STATUS_KEY,
+            DEFAULT
+        )
 
         getNextStatus(status)
 

@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
+import de.trackcovidcluster.changeStatus.ChangeStatusActivity
+import de.trackcovidcluster.changeStatus.ChangeStatusViewModel
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
@@ -23,7 +25,7 @@ class StatusActivity : AppCompatActivity() {
     }
 
     // region members
-    private lateinit var mViewModel: ChangeStatusViewModel
+    private lateinit var mViewModel: StatusViewModel
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -37,7 +39,7 @@ class StatusActivity : AppCompatActivity() {
         setContentView(R.layout.activity_status)
 
         mViewModel =
-            ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
+            ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
 
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
@@ -45,6 +47,8 @@ class StatusActivity : AppCompatActivity() {
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
         if (status != DEFAULT) {
             updateStatus(status = status)
+        } else {
+            mViewModel.getStatus()
         }
 
         maybeInfectedContainer.setOnClickListener {
@@ -103,5 +107,6 @@ class StatusActivity : AppCompatActivity() {
                 else -> resources.getString(R.string.not_infected)
             }
     }
+
 
 }

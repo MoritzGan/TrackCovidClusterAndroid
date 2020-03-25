@@ -1,4 +1,4 @@
-package de.trackcovidcluster.status
+package de.trackcovidcluster.changeStatus
 
 import androidx.lifecycle.ViewModel
 import com.jakewharton.rxrelay2.PublishRelay

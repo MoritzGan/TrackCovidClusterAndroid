@@ -6,6 +6,7 @@ import dagger.Component
 import dagger.android.AndroidInjectionModule
 import de.trackcovidcluster.di.ViewModelModule
 import de.trackcovidcluster.main.di.MainModule
+import de.trackcovidcluster.status.di.ChangeStatusModule
 import de.trackcovidcluster.status.di.StatusModule
 import javax.inject.Singleton
 
@@ -17,7 +18,8 @@ import javax.inject.Singleton
         ApplicationModule::class,
         ViewModelModule::class,
         MainModule::class,
-        StatusModule::class
+        StatusModule::class,
+        ChangeStatusModule::class
     )
 )
 interface TrackCovidClusterComponent {
