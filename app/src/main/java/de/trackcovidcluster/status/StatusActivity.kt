@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
-import de.trackcovidcluster.changeStatus.ChangeStatusViewModel
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED

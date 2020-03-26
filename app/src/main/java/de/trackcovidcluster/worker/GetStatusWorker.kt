@@ -25,7 +25,7 @@ class GetStatusWorker @Inject constructor(
             )
         ).firstOrError()
             .flatMap { result ->
-                if(!result.encounters.isNullOrEmpty()){
+                if (!result.encounters.isNullOrEmpty()) {
                     // infected send push notification and change status
                 }
                 Single.just(Result.success())
