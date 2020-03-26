@@ -48,9 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocationData.COLUMN_ID, cookie.getId());
         values.put(LocationData.COLUMN_POS, cookie.getPosition());
-        values.put(LocationData.COLUMN_TIME, cookie.getTimestamp().getTime());
+        values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(LocationData.TABLE_NAME, null, values);
 
@@ -80,9 +79,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
 
                 Cookie cookie = new Cookie(
-                                cursor.getColumnIndex(LocationData.COLUMN_ID),
                                 String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_POS)),
-                        Date.valueOf(String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_TIME)))
+                                cursor.getColumnIndex(LocationData.COLUMN_TIME)
                 );
 
                 sensorData.add(cookie);

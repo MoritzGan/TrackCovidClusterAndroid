@@ -4,22 +4,12 @@ import java.util.Date;
 
 public class Cookie {
 
-    private int id;
     private String position;
-    private Date   timestamp;
+    private long   timestamp;
 
-    public Cookie(int id, String position, Date timestamp) {
-        this.id = id;
+    public Cookie(String position, long timestamp) {
         this.position = position;
         this.timestamp = timestamp;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getPosition() {
@@ -30,11 +20,11 @@ public class Cookie {
         this.position = position;
     }
 
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 }
