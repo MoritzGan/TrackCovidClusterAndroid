@@ -33,9 +33,7 @@ class ChangeStatusActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
 
-        val status = this.intent.getIntExtra(STATUS_KEY,
-            DEFAULT
-        )
+        val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
 
         getNextStatus(status)
 

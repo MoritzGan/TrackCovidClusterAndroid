@@ -3,19 +3,20 @@ package de.trackcovidcluster.status
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
-import de.trackcovidcluster.source.UserStorageSource
+import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class StatusViewModel @Inject constructor(
-    private val mUserStorageSource: UserStorageSource
+    private val mStatusStorageSource: IStatusStorageSource
 ) : ViewModel() {
 
     companion object {
-        private const val GET_STATUS_TAG = "GET_STATUS_5"
+        private const val GET_STATUS_TAG = "GET_STATUS"
     }
+
     // region Members
     private val mStatus = PublishRelay.create<Int>()
     // endregion
@@ -25,14 +26,12 @@ class StatusViewModel @Inject constructor(
     // endregion
 
     fun getStatus() {
-        // TODO call endpoint
-
         val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
         val getStatusWorker =
-            PeriodicWorkRequest.Builder(GetStatusWorker::class.java, 15, TimeUnit.MINUTES)
+            PeriodicWorkRequest.Builder(GetStatusWorker::class.java, 1, TimeUnit.HOURS)
                 .addTag(GET_STATUS_TAG)
                 .setConstraints(constraints)
                 .build()
@@ -43,6 +42,12 @@ class StatusViewModel @Inject constructor(
                 ExistingPeriodicWorkPolicy.KEEP,
                 getStatusWorker
             )
+    }
+
+    fun getStatusFromSource() : Int = mStatusStorageSource.getStatus()
+    fun setMaybeInfected() {
+        mStatusStorageSource.setMaybeInfectedStatus()
+        onGetStatus()
     }
 
     // TODO: Implement stop work
