@@ -1,15 +1,19 @@
 package de.trackcovidcluster.status
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
-
 import de.trackcovidcluster.R
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
@@ -17,6 +21,7 @@ import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import javax.inject.Inject
+
 
 class StatusActivity : AppCompatActivity() {
 
@@ -26,7 +31,7 @@ class StatusActivity : AppCompatActivity() {
 
     // region members
     private lateinit var mViewModel: ChangeStatusViewModel
-
+    private val PERMISSIONS_REQUEST = 100
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mCurrentStatusImage: ImageView
@@ -40,6 +45,28 @@ class StatusActivity : AppCompatActivity() {
 
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
+
+        // Get Permissions for Tracking
+        val lm =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            finish()
+        }
+
+        val permission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            // Start Tracking here
+        } else {
+
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST
+            )
+        }
 
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
