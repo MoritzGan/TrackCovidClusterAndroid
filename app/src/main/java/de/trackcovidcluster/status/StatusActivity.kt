@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 import android.content.Intent
-import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
@@ -107,5 +105,4 @@ class StatusActivity : AppCompatActivity() {
                 else -> resources.getString(R.string.not_infected)
             }
     }
-
 }
