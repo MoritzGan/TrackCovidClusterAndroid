@@ -23,8 +23,6 @@ public class BackgroundLocationService extends Service {
     private LocationListener mLocationListener;
     private LocationManager mLocationManager;
     private NotificationManager notificationManager;
-    private final int LOCATION_INTERVAL = 500;
-    private final int LOCATION_DISTANCE = 10;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,7 +42,26 @@ public class BackgroundLocationService extends Service {
         public void onLocationChanged(Location location) {
             mLastLocation = location;
             Log.i(TAG, "LocationChanged: " + location);
+
             // Save to local DB
+            // TODO: Translate to 3word address and encrypt cookie!
+            // TODO: Save encrypted cookie to database
+            /*
+                    {
+                      "UUID": "CJnw5cqBJ153OTIka2tqDKWoOvBKqis2M+7zEj07WTM=",
+                      "Whereabouts": [
+                             {
+                                 "W3W": "gelbes.beinen.freudige",
+                                 "Timestamp": 1585054159
+                             },
+                             {
+                                 "W3W": "gelbes.beinen.blabla",
+                                 "Timestamp": 1585054170
+                             }
+                         ]
+                    }
+             */
+
             Toast.makeText(BackgroundLocationService.this, "LAT: " + location.getLatitude() + "\n LONG: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         }
 
@@ -100,12 +117,14 @@ public class BackgroundLocationService extends Service {
         mLocationListener = new LocationListener(LocationManager.GPS_PROVIDER);
 
         try {
+            int LOCATION_DISTANCE = 10;
+            int LOCATION_INTERVAL = 500;
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListener);
 
         } catch (java.lang.SecurityException ex) {
-            // Log.i(TAG, "fail to request location update, ignore", ex);
+            Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
-            // Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
 
     }
