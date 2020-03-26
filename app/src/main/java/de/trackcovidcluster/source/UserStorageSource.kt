@@ -12,13 +12,13 @@ class UserStorageSource @Inject constructor(
         private const val USER_ID = "USER_ID"
     }
 
-    override fun isUserExisting(): Boolean {
-        return !mSharedPreferences.getString(USER_ID, null).isNullOrEmpty()
-    }
+    override fun isUserExisting(): Boolean =
+        !mSharedPreferences.getString(USER_ID, null).isNullOrEmpty()
+
 
     override fun createUser() {
         mSharedPreferences.edit().putString(USER_ID, UUID.randomUUID().toString()).apply()
     }
 
-
+    override fun getUUID(): String? = mSharedPreferences.getString(USER_ID, null)
 }

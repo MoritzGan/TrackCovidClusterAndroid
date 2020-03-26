@@ -1,4 +1,4 @@
-package de.trackcovidcluster.main.di
+package de.trackcovidcluster.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

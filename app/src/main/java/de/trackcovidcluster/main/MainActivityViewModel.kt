@@ -5,7 +5,7 @@ import de.trackcovidcluster.source.UserStorageSource
 import javax.inject.Inject
 
 class MainActivityViewModel @Inject constructor(
-    val mUserStorageSource: UserStorageSource
+    private val mUserStorageSource: UserStorageSource
 ) : ViewModel() {
 
     fun isFirstTimeUser(): Boolean =
