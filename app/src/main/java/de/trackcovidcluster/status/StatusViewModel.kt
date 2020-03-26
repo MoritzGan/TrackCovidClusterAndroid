@@ -31,7 +31,7 @@ class StatusViewModel @Inject constructor(
         .build()
 
         val getStatusWorker =
-            PeriodicWorkRequest.Builder(GetStatusWorker::class.java, 1, TimeUnit.HOURS)
+            PeriodicWorkRequest.Builder(GetStatusWorker::class.java, 15, TimeUnit.MINUTES)
                 .addTag(GET_STATUS_TAG)
                 .setConstraints(constraints)
                 .build()

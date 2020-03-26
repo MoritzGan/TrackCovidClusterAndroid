@@ -22,7 +22,7 @@ class UserStorageSource @Inject constructor(
     override fun createUser() {
         mSharedPreferences.edit().apply {
             putString(USER_ID, UUID.randomUUID().toString()).apply()
-           putString(PK_ID, mServerAdapter.publicKey).apply()
+//            putString(PK_ID, mServerAdapter.publicKey).apply()
         }
     }
 

@@ -157,6 +157,22 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
         this.registerReceiver(mReceiver, intentFilter)
     }
 
+    override fun onPause() {
+        // TODO Auto-generated method stub
+        super.onPause()
+
+        //unregister our receiver
+        this.unregisterReceiver(this.mReceiver)
+    }
+
+    override fun onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy()
+
+        //unregister our receiver
+        this.unregisterReceiver(this.mReceiver)
+    }
+
     override fun onServiceConnected(
         className: ComponentName,
         service: IBinder
