@@ -1,5 +1,8 @@
 package de.trackcovidcluster.status
 
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
@@ -8,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
+
 import de.trackcovidcluster.R
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
