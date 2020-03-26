@@ -3,8 +3,11 @@ package de.trackcovidcluster
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.ViewModelProvider
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import de.trackcovidcluster.di.ViewModelFactory
 
 @Module
 class ApplicationModule {

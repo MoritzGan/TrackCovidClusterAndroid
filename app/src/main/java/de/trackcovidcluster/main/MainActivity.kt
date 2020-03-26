@@ -37,17 +37,20 @@ class MainActivity : AppCompatActivity() {
                 startActivity(
                     Intent(this, StatusActivity::class.java)
                 )
+                finish()
             }
             startButtonTop.setOnClickListener {
                 mViewModel.createUser()
                 startActivity(
                     Intent(this, StatusActivity::class.java)
                 )
+                finish()
             }
         } else {
             startActivity(
                 Intent(this, StatusActivity::class.java)
             )
+            finish()
         }
     }
 }

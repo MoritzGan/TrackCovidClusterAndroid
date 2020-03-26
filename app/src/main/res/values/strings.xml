@@ -52,7 +52,7 @@ jedem Zeitpunkt geschützt. Trotzdem
 werden Kontaktpersonen
 schnellstmöglich über ein
 Ansteckungsrisiko informiert.</string>
-    <string name="test_positive">Positiv getester worden?</string>
+    <string name="test_positive">Positiv getestet worden?</string>
     <string name="not_infected">nicht infiziert</string>
     <string name="maybe_infected">möglicherweise infiziert</string>
     <string name="infected_text">du hast gemeldet infiziert zu sein</string>
