@@ -16,12 +16,10 @@ class MainActivity : AppCompatActivity() {
 
     // region members
     private lateinit var mViewModel: MainActivityViewModel
-
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
 
     // endregion
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)
@@ -30,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(MainActivityViewModel::class.java)
 
+        // Log User in
         if (mViewModel.isFirstTimeUser()) {
             mainScreen.visibility = View.VISIBLE
             startButtonBottom.setOnClickListener {
