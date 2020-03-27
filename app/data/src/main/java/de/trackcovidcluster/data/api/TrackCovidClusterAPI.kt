@@ -14,6 +14,9 @@ interface TrackCovidClusterAPI {
     @POST("json")
     fun getStatusFromAPI(@Body body: Request): Observable<Result>
 
+    @POST("json")
+    fun getPublicKey(@Body body: Request): Observable<Result>
+
     companion object {
         fun create(): TrackCovidClusterAPI {
             val retrofit = Retrofit.Builder()
