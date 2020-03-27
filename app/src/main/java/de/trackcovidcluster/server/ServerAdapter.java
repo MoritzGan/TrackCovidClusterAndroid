@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ServerAdapter {
 
-    private SendJsonToServer sendJsonDataToServer;
+    private SendJsonToServer sendJsonDataToServer = new SendJsonToServer();
 
     /**
      * Sends data to the Server "https://api.trackcovidcluster.de:12345/json"
