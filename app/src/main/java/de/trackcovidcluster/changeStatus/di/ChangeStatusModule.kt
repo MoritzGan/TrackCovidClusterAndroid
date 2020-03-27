@@ -6,14 +6,13 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import de.trackcovidcluster.di.ViewModelKey
 import de.trackcovidcluster.changeStatus.ChangeStatusViewModel
-import de.trackcovidcluster.status.StatusViewModel
 
 
 @Module
-abstract class StatusModule {
+abstract class ChangeStatusModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(StatusViewModel::class)
-    abstract fun bindViewModel(mainViewModel: StatusViewModel): ViewModel
+    @ViewModelKey(ChangeStatusViewModel::class)
+    abstract fun bindViewModel(mainViewModel: ChangeStatusViewModel): ViewModel
 }

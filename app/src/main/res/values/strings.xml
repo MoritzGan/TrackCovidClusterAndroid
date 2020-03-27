@@ -66,4 +66,7 @@ Ansteckungsrisiko informiert.</string>
     <string name="change_status_reminder">Es ist nicht notwendig seinen Status wieder zu ändern. Nach der errechneten Zeit wird dein Status wieder automatisch zurückgesetzt. Falls es ein versehen war kannst du es hier dennoch tun</string>
     <string name="report">Jemand hat sich positiv testen lassen! Melde dich bei deinem Gesundheitsamt unter der Nummer: 0049 0431 9999999</string>
     <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
+    <string name="notification_title">You might be infected</string>
+    <string name="notification_body">You were in contact with someone who tested positive</string>
+
 </resources>
