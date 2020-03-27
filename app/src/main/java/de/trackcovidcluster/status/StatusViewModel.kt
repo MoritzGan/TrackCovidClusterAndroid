@@ -1,11 +1,20 @@
 package de.trackcovidcluster.status
 
+import android.app.Application
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseSettings
+import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
 import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
+import org.altbeacon.beacon.Beacon
+import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.BeaconTransmitter
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -49,7 +58,6 @@ class StatusViewModel @Inject constructor(
         mStatusStorageSource.setMaybeInfectedStatus()
         onGetStatus()
     }
-
 
     // TODO: Implement stop work
 //    fun stopTrackLocation() {

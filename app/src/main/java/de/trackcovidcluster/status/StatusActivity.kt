@@ -1,6 +1,7 @@
 package de.trackcovidcluster.status
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Application
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
 import android.content.*
@@ -35,7 +36,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
+class StatusActivity : AppCompatActivity() {
 
     companion object {
         private const val DEFAULT = -1
@@ -43,11 +44,8 @@ class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
 
     // region members
     private lateinit var mViewModel: StatusViewModel
-    private var beaconManager: BeaconManager? = null
     private val PERMISSIONS_REQUEST = 100
     private lateinit var mUserStorageSource: IUserStorageSource
-    var gpsService: BackgroundLocationService? = null
-    var mTracking = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -78,35 +76,8 @@ class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
             updateStatus(status = currentStatus)
         }
 
-        // region Get Permissions for Tracking
-        val lm =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            finish()
-        }
-
-        val permission = ContextCompat.checkSelfPermission(
-            this,
-            ACCESS_FINE_LOCATION
-        )
-
-        if (permission == PackageManager.PERMISSION_GRANTED) {
-            // Start Tracking here
-        } else {
-
-            ActivityCompat.requestPermissions(
-                this, arrayOf(ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST
-            )
-        }
-        // endregion
-
-        /**
-         * Stream as BLE Beacon
-         */
-
         var beacon: Beacon? = Beacon.Builder()
-            .setId1(mUserStorageSource.getUUID()) // hashed
+            .setId1(UUID.randomUUID().toString())
             .setId2("1")
             .setId3("2")
             .setManufacturer(0x004c)
@@ -135,17 +106,6 @@ class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
             })
         }
 
-        /**
-         * Listen for near Devices
-         */
-        beaconManager = BeaconManager.getInstanceForApplication(this)
-        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
-
-        beaconManager!!.startMonitoringBeaconsInRegion(Region("myBeacons", Identifier.parse("12345678-1234-5678-1234-567812345678"),
-                                                                    Identifier.parse("1"), Identifier.parse("1")))
-        /**
-         * TODO: This should change on Server poll :
-         */
         maybeInfectedContainer.setOnClickListener {
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
@@ -224,61 +184,6 @@ class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
         this.unregisterReceiver(this.mReceiver)
     }
 
-    override fun onServiceConnected(
-        className: ComponentName,
-        service: IBinder
-    ) {
-        val name = className.className
-        if (name.endsWith("BackgroundLocationService")) {
-            gpsService = (service as LocationServiceBinder).service
-            Log.d("GPS Ready", "!!");
-        }
-        if (name.endsWith("StatusActivity")) {
-            Log.d("SERVICE", "STARTED SERVICE --------------------------------------\n");
-            Log.d("Status BLE Ready", "!!");
-        }
-    }
-
-    override fun onServiceDisconnected(className: ComponentName) {
-        if (className.className == "BackgroundLocationService") {
-            gpsService = null
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 200) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startTracking()
-            }
-        }
-    }
-
-    fun stopTracking() {
-        mTracking = false
-        gpsService?.stopTracking()
-    }
-
-    fun startTracking() {
-        //check for permission
-        if (ContextCompat.checkSelfPermission(
-                applicationContext,
-                ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            gpsService?.startTracking()
-            mTracking = true
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 200)
-        }
-    }
-
-
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
             when (status) {
@@ -293,42 +198,5 @@ class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
-    }
-
-    override fun onBeaconServiceConnect() {
-        beaconManager?.removeAllMonitorNotifiers()
-        beaconManager?.addMonitorNotifier(object : MonitorNotifier {
-            override fun didEnterRegion(region: Region) {
-                Log.d(
-                    "MonitoringActivity.TAG",
-                    "I just saw an beacon for the first time!"
-                )
-            }
-
-            override fun didExitRegion(region: Region) {
-                Log.d("MonitoringActivity.TAG", "I no longer see an beacon")
-            }
-
-            override fun didDetermineStateForRegion(
-                state: Int,
-                region: Region
-            ) {
-                Log.d(
-                    "MonitoringActivity.TAG",
-                    "I have just switched from seeing/not seeing beacons: $state"
-                )
-            }
-        })
-
-            try {
-                beaconManager?.startMonitoringBeaconsInRegion(
-                    Region(
-                        "myMonitoringUniqueId",
-                        null,
-                        null,
-                        null
-                    )
-                )
-            } catch (e: RemoteException) {}
     }
 }
