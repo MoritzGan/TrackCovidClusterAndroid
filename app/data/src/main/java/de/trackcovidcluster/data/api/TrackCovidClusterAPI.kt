@@ -1,7 +1,7 @@
 package de.trackcovidcluster.data.api
 
-import com.example.data.entities.Request
-import com.example.data.entities.Result
+import de.trackcovidcluster.data.entities.Request
+import de.trackcovidcluster.data.entities.Result
 import io.reactivex.Observable
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

@@ -1,4 +1,4 @@
-package com.example.data.entities
+package de.trackcovidcluster.data.entities
 
 import com.google.gson.annotations.SerializedName
 

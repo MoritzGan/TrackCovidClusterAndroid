@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
-import com.example.data.entities.Request
+import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.R
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.network.StatusNetworkCall
