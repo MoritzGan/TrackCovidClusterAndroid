@@ -1,20 +1,12 @@
 package de.trackcovidcluster.status
 
-import android.app.Application
-import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseSettings
-import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
+import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
-import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.BeaconTransmitter
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -57,6 +49,24 @@ class StatusViewModel @Inject constructor(
     fun setMaybeInfected() {
         mStatusStorageSource.setMaybeInfectedStatus()
         onGetStatus()
+    }
+
+    fun test() {
+        // TODO Create Keypair wit lipsodium
+        // byte[] secret_key = new byte[Box.SECRETKEYBYTES];
+        // byte[] public_key = new byte[Box.PUBLICKEYBYTES];
+        // Box.keypair(public_key, secret_key);
+
+        // TODO encrypt
+        // Box.seal(
+        //    ciphertextByteArray, // Output goes here
+        //    plaintextByteArray,  // Your message
+        //    public_key
+        // );
+
+        // TODO Hash the public key
+        // MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        // byte[] hash = digest.digest(public_key.getBytes("UTF-8"));
     }
 
     // TODO: Implement stop work
