@@ -1,11 +1,15 @@
 package de.trackcovidcluster.status
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseSettings
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
+import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
@@ -25,10 +30,12 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.tracking.BackgroundLocationService
 import de.trackcovidcluster.tracking.BackgroundLocationService.LocationServiceBinder
 import kotlinx.android.synthetic.main.activity_status.*
+import org.altbeacon.beacon.*
+import java.util.*
 import javax.inject.Inject
 
 
-class StatusActivity : AppCompatActivity(), ServiceConnection {
+class StatusActivity : AppCompatActivity(), ServiceConnection, BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
@@ -36,7 +43,9 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
 
     // region members
     private lateinit var mViewModel: StatusViewModel
+    private var beaconManager: BeaconManager? = null
     private val PERMISSIONS_REQUEST = 100
+    private lateinit var mUserStorageSource: IUserStorageSource
     var gpsService: BackgroundLocationService? = null
     var mTracking = false
 
@@ -92,6 +101,48 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
         }
         // endregion
 
+        /**
+         * Stream as BLE Beacon
+         */
+
+        var beacon: Beacon? = Beacon.Builder()
+            .setId1(mUserStorageSource.getUUID()) // hashed
+            .setId2("1")
+            .setId3("2")
+            .setManufacturer(0x004c)
+            .setTxPower(-59)
+            .build()
+
+        val beaconParser: BeaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+        val beaconTransmitter =
+            BeaconTransmitter(applicationContext, beaconParser)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
+                override fun onStartFailure(errorCode: Int) {
+                    Log.e(
+                        "BeaconState: ",
+                        " \n Advertisement start failed with code: $errorCode"
+                    )
+                }
+
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                    Log.i("BeaconState: ",
+                        "Advertisement start succeeded.")
+                }
+            })
+        }
+
+        /**
+         * Listen for near Devices
+         */
+        beaconManager = BeaconManager.getInstanceForApplication(this)
+        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
+
+        beaconManager!!.startMonitoringBeaconsInRegion(Region("myBeacons", Identifier.parse("12345678-1234-5678-1234-567812345678"),
+                                                                    Identifier.parse("1"), Identifier.parse("1")))
         /**
          * TODO: This should change on Server poll :
          */
@@ -182,6 +233,10 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
             gpsService = (service as LocationServiceBinder).service
             Log.d("GPS Ready", "!!");
         }
+        if (name.endsWith("StatusActivity")) {
+            Log.d("SERVICE", "STARTED SERVICE --------------------------------------\n");
+            Log.d("Status BLE Ready", "!!");
+        }
     }
 
     override fun onServiceDisconnected(className: ComponentName) {
@@ -238,5 +293,42 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+    }
+
+    override fun onBeaconServiceConnect() {
+        beaconManager?.removeAllMonitorNotifiers()
+        beaconManager?.addMonitorNotifier(object : MonitorNotifier {
+            override fun didEnterRegion(region: Region) {
+                Log.d(
+                    "MonitoringActivity.TAG",
+                    "I just saw an beacon for the first time!"
+                )
+            }
+
+            override fun didExitRegion(region: Region) {
+                Log.d("MonitoringActivity.TAG", "I no longer see an beacon")
+            }
+
+            override fun didDetermineStateForRegion(
+                state: Int,
+                region: Region
+            ) {
+                Log.d(
+                    "MonitoringActivity.TAG",
+                    "I have just switched from seeing/not seeing beacons: $state"
+                )
+            }
+        })
+
+            try {
+                beaconManager?.startMonitoringBeaconsInRegion(
+                    Region(
+                        "myMonitoringUniqueId",
+                        null,
+                        null,
+                        null
+                    )
+                )
+            } catch (e: RemoteException) {}
     }
 }

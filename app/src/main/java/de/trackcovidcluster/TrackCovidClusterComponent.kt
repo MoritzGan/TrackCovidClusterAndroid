@@ -24,10 +24,12 @@ import javax.inject.Singleton
         WorkerModule::class
     )
 )
+
 interface TrackCovidClusterComponent {
     fun inject(app: TrackCovidClusterApplication)
 
     @Component.Builder
+
     interface Builder {
         @BindsInstance
         fun app(app: Application): Builder

@@ -50,6 +50,7 @@ class StatusViewModel @Inject constructor(
         onGetStatus()
     }
 
+
     // TODO: Implement stop work
 //    fun stopTrackLocation() {
 //        WorkManager.getInstance().cancelAllWorkByTag(LOCATION_WORK_TAG)

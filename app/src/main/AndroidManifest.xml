@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="de.trackcovidcluster">
+
     <!-- Permisions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -9,8 +10,7 @@
  If your app targets Android 9 or lower, you can declare
          ACCESS_COARSE_LOCATION instead.
     -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- For 10 or above -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- For 10 or above -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -26,6 +26,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".tracking.MonitoringService"
+            android:exported="false"></service>
+
         <activity
             android:name=".changeStatus.ChangeStatusActivity"
             android:screenOrientation="portrait" />
@@ -41,12 +45,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MonitoringActivity" />
+        <activity android:name=".tracking.MonitoringActivity" />
 
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:authorities="${applicationId}.workmanager-init"
-            tools:replace="android:authorities"
-            tools:node="remove" />
+            tools:node="remove"
+            tools:replace="android:authorities" />
     </application>
 
 </manifest>

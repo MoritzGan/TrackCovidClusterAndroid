@@ -1,9 +1,6 @@
 package de.trackcovidcluster.worker
 
-import android.app.ActivityManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -31,6 +28,7 @@ class GetStatusWorker @Inject constructor(
 ) : RxWorker(mContext, mWorkerParams) {
 
     override fun createWork(): Single<Result> {
+
         val networkSource = StatusNetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
 
         return networkSource.getStatus(

@@ -1,7 +1,7 @@
 package de.trackcovidcluster.data.network
 
-import de.trackcovidcluster.data.entities.Answer
 import com.example.data.entities.Request
+import de.trackcovidcluster.data.entities.Answer
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import io.reactivex.Observable
 
