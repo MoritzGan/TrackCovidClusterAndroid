@@ -6,5 +6,5 @@ data class Request(
     @SerializedName("Command")
     val command: String,
     @SerializedName("UUID")
-    val uuid: String
+    val uuid: String? = null
 )

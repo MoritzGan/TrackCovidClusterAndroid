@@ -15,7 +15,7 @@ import androidx.work.WorkerParameters
 import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.R
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
-import de.trackcovidcluster.data.network.StatusNetworkCall
+import de.trackcovidcluster.data.network.NetworkCall
 import de.trackcovidcluster.di.IChildRxWorkerFactory
 import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.status.Constants
@@ -31,7 +31,7 @@ class GetStatusWorker @Inject constructor(
 ) : RxWorker(mContext, mWorkerParams) {
 
     override fun createWork(): Single<Result> {
-        val networkSource = StatusNetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
+        val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
 
         return networkSource.getStatus(
             body = Request(
