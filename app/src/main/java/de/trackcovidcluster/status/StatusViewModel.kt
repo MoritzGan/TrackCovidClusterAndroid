@@ -1,10 +1,5 @@
 package de.trackcovidcluster.status
 
-import android.app.Application
-import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseSettings
-import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
@@ -13,9 +8,10 @@ import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.BeaconTransmitter
-import java.util.*
+import org.libsodium.jni.SodiumConstants
+import org.libsodium.jni.crypto.Box
+import org.libsodium.jni.crypto.Random
+import java.security.KeyPair
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -38,8 +34,8 @@ class StatusViewModel @Inject constructor(
 
     fun getStatus() {
         val constraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
         val getStatusWorker =
             PeriodicWorkRequest.Builder(GetStatusWorker::class.java, 15, TimeUnit.MINUTES)
@@ -55,20 +51,36 @@ class StatusViewModel @Inject constructor(
             )
     }
 
-    fun getStatusFromSource() : Int = mStatusStorageSource.getStatus()
+    fun getStatusFromSource(): Int = mStatusStorageSource.getStatus()
 
     fun setMaybeInfected() {
         mStatusStorageSource.setMaybeInfectedStatus()
         onGetStatus()
     }
 
-    fun getBeacon( ): Beacon? = Beacon.Builder()
-        .setId1(mUserStorageSource.getUUID())
-        .setId2("1")
-        .setId3("2")
-        .setManufacturer(0x004c)
-        .setTxPower(-59)
-        .build()
+    fun getBeacon(): Beacon? {
+
+        val private = Random().randomBytes(SodiumConstants.SECRETKEY_BYTES)
+
+        val public = Random().randomBytes(SodiumConstants.PUBLICKEY_BYTES)
+
+        val encryptionKeyPair = KeyPair(public, private)
+
+        // TODO encrypt
+        Box.seal(
+            ciphertextByteArray, // Output goes here
+            plaintextByteArray,  // Your message
+            public_key
+        );
+
+        return Beacon.Builder()
+            .setId1(mUserStorageSource.getUUID())
+            .setId2("1")
+            .setId3("2")
+            .setManufacturer(0x004c)
+            .setTxPower(-59)
+            .build()
+    }
 
     // TODO: Implement stop work
 //    fun stopTrackLocation() {
