@@ -1,22 +1,17 @@
 package de.trackcovidcluster.status
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.Application
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
-import android.content.*
-import android.content.pm.PackageManager
-import android.location.LocationManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
-import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
@@ -28,11 +23,10 @@ import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
 import de.trackcovidcluster.status.Constants.STATUS_KEY
-import de.trackcovidcluster.tracking.BackgroundLocationService
-import de.trackcovidcluster.tracking.BackgroundLocationService.LocationServiceBinder
 import kotlinx.android.synthetic.main.activity_status.*
-import org.altbeacon.beacon.*
-import java.util.*
+import org.altbeacon.beacon.Beacon
+import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.BeaconTransmitter
 import javax.inject.Inject
 
 
@@ -76,35 +70,7 @@ class StatusActivity : AppCompatActivity() {
             updateStatus(status = currentStatus)
         }
 
-        var beacon: Beacon? = Beacon.Builder()
-            .setId1(UUID.randomUUID().toString())
-            .setId2("1")
-            .setId3("2")
-            .setManufacturer(0x004c)
-            .setTxPower(-59)
-            .build()
-
-        val beaconParser: BeaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-
-        val beaconTransmitter =
-            BeaconTransmitter(applicationContext, beaconParser)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
-                override fun onStartFailure(errorCode: Int) {
-                    Log.e(
-                        "BeaconState: ",
-                        " \n Advertisement start failed with code: $errorCode"
-                    )
-                }
-
-                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-                    Log.i("BeaconState: ",
-                        "Advertisement start succeeded.")
-                }
-            })
-        }
+        setBeaconListener()
 
         maybeInfectedContainer.setOnClickListener {
             startActivity(
@@ -182,6 +148,34 @@ class StatusActivity : AppCompatActivity() {
 
         //unregister our receiver
         this.unregisterReceiver(this.mReceiver)
+    }
+
+    private fun setBeaconListener() {
+        val beacon: Beacon? = mViewModel.getBeacon()
+
+        val beaconParser: BeaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+        val beaconTransmitter =
+            BeaconTransmitter(applicationContext, beaconParser)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
+                override fun onStartFailure(errorCode: Int) {
+                    Log.e(
+                        "BeaconState: ",
+                        " \n Advertisement start failed with code: $errorCode"
+                    )
+                }
+
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                    Log.i(
+                        "BeaconState: ",
+                        "Advertisement start succeeded."
+                    )
+                }
+            })
+        }
     }
 
     private fun updateStatus(status: Int) {

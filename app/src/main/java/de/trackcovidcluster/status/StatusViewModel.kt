@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
 import de.trackcovidcluster.source.IStatusStorageSource
+import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
@@ -19,7 +20,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class StatusViewModel @Inject constructor(
-    private val mStatusStorageSource: IStatusStorageSource
+    private val mStatusStorageSource: IStatusStorageSource,
+    private val mUserStorageSource: IUserStorageSource
 ) : ViewModel() {
 
     companion object {
@@ -54,10 +56,19 @@ class StatusViewModel @Inject constructor(
     }
 
     fun getStatusFromSource() : Int = mStatusStorageSource.getStatus()
+
     fun setMaybeInfected() {
         mStatusStorageSource.setMaybeInfectedStatus()
         onGetStatus()
     }
+
+    fun getBeacon( ): Beacon? = Beacon.Builder()
+        .setId1(mUserStorageSource.getUUID())
+        .setId2("1")
+        .setId3("2")
+        .setManufacturer(0x004c)
+        .setTxPower(-59)
+        .build()
 
     // TODO: Implement stop work
 //    fun stopTrackLocation() {
