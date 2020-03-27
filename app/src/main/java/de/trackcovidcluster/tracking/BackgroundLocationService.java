@@ -17,6 +17,10 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import de.trackcovidcluster.database.DatabaseHelper;
+import de.trackcovidcluster.database.LocationData;
+import de.trackcovidcluster.models.Cookie;
+
 public class BackgroundLocationService extends Service {
     private final LocationServiceBinder binder = new LocationServiceBinder();
     private static final String TAG = "BackgroundLocationServi";
@@ -62,6 +66,14 @@ public class BackgroundLocationService extends Service {
                     }
              */
 
+            DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+            String longitude = String.valueOf(location.getLongitude());
+            String latitude = String.valueOf(location.getLatitude());
+
+            Cookie cookie = new Cookie(longitude.concat(latitude), System.currentTimeMillis());
+
+            db.insertDataSet(cookie);
+            Log.d("SQLite", "\n Inserted a cookie inside db \n");
             Toast.makeText(BackgroundLocationService.this, "LAT: " + location.getLatitude() + "\n LONG: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         }
 

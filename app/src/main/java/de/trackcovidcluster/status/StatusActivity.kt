@@ -1,34 +1,36 @@
 package de.trackcovidcluster.status
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.*
-import android.content.pm.PackageManager
-import android.location.LocationManager
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseSettings
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
+import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
 import de.trackcovidcluster.status.Constants.STATUS_KEY
-import de.trackcovidcluster.tracking.BackgroundLocationService
-import de.trackcovidcluster.tracking.BackgroundLocationService.LocationServiceBinder
 import kotlinx.android.synthetic.main.activity_status.*
+import org.altbeacon.beacon.Beacon
+import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.BeaconTransmitter
 import javax.inject.Inject
 
 
-class StatusActivity : AppCompatActivity(), ServiceConnection {
+class StatusActivity : AppCompatActivity() {
 
     companion object {
         private const val DEFAULT = -1
@@ -37,8 +39,7 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
     // region members
     private lateinit var mViewModel: StatusViewModel
     private val PERMISSIONS_REQUEST = 100
-    var gpsService: BackgroundLocationService? = null
-    var mTracking = false
+    private lateinit var mUserStorageSource: IUserStorageSource
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -69,32 +70,8 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
             updateStatus(status = currentStatus)
         }
 
-        // region Get Permissions for Tracking
-        val lm =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            finish()
-        }
+        setBeaconListener()
 
-        val permission = ContextCompat.checkSelfPermission(
-            this,
-            ACCESS_FINE_LOCATION
-        )
-
-        if (permission == PackageManager.PERMISSION_GRANTED) {
-            // Start Tracking here
-        } else {
-
-            ActivityCompat.requestPermissions(
-                this, arrayOf(ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST
-            )
-        }
-        // endregion
-
-        /**
-         * TODO: This should change on Server poll :
-         */
         maybeInfectedContainer.setOnClickListener {
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
@@ -173,56 +150,33 @@ class StatusActivity : AppCompatActivity(), ServiceConnection {
         this.unregisterReceiver(this.mReceiver)
     }
 
-    override fun onServiceConnected(
-        className: ComponentName,
-        service: IBinder
-    ) {
-        val name = className.className
-        if (name.endsWith("BackgroundLocationService")) {
-            gpsService = (service as LocationServiceBinder).service
-            Log.d("GPS Ready", "!!");
+    private fun setBeaconListener() {
+        val beacon: Beacon? = mViewModel.getBeacon()
+
+        val beaconParser: BeaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+        val beaconTransmitter =
+            BeaconTransmitter(applicationContext, beaconParser)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
+                override fun onStartFailure(errorCode: Int) {
+                    Log.e(
+                        "BeaconState: ",
+                        " \n Advertisement start failed with code: $errorCode"
+                    )
+                }
+
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                    Log.i(
+                        "BeaconState: ",
+                        "Advertisement start succeeded."
+                    )
+                }
+            })
         }
     }
-
-    override fun onServiceDisconnected(className: ComponentName) {
-        if (className.className == "BackgroundLocationService") {
-            gpsService = null
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 200) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startTracking()
-            }
-        }
-    }
-
-    fun stopTracking() {
-        mTracking = false
-        gpsService?.stopTracking()
-    }
-
-    fun startTracking() {
-        //check for permission
-        if (ContextCompat.checkSelfPermission(
-                applicationContext,
-                ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            gpsService?.startTracking()
-            mTracking = true
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 200)
-        }
-    }
-
 
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(

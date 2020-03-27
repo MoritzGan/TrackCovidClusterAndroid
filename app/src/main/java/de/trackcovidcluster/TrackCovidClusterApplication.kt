@@ -4,9 +4,7 @@ import android.app.Activity
 import android.app.Application
 import androidx.work.Configuration
 import androidx.work.WorkManager
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.*
 import de.trackcovidcluster.di.RxWorkerFactory
 import javax.inject.Inject
 
@@ -28,7 +26,6 @@ class TrackCovidClusterApplication : Application(), HasActivityInjector {
             .app(this)
             .build()
             .inject(this)
-
 
         // WorkManager Init
         WorkManager.initialize(
