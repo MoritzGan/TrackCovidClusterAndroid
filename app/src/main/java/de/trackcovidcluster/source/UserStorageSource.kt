@@ -1,13 +1,14 @@
 package de.trackcovidcluster.source
 
 import android.content.SharedPreferences
-import de.trackcovidcluster.server.ServerAdapter
+import de.trackcovidcluster.data.api.TrackCovidClusterAPI
+import de.trackcovidcluster.data.network.NetworkCall
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 
 class UserStorageSource @Inject constructor(
-    private val mSharedPreferences: SharedPreferences,
-    private val mServerAdapter: ServerAdapter
+    private val mSharedPreferences: SharedPreferences
 ) : IUserStorageSource {
 
     companion object {
@@ -20,10 +21,15 @@ class UserStorageSource @Inject constructor(
 
 
     override fun createUser() {
-        mSharedPreferences.edit().apply {
-            putString(USER_ID, UUID.randomUUID().toString()).apply()
-//            putString(PK_ID, mServerAdapter.publicKey).apply()
-        }
+        val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
+        networkSource.getPublicKey()
+            .subscribeOn(Schedulers.io())
+            .subscribe { publicKey ->
+                mSharedPreferences.edit().putString(PK_ID, publicKey).apply()
+            }
+
+        mSharedPreferences.edit()
+            .putString(USER_ID, UUID.randomUUID().toString()).apply()
     }
 
     override fun getUUID(): String? = mSharedPreferences.getString(USER_ID, null)
