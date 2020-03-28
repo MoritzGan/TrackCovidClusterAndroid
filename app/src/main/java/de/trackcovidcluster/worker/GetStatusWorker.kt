@@ -36,7 +36,7 @@ class GetStatusWorker @Inject constructor(
         return networkSource.getStatus(
             body = Request(
                 command = "StatePoll",
-                uuid = mUserStorageSource.getUUID().toString()
+                uuid = mUserStorageSource.getUserPublicKey()
             )
         ).firstOrError()
             .flatMap { result ->

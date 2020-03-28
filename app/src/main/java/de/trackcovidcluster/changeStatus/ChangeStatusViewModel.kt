@@ -11,7 +11,7 @@ class ChangeStatusViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun sendStatus() {
-        val uUID = mUserStorageSource.getUUID()
+        val uUID = mUserStorageSource.getUserPublicKey()
         // TODO get cluster and call endpoint
     }
 

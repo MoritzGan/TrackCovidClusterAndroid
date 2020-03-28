@@ -1,6 +1,7 @@
 package de.trackcovidcluster.source
 
 import android.content.SharedPreferences
+import android.util.Base64
 import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.network.NetworkCall
@@ -41,8 +42,14 @@ class UserStorageSource @Inject constructor(
         val encryptionPrivateKey: ByteArray = encryptionKeyPair.privateKey.toBytes()
 
         mSharedPreferences.edit().apply {
-            putString(USER_PRIVATE_KEY_ID, encryptionPrivateKey.toString())
-            putString(USER_PUBLIC_KEY_ID, encryptionPublicKey.toString())
+            putString(
+                USER_PRIVATE_KEY_ID,
+                Base64.encodeToString(encryptionPrivateKey, Base64.DEFAULT).substring(0, 44)
+            )
+            putString(
+                USER_PUBLIC_KEY_ID,
+                Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)
+            )
         }.apply()
 
         Log.d(
@@ -51,9 +58,7 @@ class UserStorageSource @Inject constructor(
         )
     }
 
-    override fun getUUID(): String? = mSharedPreferences.getString(USER_ID, null)
-
-    override fun getUserPublicKey() =  mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null)
+    override fun getUserPublicKey() = mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null)
 
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())

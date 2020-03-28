@@ -1,5 +1,6 @@
 package de.trackcovidcluster.status
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
@@ -61,9 +62,9 @@ class StatusViewModel @Inject constructor(
         val digest: MessageDigest = MessageDigest.getInstance(SHA256.digestAlgorithm)
 
         mUserStorageSource.getUserPublicKey()?.let { publicKey ->
-            val hashBytes = digest.digest(
-                publicKey.toByteArray()
-            )
+            val byte = Base64.decode(publicKey, Base64.DEFAULT)
+
+            val hashBytes = digest.digest(byte)
 
             var hex = ""
             hashBytes.map {
