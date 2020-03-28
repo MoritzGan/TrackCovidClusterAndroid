@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             startButtonBottom.setOnClickListener {
 
                 mViewModel.createUser()
-                mViewModel.generateKeyPair(this)
+                mViewModel.generateKeyPair()
 
                 startActivity(
                     Intent(this, StatusActivity::class.java)
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             startButtonTop.setOnClickListener {
 
                 mViewModel.createUser()
-                mViewModel.generateKeyPair(this)
+                mViewModel.generateKeyPair()
 
                 startActivity(
                     Intent(this, StatusActivity::class.java)

@@ -20,23 +20,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun createUser() = mUserStorageSource.createUser()
 
-    fun generateKeyPair(context: Context) {
-        val sharedPreference =  context.getSharedPreferences("KEYSET",Context.MODE_PRIVATE)
-
-        val editor: SharedPreferences.Editor = sharedPreference.edit()
-        val seed: ByteArray = Random().randomBytes(SodiumConstants.SECRETKEY_BYTES)
-
-        val encryptionKeyPair = KeyPair(seed)
-        val encryptionPublicKey: ByteArray = encryptionKeyPair.publicKey.toBytes()
-        val encryptionPrivateKey: ByteArray = encryptionKeyPair.privateKey.toBytes()
-
-        editor.putString("PrivateKey", encryptionPrivateKey.toString())
-        editor.putString("PublicKey", encryptionPublicKey.toString())
-        editor.commit()
-
-        Log.d("FIRST TIME USER:", "\n" + "GENERATED KEYPAIR \n" +
-                encryptionPrivateKey.toString())
-    }
+    fun generateKeyPair() = mUserStorageSource.createUserKeys()
 }
 
 

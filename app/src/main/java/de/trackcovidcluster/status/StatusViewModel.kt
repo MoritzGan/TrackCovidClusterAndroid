@@ -8,10 +8,6 @@ import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
-import org.libsodium.jni.SodiumConstants
-import org.libsodium.jni.crypto.Box
-import org.libsodium.jni.crypto.Random
-import java.security.KeyPair
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

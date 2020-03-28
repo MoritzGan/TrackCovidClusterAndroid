@@ -7,4 +7,4 @@
 /captures
 .externalNativeBuild
 .cxx
-/data/build
+app/data/buid/*
