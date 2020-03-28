@@ -60,19 +60,6 @@ class StatusViewModel @Inject constructor(
 
     fun getBeacon(): Beacon? {
 
-        val private = Random().randomBytes(SodiumConstants.SECRETKEY_BYTES)
-
-        val public = Random().randomBytes(SodiumConstants.PUBLICKEY_BYTES)
-
-        val encryptionKeyPair = KeyPair(public, private)
-
-        // TODO encrypt
-        Box.seal(
-            ciphertextByteArray, // Output goes here
-            plaintextByteArray,  // Your message
-            public_key
-        );
-
         return Beacon.Builder()
             .setId1(mUserStorageSource.getUUID())
             .setId2("1")

@@ -3,7 +3,6 @@ package de.trackcovidcluster.database;
 public class LocationData {
 
     public static final String TABLE_NAME = "locationData";
-
     public static final String COLUMN_ID   = "id";
     public static final String COLUMN_POS = "position";
     public static final String COLUMN_TIME = "timestamp";
@@ -17,7 +16,6 @@ public class LocationData {
      */
     public static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + "("
-                    + COLUMN_ID         + " VARCHAR,"
                     + COLUMN_POS       + " VARCHAR,"
                     + COLUMN_TIME       + " DATETIME DEFAULT CURRENT_TIMESTAMP"
                     + ")";

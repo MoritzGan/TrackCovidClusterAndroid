@@ -27,9 +27,12 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.BeaconTransmitter
+import java.security.MessageDigest
 import javax.inject.Inject
+import kotlin.experimental.and
 
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class StatusActivity : AppCompatActivity() {
 
     companion object {
@@ -70,7 +73,7 @@ class StatusActivity : AppCompatActivity() {
             updateStatus(status = currentStatus)
         }
 
-        setBeaconListener()
+        setBeaconTransmitter()
 
         maybeInfectedContainer.setOnClickListener {
             startActivity(
@@ -150,7 +153,17 @@ class StatusActivity : AppCompatActivity() {
         this.unregisterReceiver(this.mReceiver)
     }
 
-    private fun setBeaconListener() {
+    private fun setBeaconTransmitter() {
+        val sharedPreference =  getSharedPreferences("KEYSET",Context.MODE_PRIVATE)
+        val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(
+            sharedPreference.getString("PublicKey", null)?.toByteArray()
+        )
+
+        val sha3_256hex: String = Byte.toString(hashBytes)
+
+        Log.d("HASH OF PUBKEY", " \n $sha3_256hex")
+
         val beacon: Beacon? = mViewModel.getBeacon()
 
         val beaconParser: BeaconParser = BeaconParser()

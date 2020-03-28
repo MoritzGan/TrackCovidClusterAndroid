@@ -32,14 +32,20 @@ class MainActivity : AppCompatActivity() {
         if (mViewModel.isFirstTimeUser()) {
             mainScreen.visibility = View.VISIBLE
             startButtonBottom.setOnClickListener {
+
                 mViewModel.createUser()
+                mViewModel.generateKeyPair(this)
+
                 startActivity(
                     Intent(this, StatusActivity::class.java)
                 )
                 finish()
             }
             startButtonTop.setOnClickListener {
+
                 mViewModel.createUser()
+                mViewModel.generateKeyPair(this)
+
                 startActivity(
                     Intent(this, StatusActivity::class.java)
                 )
