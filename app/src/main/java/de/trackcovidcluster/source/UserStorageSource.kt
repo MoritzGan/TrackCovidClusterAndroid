@@ -18,7 +18,7 @@ class UserStorageSource @Inject constructor(
     companion object {
         private const val USER_ID = "USER_ID"
         private const val PK_ID = "SERVER_PUBLIC_KEY"
-        private const val USER_PUBLIC_KEY_ID = "UBLIC_KEY"
+        private const val USER_PUBLIC_KEY_ID = "PUBLIC_KEY"
         private const val USER_PRIVATE_KEY_ID = "SERVER_PRIVATE_KEY"
     }
 
@@ -51,6 +51,9 @@ class UserStorageSource @Inject constructor(
         )
     }
 
+    override fun getUUID(): String? = mSharedPreferences.getString(USER_ID, null)
+
+    override fun getUserPublicKey() =  mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null)
 
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
@@ -60,6 +63,4 @@ class UserStorageSource @Inject constructor(
                 mSharedPreferences.edit().putString(PK_ID, publicKey).apply()
             }
     }
-
-    override fun getUUID(): String? = mSharedPreferences.getString(USER_ID, null)
 }

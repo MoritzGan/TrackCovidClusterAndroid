@@ -154,16 +154,6 @@ class StatusActivity : AppCompatActivity() {
     }
 
     private fun setBeaconTransmitter() {
-        val sharedPreference =  getSharedPreferences("KEYSET",Context.MODE_PRIVATE)
-        val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-        val hashBytes = digest.digest(
-            sharedPreference.getString("PublicKey", null)?.toByteArray()
-        )
-
-        val sha3_256hex: String = Byte.toString(hashBytes)
-
-        Log.d("HASH OF PUBKEY", " \n $sha3_256hex")
-
         val beacon: Beacon? = mViewModel.getBeacon()
 
         val beaconParser: BeaconParser = BeaconParser()
