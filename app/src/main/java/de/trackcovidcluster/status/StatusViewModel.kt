@@ -10,6 +10,7 @@ import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import java.security.MessageDigest
+import java.security.spec.MGF1ParameterSpec.SHA256
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -57,19 +58,20 @@ class StatusViewModel @Inject constructor(
     }
 
     fun getBeacon(): Beacon? {
-        val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
+        val digest: MessageDigest = MessageDigest.getInstance(SHA256.digestAlgorithm)
 
         mUserStorageSource.getUserPublicKey()?.let { publicKey ->
             val hashBytes = digest.digest(
                 publicKey.toByteArray()
             )
 
-            val sha3_256hex: String = hashBytes
-            Log.d("HASH OF PUBKEY", " \n $sha3256Hex")
-
+            var hex = ""
+            hashBytes.map {
+                hex += String.format("%02X", it)
+            }
 
             return Beacon.Builder()
-                .setId1(mUserStorageSource.getUUID())
+                .setId1(hex)
                 .setId2("1")
                 .setId3("2")
                 .setManufacturer(0x004c)
