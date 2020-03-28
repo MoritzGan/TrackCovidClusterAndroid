@@ -27,9 +27,7 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.BeaconTransmitter
-import java.security.MessageDigest
 import javax.inject.Inject
-import kotlin.experimental.and
 
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
