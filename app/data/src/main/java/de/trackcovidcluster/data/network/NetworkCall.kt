@@ -7,10 +7,10 @@ import io.reactivex.Observable
 
 class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
-    fun getStatus(body: Request): Observable<Answer> {
+    fun getStatus(body: Request): Observable<List<String>?> {
         return trackCovidAPI.getStatusFromAPI(body = body)
             .map { response ->
-                response.answer
+                response.answer.encounters
             }
     }
 
