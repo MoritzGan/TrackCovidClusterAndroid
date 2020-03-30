@@ -130,25 +130,24 @@ class StatusActivity : AppCompatActivity() {
             }
         }
 
-        //registering our receiver
         this.registerReceiver(mReceiver, intentFilter)
     }
 
     override fun onPause() {
-        // TODO Auto-generated method stub
         super.onPause()
 
-        //unregister our receiver
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
-        // TODO Auto-generated method stub
         super.onDestroy()
 
-        //unregister our receiver
         this.unregisterReceiver(this.mReceiver)
     }
+
+    /**
+     * Functions for setting the beacons to Advertise themselfs.
+     */
 
     private fun setBeaconTransmitter(major: Int?, minor: Int?) {
         // TODO Change UUID to one of the Server ones
@@ -182,14 +181,16 @@ class StatusActivity : AppCompatActivity() {
         beaconTransmitter.startAdvertising(beacon)
     }
 
+    /**
+     * Advertises the hashed truncated public key in major and minor of 5 beacons.
+     *
+     * TODO: Set the UUIDs of the beacons to the ordered one from the server
+     */
+
     private fun startAdvertising() {
 
-        // Will return sth. like 266290753698018418588485362138100705178
         val hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
         val keyAsString : String = bigIntegerToString(hashedPubKey)
-
-        Log.d(" METHOD  ", "  " + bigIntegerToString(hashedPubKey));
-        // TODO split the hashedPubKey to minor/majors of the beacons
 
         for (x in 0 .. keyAsString.length - 1) {
             var oneStr : String? = ""
@@ -220,8 +221,7 @@ class StatusActivity : AppCompatActivity() {
     }
 
     private fun bigIntegerToString(input : BigInteger): String {
-        var output : String = "" + input
-        return output
+        return "" + input
     }
 
     private fun updateStatus(status: Int) {
