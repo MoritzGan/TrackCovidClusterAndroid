@@ -60,10 +60,11 @@ class StatusViewModel @Inject constructor(
     fun getBeacon(uuid : String, major : String, minor : String): Beacon? {
 
         return Beacon.Builder()
+            .setBluetoothAddress("6BEC8F04BA0C") // TODO does not change the mac
+            .setBluetoothName("Testing")         // TODO Also not readable
             .setId1(uuid)
             .setId2(major)
             .setId3(minor)
-            .setBluetoothAddress("6B-EC-8F-04-BA-0C")
             .setManufacturer(0x004c)
             .setTxPower(-59)
             .build()
