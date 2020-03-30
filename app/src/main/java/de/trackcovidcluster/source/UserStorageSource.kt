@@ -2,14 +2,12 @@ package de.trackcovidcluster.source
 
 import android.content.SharedPreferences
 import android.util.Base64
-import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.network.NetworkCall
 import io.reactivex.schedulers.Schedulers
 import org.libsodium.jni.SodiumConstants
 import org.libsodium.jni.crypto.Random
 import org.libsodium.jni.keys.KeyPair
-import java.util.*
 import javax.inject.Inject
 
 class UserStorageSource @Inject constructor(
@@ -17,21 +15,13 @@ class UserStorageSource @Inject constructor(
 ) : IUserStorageSource {
 
     companion object {
-        private const val USER_ID = "USER_ID"
-        private const val PK_ID = "SERVER_PUBLIC_KEY"
+        private const val SERVER_PUBLIC_KEY_ID = "SERVER_PUBLIC_KEY"
         private const val USER_PUBLIC_KEY_ID = "PUBLIC_KEY"
         private const val USER_PRIVATE_KEY_ID = "SERVER_PRIVATE_KEY"
     }
 
     override fun isUserExisting(): Boolean =
-        !mSharedPreferences.getString(USER_ID, null).isNullOrEmpty()
-
-
-    override fun createUser() {
-        mSharedPreferences.edit()
-            .putString(USER_ID, UUID.randomUUID().toString()).apply()
-        getPublicKey()
-    }
+        !mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null).isNullOrEmpty()
 
 
     override fun createUserKeys() {
@@ -51,21 +41,17 @@ class UserStorageSource @Inject constructor(
                 Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)
             )
         }.apply()
-
-        Log.d(
-            "FIRST TIME USER:", "\n" + "GENERATED KEYPAIR \n" +
-                    encryptionPrivateKey.toString()
-        )
+        getServerPublicKey()
     }
 
     override fun getUserPublicKey() = mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null)
 
-    private fun getPublicKey() {
+    private fun getServerPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
         networkSource.getPublicKey()
             .subscribeOn(Schedulers.io())
             .subscribe { publicKey ->
-                mSharedPreferences.edit().putString(PK_ID, publicKey).apply()
+                mSharedPreferences.edit().putString(SERVER_PUBLIC_KEY_ID, publicKey).apply()
             }
     }
 }
