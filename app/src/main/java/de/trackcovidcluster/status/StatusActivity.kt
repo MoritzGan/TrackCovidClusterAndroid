@@ -153,7 +153,6 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
-        val beacon: Beacon? = null
         val uuids: JSONObject = mViewModel.getUUIDs()
 
         if (!uuids.isNull("0")) {
@@ -171,7 +170,9 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
 
-            mBeaconManager.bind(this);
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.bind(this)
+
             beaconTransmitter.startAdvertising(beacon)
         }
     }
@@ -187,6 +188,9 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         val beaconParser: BeaconParser = BeaconParser()
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+        mBeaconManager.beaconParsers.add(beaconParser)
+        mBeaconManager.bind(this)
 
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
@@ -275,6 +279,7 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     null
                 )
             )
+            Log.d("Looking for beacons", "looking for beacons ")
         } catch (e: RemoteException) {
             Log.e("Dont see Beacon", e.toString())
         }
