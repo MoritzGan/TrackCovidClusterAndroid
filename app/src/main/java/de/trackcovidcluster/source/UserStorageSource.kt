@@ -7,6 +7,7 @@ import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.network.NetworkCall
 import io.reactivex.schedulers.Schedulers
 import org.bouncycastle.util.StringList
+import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import org.libsodium.jni.SodiumConstants
 import org.libsodium.jni.crypto.Random
@@ -37,6 +38,9 @@ class UserStorageSource @Inject constructor(
         getUUIDsFromServer()
     }
 
+    override fun getUUIDsFromUser(): String? {
+        return mSharedPreferences.getString(UUID_LIST, "")
+    }
 
     override fun createUserKeys() {
         val seed: ByteArray = Random().randomBytes(SodiumConstants.SECRETKEY_BYTES)
@@ -74,19 +78,24 @@ class UserStorageSource @Inject constructor(
             }
     }
 
-    private fun getUUIDsFromServer() {
+    private fun getUUIDsFromServer(): String? {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
-        var concattedUuids: String = ""
+        var uuidsJson: JSONObject = JSONObject()
+
         networkSource.getUUIDs()
             .subscribeOn(Schedulers.io())
             .subscribe { uuids ->
-                if (uuids != null) {
-                    for (x :String in uuids) {
-                        concattedUuids += x
-                    }
-                }
-                mSharedPreferences.edit().putString(UUID_LIST, concattedUuids).apply()
-                Log.d("SERVER    ", "UUIDS FROM SERVER :" + uuids);
+
+                uuidsJson.put("0", uuids?.get(0))
+                uuidsJson.put("1", uuids?.get(1))
+                uuidsJson.put("2", uuids?.get(2))
+                uuidsJson.put("3", uuids?.get(3))
+                uuidsJson.put("4", uuids?.get(4))
+
+                mSharedPreferences.edit().putString(UUID_LIST, uuidsJson.toString()).apply()
+                Log.d("SERVER    ", "UUIDS FROM SERVER :" + uuidsJson);
             }
+
+        return uuidsJson.toString();
     }
 }

@@ -1,9 +1,6 @@
 package de.trackcovidcluster.status
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
@@ -15,6 +12,7 @@ import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.source.IUserStorageSource
+import de.trackcovidcluster.source.UserStorageSource
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
@@ -24,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.BeaconTransmitter
+import org.json.JSONObject
 import java.math.BigInteger
 import java.util.*
 import javax.inject.Inject
@@ -44,6 +43,7 @@ class StatusActivity : AppCompatActivity() {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
+    private val mSharedPreferences: SharedPreferences?= null
     private var mReceiver: BroadcastReceiver? = null
     // endregion
 
@@ -67,8 +67,6 @@ class StatusActivity : AppCompatActivity() {
             val currentStatus = mViewModel.getStatusFromSource()
             updateStatus(status = currentStatus)
         }
-
-        startAdvertising()
 
         maybeInfectedContainer.setOnClickListener {
             startActivity(
@@ -109,7 +107,10 @@ class StatusActivity : AppCompatActivity() {
                     )
             )
         }
+
+        startAdvertising()
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -147,11 +148,14 @@ class StatusActivity : AppCompatActivity() {
      * Functions for setting the beacons to Advertise themselfs.
      */
 
-    private fun setBeaconTransmitter(major: Int?, minor: Int?) {
+    private fun setBeaconTransmitter(major: Int?, minor: Int?, counter : Int) {
         // TODO Change UUID to one of the Server ones
+        var uuids: JSONObject = mViewModel.getUUIDs()
+        Log.d("UUIDS", "   " + uuids)
+
 
         val beacon: Beacon? = mViewModel.getBeacon(
-            UUID.randomUUID().toString(), major.toString(), minor.toString())
+            uuids.getString(counter.toString()), major.toString(), minor.toString())
 
 
         val beaconParser: BeaconParser = BeaconParser()
@@ -163,11 +167,12 @@ class StatusActivity : AppCompatActivity() {
         beaconTransmitter.startAdvertising(beacon)
     }
 
-    private fun setBeaconTransmitterLast(major: Int?) {
+    private fun setBeaconTransmitterLast(major: Int?, counter : Int) {
         // TODO Change UUID to one of the Server ones
+        var uuids: JSONObject = mViewModel.getUUIDs()
 
         val beacon: Beacon? = mViewModel.getBeacon(
-            UUID.randomUUID().toString(), major.toString(), "")
+            uuids.getString(counter.toString()), major.toString(), "")
 
 
         val beaconParser: BeaconParser = BeaconParser()
@@ -189,6 +194,7 @@ class StatusActivity : AppCompatActivity() {
 
         val hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
         val keyAsString : String = bigIntegerToString(hashedPubKey)
+        var counter: Int = 0
 
         for (x in 0 .. keyAsString.length - 1) {
             var oneStr : String? = ""
@@ -201,23 +207,24 @@ class StatusActivity : AppCompatActivity() {
                     if(x == 4) {
                         oneStr = keyAsString.substring(0, 4)
                         twoStr = keyAsString.substring(4, 8)
-                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt())
+                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt(), counter)
 
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
-
+                        counter++
                     } else {
                         oneStr = keyAsString.substring(x - 4, x)
                         twoStr = keyAsString.substring(x, x + 4)
-                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt())
+                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt(), counter)
 
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
-
+                        counter++
                     }
 
                 } else if ((x + 4) > keyAsString.length){
-                    setBeaconTransmitterLast(keyAsString.substring(x).toInt())
+                    setBeaconTransmitterLast(keyAsString.substring(x).toInt(), counter)
 
                     Log.d("SET BEACON (", " " + keyAsString.substring(x).toInt() + ")\n");
+                    counter++
                 }
             }
         }

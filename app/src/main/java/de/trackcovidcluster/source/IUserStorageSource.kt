@@ -9,4 +9,6 @@ interface IUserStorageSource {
     fun createUserKeys()
 
     fun getUserPublicKey(): String?
+
+    fun getUUIDsFromUser(): String?
 }

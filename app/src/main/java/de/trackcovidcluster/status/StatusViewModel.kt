@@ -10,6 +10,7 @@ import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import org.bouncycastle.jcajce.provider.digest.SHA3
+import org.json.JSONObject
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -90,6 +91,16 @@ class StatusViewModel @Inject constructor(
         }
 
         return BigInteger("0");
+    }
+
+    fun getUUIDs(): JSONObject {
+        var stringRep = mUserStorageSource.getUUIDsFromUser()
+
+        var jsonRep :JSONObject = JSONObject()
+
+        if(!stringRep.equals(""))  jsonRep = JSONObject(stringRep)
+
+        return jsonRep
     }
 
     // TODO: Implement stop work
