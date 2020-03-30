@@ -80,7 +80,7 @@ class UserStorageSource @Inject constructor(
 
     private fun getUUIDsFromServer(): String? {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
-        var uuidsJson: JSONObject = JSONObject()
+        var uuidsJson = JSONObject()
 
         networkSource.getUUIDs()
             .subscribeOn(Schedulers.io())
@@ -93,9 +93,9 @@ class UserStorageSource @Inject constructor(
                 uuidsJson.put("4", uuids?.get(4))
 
                 mSharedPreferences.edit().putString(UUID_LIST, uuidsJson.toString()).apply()
-                Log.d("SERVER    ", "UUIDS FROM SERVER :" + uuidsJson);
+                Log.d("SERVER    ", "UUIDS FROM SERVER :" + uuidsJson)
             }
 
-        return uuidsJson.toString();
+        return uuidsJson.toString()
     }
 }

@@ -1,7 +1,11 @@
 package de.trackcovidcluster.status
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,25 +15,20 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
-import de.trackcovidcluster.source.IUserStorageSource
-import de.trackcovidcluster.source.UserStorageSource
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
-import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.BeaconTransmitter
+import org.altbeacon.beacon.*
+import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.json.JSONObject
 import java.math.BigInteger
-import java.util.*
 import javax.inject.Inject
 
-
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class StatusActivity : AppCompatActivity() {
+class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
@@ -37,20 +36,23 @@ class StatusActivity : AppCompatActivity() {
 
     // region members
     private lateinit var mViewModel: StatusViewModel
-    private lateinit var mUserStorageSource: IUserStorageSource
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
-    private val mSharedPreferences: SharedPreferences?= null
     private var mReceiver: BroadcastReceiver? = null
+    private lateinit var mBeaconManager: BeaconManager
+    private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
     // endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_status)
+
+        mBeaconManager = BeaconManager.getInstanceForApplication(this)
+        mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
@@ -142,25 +144,26 @@ class StatusActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        this.unregisterReceiver(this.mReceiver)
+        mBeaconManager.unbind(this)
     }
 
     /**
      * Functions for setting the beacons to Advertise themselfs.
      */
 
-    private fun setBeaconTransmitter(major: Int?, minor: Int?, counter : Int) {
+    private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
         val beacon: Beacon? = null
         val uuids: JSONObject = mViewModel.getUUIDs()
 
-        if( !uuids.isNull("0") ) {
+        if (!uuids.isNull("0")) {
             var uuid: String = uuids.getString(counter.toString())
 
             Log.d("UUIDS", "   " + uuids)
 
             val beacon: Beacon? = mViewModel.getBeacon(
-                uuid, major.toString(), minor.toString())
+                uuid, major.toString(), minor.toString()
+            )
 
             val beaconParser: BeaconParser = BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -168,16 +171,18 @@ class StatusActivity : AppCompatActivity() {
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
 
+            mBeaconManager.bind(this);
             beaconTransmitter.startAdvertising(beacon)
         }
     }
 
-    private fun setBeaconTransmitterLast(major: Int?, counter : Int) {
+    private fun setBeaconTransmitterLast(major: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
         var uuids: JSONObject = mViewModel.getUUIDs()
 
         val beacon: Beacon? = mViewModel.getBeacon(
-            uuids.getString(counter.toString()), major.toString(), "")
+            uuids.getString(counter.toString()), major.toString(), ""
+        )
 
 
         val beaconParser: BeaconParser = BeaconParser()
@@ -197,35 +202,35 @@ class StatusActivity : AppCompatActivity() {
 
     private fun startAdvertising() {
 
-        val hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
-        val keyAsString : String = bigIntegerToString(hashedPubKey)
-        var counter: Int = 0
+        val hashedPubKey: BigInteger = mViewModel.getPublicKeyInInt()
+        val keyAsString = hashedPubKey.toString()
+        var counter = 0
 
-        for (x in 0 .. keyAsString.length - 1) {
-            var oneStr : String? = ""
-            var twoStr : String? = ""
+        for (x in keyAsString.indices) {
+            var oneStr: String?
+            var twoStr: String?
 
             if ((x % 8 == 0 && x != 0 && x <= keyAsString.length) || x == 4) {
 
                 if ((x + 4) < keyAsString.length) {
 
-                    if(x == 4) {
+                    if (x == 4) {
                         oneStr = keyAsString.substring(0, 4)
                         twoStr = keyAsString.substring(4, 8)
-                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt(), counter)
+                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
 
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
                         counter++
                     } else {
                         oneStr = keyAsString.substring(x - 4, x)
                         twoStr = keyAsString.substring(x, x + 4)
-                        setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt(), counter)
+                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
 
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
                         counter++
                     }
 
-                } else if ((x + 4) > keyAsString.length){
+                } else if ((x + 4) > keyAsString.length) {
                     setBeaconTransmitterLast(keyAsString.substring(x).toInt(), counter)
 
                     Log.d("SET BEACON (", " " + keyAsString.substring(x).toInt() + ")\n");
@@ -233,10 +238,6 @@ class StatusActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun bigIntegerToString(input : BigInteger): String {
-        return "" + input
     }
 
     private fun updateStatus(status: Int) {
@@ -253,5 +254,29 @@ class StatusActivity : AppCompatActivity() {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+    }
+
+    override fun onBeaconServiceConnect() {
+        mBeaconManager.removeAllMonitorNotifiers()
+        mBeaconManager.addRangeNotifier { beacons, _ ->
+            if (beacons.isNotEmpty()) {
+                Log.i(
+                    "See Beacon",
+                    "The first beacon I see is about " + beacons.iterator().next().distance + " meters away."
+                )
+            }
+        }
+        try {
+            mBeaconManager.startRangingBeaconsInRegion(
+                Region(
+                    "myRangingUniqueId",
+                    null,
+                    null,
+                    null
+                )
+            )
+        } catch (e: RemoteException) {
+            Log.e("Dont see Beacon", e.toString())
+        }
     }
 }

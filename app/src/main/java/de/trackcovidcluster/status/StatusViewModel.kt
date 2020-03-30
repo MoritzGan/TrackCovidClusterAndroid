@@ -1,6 +1,5 @@
 package de.trackcovidcluster.status
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
@@ -58,7 +57,7 @@ class StatusViewModel @Inject constructor(
         onGetStatus()
     }
 
-    fun getBeacon(uuid : String, major : String, minor : String): Beacon? {
+    fun getBeacon(uuid: String, major: String, minor: String): Beacon? {
 
         return Beacon.Builder()
             .setBluetoothAddress("6BEC8F04BA0C") // TODO does not change the mac
@@ -71,11 +70,11 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt() : BigInteger {
+    fun getPublicKeyInInt(): BigInteger {
 
         mUserStorageSource.getUserPublicKey()?.let { publicKey ->
 
-            val digestSHA3 : SHA3.DigestSHA3 = SHA3.Digest256()
+            val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
             val digest = digestSHA3.digest(publicKey.toByteArray())
 
             var hex = ""
@@ -83,28 +82,22 @@ class StatusViewModel @Inject constructor(
                 hex += String.format("%02X", it)
             }
 
-            var result : String = hex.substring(32)
-            val resultAsInt : BigInteger = BigInteger(result, 16)
-            val test : String = resultAsInt.toString(16)
-
-            return resultAsInt;
+            val result: String = hex.substring(32)
+            return BigInteger(result, 16)
         }
 
-        return BigInteger("0");
+        return BigInteger("0")
     }
 
     fun getUUIDs(): JSONObject {
-        var stringRep = mUserStorageSource.getUUIDsFromUser()
+        val stringRep = mUserStorageSource.getUUIDsFromUser()
 
-        var jsonRep :JSONObject = JSONObject()
+        var jsonRep = JSONObject()
 
-        if(!stringRep.equals(""))  jsonRep = JSONObject(stringRep)
+        if (!stringRep.equals("")) jsonRep = JSONObject(stringRep!!)
 
         return jsonRep
     }
 
-    // TODO: Implement stop work
-    //    fun stopTrackLocation() {
-    //        WorkManager.getInstance().cancelAllWorkByTag(LOCATION_WORK_TAG)
-    //    }
+
 }
