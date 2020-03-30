@@ -128,6 +128,7 @@ class StatusActivity : AppCompatActivity() {
                 }
             }
         }
+        startAdvertising()
 
         this.registerReceiver(mReceiver, intentFilter)
     }
@@ -150,21 +151,25 @@ class StatusActivity : AppCompatActivity() {
 
     private fun setBeaconTransmitter(major: Int?, minor: Int?, counter : Int) {
         // TODO Change UUID to one of the Server ones
-        var uuids: JSONObject = mViewModel.getUUIDs()
-        Log.d("UUIDS", "   " + uuids)
+        val beacon: Beacon? = null
+        val uuids: JSONObject = mViewModel.getUUIDs()
 
+        if( !uuids.isNull("0") ) {
+            var uuid: String = uuids.getString(counter.toString())
 
-        val beacon: Beacon? = mViewModel.getBeacon(
-            uuids.getString(counter.toString()), major.toString(), minor.toString())
+            Log.d("UUIDS", "   " + uuids)
 
+            val beacon: Beacon? = mViewModel.getBeacon(
+                uuid, major.toString(), minor.toString())
 
-        val beaconParser: BeaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+            val beaconParser: BeaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
 
-        val beaconTransmitter =
-            BeaconTransmitter(applicationContext, beaconParser)
+            val beaconTransmitter =
+                BeaconTransmitter(applicationContext, beaconParser)
 
-        beaconTransmitter.startAdvertising(beacon)
+            beaconTransmitter.startAdvertising(beacon)
+        }
     }
 
     private fun setBeaconTransmitterLast(major: Int?, counter : Int) {
