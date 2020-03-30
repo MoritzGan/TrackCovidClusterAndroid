@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
+import kotlin.collections.*
 import de.trackcovidcluster.R
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
@@ -42,11 +43,11 @@ class GetStatusWorker @Inject constructor(
             )
         ).firstOrError()
             .flatMap { encounters ->
-                if (!encounters.isNullOrEmpty()) {
+                if (!encounters.toString().isNullOrEmpty()) {
                     if (!isForeground()) {
                         sendPushNotification()
                     }
-                    mStatusStorageSource.setContactTime(time = encounters.last().toInt())
+                    mStatusStorageSource.setContactTime(time = encounters.toString().last().toInt())
                     applicationContext.sendBroadcast(
                         Intent(
                             "android.intent.action.MAYBE_INFECTED"
