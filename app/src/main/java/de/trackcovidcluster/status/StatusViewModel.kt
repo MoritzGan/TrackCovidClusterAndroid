@@ -63,6 +63,7 @@ class StatusViewModel @Inject constructor(
             .setId1(uuid)
             .setId2(major)
             .setId3(minor)
+            .setBluetoothAddress("6B-EC-8F-04-BA-0C")
             .setManufacturer(0x004c)
             .setTxPower(-59)
             .build()

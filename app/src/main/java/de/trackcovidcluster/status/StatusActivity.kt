@@ -80,15 +80,26 @@ class StatusActivity : AppCompatActivity() {
             updateStatus(status = currentStatus)
         }
 
-        // Will return sth. like 266290753698018418588485362138100705178
+        // Will return sth. like 2662 9075 3698 0184 1858 8485 3621 3810 0705 178
         var hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
 
         // TODO split the hashedPubKey to minor/majors of the beacons
+        val splitOne : Int = hashedPubKey.toString(10).substring(0, 4).toInt()
+        val splitTwo : Int = hashedPubKey.toString(10).substring(4, 8).toInt()
+        val splitThree : Int = hashedPubKey.toString(10).substring(8, 12).toInt()
+        val splitFour : Int = hashedPubKey.toString(10).substring(12, 16).toInt()
+        val splitFive : Int = hashedPubKey.toString(10).substring(16, 20).toInt()
+        val splitSix : Int = hashedPubKey.toString(10).substring(20, 24).toInt()
+        val splitSeven : Int = hashedPubKey.toString(10).substring(24, 28).toInt()
+        val splitEight : Int = hashedPubKey.toString(10).substring(28, 32).toInt()
+        val splitNine : Int = hashedPubKey.toString(10).substring(32, 36).toInt()
+        val splitTen : Int = hashedPubKey.toString(10).substring(36, 39).toInt()
 
-        setBeaconTransmitter()
-        setBeaconTransmitter()
-        setBeaconTransmitter()
-        setBeaconTransmitter()
+        setBeaconTransmitter(splitOne, splitTwo)
+        setBeaconTransmitter(splitThree, splitFour)
+        setBeaconTransmitter(splitFive, splitSix)
+        setBeaconTransmitter(splitSeven, splitEight)
+        setBeaconTransmitter(splitNine, splitTen)
 
         maybeInfectedContainer.setOnClickListener {
             startActivity(
@@ -168,11 +179,11 @@ class StatusActivity : AppCompatActivity() {
         this.unregisterReceiver(this.mReceiver)
     }
 
-    private fun setBeaconTransmitter() {
+    private fun setBeaconTransmitter(major : Int, minor : Int) {
         // TODO Change UUID to one of the Server ones
 
         val beacon: Beacon? = mViewModel.getBeacon(
-            UUID.randomUUID().toString(), "1", "f")
+            UUID.randomUUID().toString(), major.toString(), minor.toString())
 
 
         val beaconParser: BeaconParser = BeaconParser()
