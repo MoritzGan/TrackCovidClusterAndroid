@@ -6,5 +6,7 @@ data class Answer(
     @SerializedName("Encounters")
     val encounters: List<String>?,
     @SerializedName("ServerPubKey")
-    val publicKey: String?
+    val publicKey: String?,
+    @SerializedName("BLEUUIDs")
+    val uuids: List<String>?
 )

@@ -218,7 +218,6 @@ class StatusActivity : AppCompatActivity() {
                     setBeaconTransmitterLast(keyAsString.substring(x).toInt())
 
                     Log.d("SET BEACON (", " " + keyAsString.substring(x).toInt() + ")\n");
-
                 }
             }
         }
