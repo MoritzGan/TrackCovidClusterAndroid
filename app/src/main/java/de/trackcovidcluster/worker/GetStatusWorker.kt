@@ -12,11 +12,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
-import de.trackcovidcluster.data.entities.Request
+import kotlin.collections.*
 import de.trackcovidcluster.R
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
+import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.data.network.NetworkCall
 import de.trackcovidcluster.di.IChildRxWorkerFactory
+import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.status.Constants
 import de.trackcovidcluster.status.Constants.PUSH_NOTIFICATION_CHANNEL
@@ -27,7 +29,8 @@ import javax.inject.Inject
 class GetStatusWorker @Inject constructor(
     mContext: Context,
     mWorkerParams: WorkerParameters,
-    private val mUserStorageSource: IUserStorageSource
+    private val mUserStorageSource: IUserStorageSource,
+    private val mStatusStorageSource: IStatusStorageSource
 ) : RxWorker(mContext, mWorkerParams) {
 
     override fun createWork(): Single<Result> {
@@ -36,19 +39,20 @@ class GetStatusWorker @Inject constructor(
         return networkSource.getStatus(
             body = Request(
                 command = "StatePoll",
-                uuid = mUserStorageSource.getUUID().toString()
+                uuid = mUserStorageSource.getUserPublicKey()
             )
         ).firstOrError()
-            .flatMap { result ->
-                if (!result.encounters.isNullOrEmpty()) {
+            .flatMap { encounters ->
+                if (!encounters.toString().isNullOrEmpty()) {
                     if (!isForeground()) {
                         sendPushNotification()
                     }
+                    mStatusStorageSource.setContactTime(time = encounters.toString().last().toInt())
                     applicationContext.sendBroadcast(
                         Intent(
                             "android.intent.action.MAYBE_INFECTED"
                         ).putExtra(
-                            Constants.STATUS_API_KEY,
+                            Constants.STATUS_KEY,
                             Constants.MAYBE_INFECTED
                         )
                     )
@@ -66,7 +70,7 @@ class GetStatusWorker @Inject constructor(
         val statusActivity = Intent(applicationContext, StatusActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             putExtra(
-                Constants.STATUS_API_KEY,
+                Constants.STATUS_KEY,
                 Constants.MAYBE_INFECTED
             )
         }
@@ -106,14 +110,16 @@ class GetStatusWorker @Inject constructor(
     }
 
     private fun isForeground(): Boolean {
-        val manager = applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val manager =
+            applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val runningTaskInfo: List<ActivityManager.RunningTaskInfo> = manager.getRunningTasks(1)
         val componentInfo = runningTaskInfo[0].topActivity
         return componentInfo?.packageName.equals("de.trackcovidcluster")
     }
 
     internal class Factory @Inject constructor(
-        private val mUserStorageSource: IUserStorageSource
+        private val mUserStorageSource: IUserStorageSource,
+        private val mStatusStorageSource: IStatusStorageSource
     ) : IChildRxWorkerFactory {
         override fun create(
             context: Context,
@@ -122,7 +128,8 @@ class GetStatusWorker @Inject constructor(
             GetStatusWorker(
                 mContext = context,
                 mWorkerParams = workerParameters,
-                mUserStorageSource = mUserStorageSource
+                mUserStorageSource = mUserStorageSource,
+                mStatusStorageSource = mStatusStorageSource
             )
     }
 }

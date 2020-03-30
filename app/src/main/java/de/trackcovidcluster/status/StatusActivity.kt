@@ -1,17 +1,24 @@
 package de.trackcovidcluster.status
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
@@ -27,9 +34,12 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.BeaconTransmitter
+import java.math.BigInteger
+import java.util.*
 import javax.inject.Inject
 
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class StatusActivity : AppCompatActivity() {
 
     companion object {
@@ -70,7 +80,15 @@ class StatusActivity : AppCompatActivity() {
             updateStatus(status = currentStatus)
         }
 
-        setBeaconListener()
+        // Will return sth. like 266290753698018418588485362138100705178
+        var hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
+
+        // TODO split the hashedPubKey to minor/majors of the beacons
+
+        setBeaconTransmitter()
+        setBeaconTransmitter()
+        setBeaconTransmitter()
+        setBeaconTransmitter()
 
         maybeInfectedContainer.setOnClickListener {
             startActivity(
@@ -150,8 +168,12 @@ class StatusActivity : AppCompatActivity() {
         this.unregisterReceiver(this.mReceiver)
     }
 
-    private fun setBeaconListener() {
-        val beacon: Beacon? = mViewModel.getBeacon()
+    private fun setBeaconTransmitter() {
+        // TODO Change UUID to one of the Server ones
+
+        val beacon: Beacon? = mViewModel.getBeacon(
+            UUID.randomUUID().toString(), "1", "f")
+
 
         val beaconParser: BeaconParser = BeaconParser()
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -159,23 +181,7 @@ class StatusActivity : AppCompatActivity() {
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
-                override fun onStartFailure(errorCode: Int) {
-                    Log.e(
-                        "BeaconState: ",
-                        " \n Advertisement start failed with code: $errorCode"
-                    )
-                }
-
-                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-                    Log.i(
-                        "BeaconState: ",
-                        "Advertisement start succeeded."
-                    )
-                }
-            })
-        }
+        beaconTransmitter.startAdvertising(beacon)
     }
 
     private fun updateStatus(status: Int) {

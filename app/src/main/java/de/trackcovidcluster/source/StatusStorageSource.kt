@@ -10,6 +10,7 @@ class StatusStorageSource @Inject constructor(
 
     companion object {
         private const val STATUS = "STATUS"
+        private const val LAST_CONTACT = "LAST_CONTACT"
     }
 
     override fun setStatus(status: Int) {
@@ -23,4 +24,9 @@ class StatusStorageSource @Inject constructor(
     override fun getStatus(): Int =
         mSharedPreferences.getInt(STATUS, -1)
 
+    override fun setContactTime(time: Int) {
+        mSharedPreferences.edit().putInt(LAST_CONTACT, time).apply()
+    }
+
+    override fun getContactTime() = mSharedPreferences.getInt(LAST_CONTACT, 0)
 }

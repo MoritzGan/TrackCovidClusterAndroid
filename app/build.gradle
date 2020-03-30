@@ -13,6 +13,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,6 +51,10 @@ dependencies {
     implementation 'androidx.work:work-rxjava2:2.3.4'
     implementation 'androidx.work:work-runtime-ktx:2.3.4'
     implementation 'org.altbeacon:android-beacon-library:2.16.4'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.56'
+
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.1'
 
     implementation project(':app:data')
 

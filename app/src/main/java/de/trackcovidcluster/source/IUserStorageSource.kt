@@ -6,5 +6,7 @@ interface IUserStorageSource {
 
     fun createUser()
 
-    fun getUUID() : String?
+    fun createUserKeys()
+
+    fun getUserPublicKey(): String?
 }

@@ -6,8 +6,8 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="16"
-8-->/Users/baznar/development/TrackCovidClusterAndroid/app/data/src/main/AndroidManifest.xml
+8-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="29" />
-9-->/Users/baznar/development/TrackCovidClusterAndroid/app/data/src/main/AndroidManifest.xml
+9-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 10
 11</manifest>
