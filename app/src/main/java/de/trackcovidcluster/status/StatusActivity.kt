@@ -38,7 +38,6 @@ class StatusActivity : AppCompatActivity() {
 
     // region members
     private lateinit var mViewModel: StatusViewModel
-    private val PERMISSIONS_REQUEST = 100
     private lateinit var mUserStorageSource: IUserStorageSource
 
     @Inject
@@ -46,7 +45,6 @@ class StatusActivity : AppCompatActivity() {
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
     private var mReceiver: BroadcastReceiver? = null
-
     // endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -200,21 +198,27 @@ class StatusActivity : AppCompatActivity() {
 
                 if ((x + 4) < keyAsString.length) {
 
-                    if(x == 8) {
+                    if(x == 4) {
                         oneStr = keyAsString.substring(0, 4)
                         twoStr = keyAsString.substring(4, 8)
                         setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt())
+
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
+
                     } else {
                         oneStr = keyAsString.substring(x - 4, x)
                         twoStr = keyAsString.substring(x, x + 4)
                         setBeaconTransmitter(oneStr?.toInt(), twoStr?.toInt())
+
                         Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
+
                     }
 
                 } else if ((x + 4) > keyAsString.length){
                     setBeaconTransmitterLast(keyAsString.substring(x).toInt())
+
                     Log.d("SET BEACON (", " " + keyAsString.substring(x).toInt() + ")\n");
+
                 }
             }
         }

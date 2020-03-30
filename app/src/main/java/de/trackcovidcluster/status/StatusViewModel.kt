@@ -86,10 +86,6 @@ class StatusViewModel @Inject constructor(
             val resultAsInt : BigInteger = BigInteger(result, 16)
             val test : String = resultAsInt.toString(16)
 
-            Log.d("HASH OF USER PUBKEY HEX", "\n    " + result + "\n");
-            Log.d("HASH OF USER PUBKEY INT", "\n    " + resultAsInt + "\n");
-            Log.d("HASH OF USER PUBKEY HEX", "\n    " + test + "\n");
-
             return resultAsInt;
         }
 
