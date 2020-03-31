@@ -2,10 +2,7 @@ package de.trackcovidcluster.status
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +16,8 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
+import de.trackcovidcluster.database.DatabaseHelper
+import de.trackcovidcluster.models.Cookie
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
@@ -29,6 +28,7 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.json.JSONObject
 import java.math.BigInteger
+import java.security.Timestamp
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -78,6 +78,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     private var uuids: JSONObject?= null
     private var contacts: HashMap<String, String>? = null
+    private var contactsDistance: HashMap<String, String>? = null
+    private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
 
     @Inject
@@ -87,6 +89,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mCurrentStatusText: TextView
     private lateinit var mBeaconManager: BeaconManager
     private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
+    private lateinit var mSharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -102,9 +105,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mViewModel.getStatus()
         uuids = mViewModel.getUUIDs()
         contacts = HashMap()
+        contactsUUIDs = HashMap()
+        contactsDistance = HashMap()
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
-
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
         if (status != DEFAULT) {
             updateStatus(status = status)
@@ -246,6 +250,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     /**
      * Functions for monitoring
      */
+
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllMonitorNotifiers()
 
@@ -258,8 +263,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 for (beacon in beacons) {
                     if(!contacts!!.containsKey(beacon.id1.toString())) {
                         contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
-                        // TODO Save the contacts encrypted to db
-                        Log.d("ADDED BEACON!", " " + contacts!![beacon.id1.toString()].toString())
+                        contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                     }
                     createPayload(contacts!!)
                 }
@@ -308,14 +312,28 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     private fun createPayload(contacs : HashMap<String, String>) {
         var uuidOfContact: String? = ""
+        var beaconCounter: Int = 0
+        var db: DatabaseHelper = DatabaseHelper(this)
+        var jsonPayload: JSONObject = JSONObject()
+        var publicKey: String? = mViewModel.getServerPubKey()
+
         for (beacon in contacs) {
             for (char in beacon.value) {
                 uuidOfContact += "" + char
             }
-            var uuidAsInteger: String = BigInteger(uuidOfContact).toString(16)
-            Log.d(" ", "UUID OF CONTACT USER: "+ uuidAsInteger);
+            beaconCounter++
+
+            if (beaconCounter == 5) {
+                val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
+                if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
+                    contactsUUIDs!!.put(uuidContactHex, System.currentTimeMillis().toString())
+                    var cookie: Cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    db.insertDataSet(cookie, publicKey)
+                }
+            }
         }
     }
+
     /**
      * Functions for setting the beacons to Advertise themselfs.
      */

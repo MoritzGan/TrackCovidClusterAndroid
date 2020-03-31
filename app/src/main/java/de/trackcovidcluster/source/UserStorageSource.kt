@@ -69,7 +69,7 @@ class UserStorageSource @Inject constructor(
         )
     }
 
-    override fun getUserPublicKey() = mSharedPreferences.getString(USER_PUBLIC_KEY_ID, null)
+    override fun getUserPublicKey() = mSharedPreferences.getString(PK_ID, null)
 
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())

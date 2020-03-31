@@ -5,13 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
+import org.libsodium.jni.Sodium;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 import de.trackcovidcluster.models.Cookie;
+import kotlin.UByteArray;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -43,18 +51,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public long insertDataSet(Cookie cookie) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public long insertDataSet(Cookie cookie, String pkey) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        byte[] bytes = new byte[cookie.getHashedUUID().getBytes().length];
 
-        values.put(LocationData.COLUMN_POS, cookie.getPosition());
+        int result = Sodium.crypto_box_seal(
+                bytes,
+                cookie.getHashedUUID().getBytes(),
+                cookie.getHashedUUID().getBytes().length,
+                pkey.getBytes()
+        );
+
+        String decoded = new String(Base64.getEncoder().encode(bytes));
+
+        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, bytes);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(LocationData.TABLE_NAME, null, values);
 
         Log.d("SQL_HELPER", "\n" +
-                " ADDED NEW DATASET TO LOCAL DB!\n");
+                " ADDED NEW DATASET TO LOCAL DB!\n" + decoded);
 
         db.close();
 
@@ -79,7 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
 
                 Cookie cookie = new Cookie(
-                                String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_POS)),
+                                String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)),
                                 cursor.getColumnIndex(LocationData.COLUMN_TIME)
                 );
 

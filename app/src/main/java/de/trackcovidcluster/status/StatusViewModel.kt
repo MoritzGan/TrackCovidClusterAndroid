@@ -100,4 +100,8 @@ class StatusViewModel @Inject constructor(
 
         return jsonRep
     }
+
+    fun getServerPubKey(): String {
+        return mUserStorageSource.getUserPublicKey().toString()
+    }
 }
