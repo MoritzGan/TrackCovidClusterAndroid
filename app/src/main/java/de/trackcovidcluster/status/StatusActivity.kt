@@ -10,6 +10,7 @@ import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -26,9 +27,9 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
+import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
 import java.math.BigInteger
-import java.security.Timestamp
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -109,6 +110,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         contactsDistance = HashMap()
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
+
+        val medic: BluetoothMedic = BluetoothMedic.getInstance()
+        medic.enablePowerCycleOnFailures(this)
+        medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
+
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
         if (status != DEFAULT) {
             updateStatus(status = status)
@@ -156,8 +162,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     )
             )
         }
-        startAdvertising()
 
+        startAdvertising()
         verifyBluetooth()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -230,8 +236,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
-        startAdvertising()
-
         this.registerReceiver(mReceiver, intentFilter)
     }
 
@@ -251,8 +255,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * Functions for monitoring
      */
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
-        mBeaconManager.removeAllMonitorNotifiers()
+        mBeaconManager.removeAllRangeNotifiers()
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
@@ -265,8 +270,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                     }
-                    createPayload(contacts!!)
                 }
+
+                if(contacts!!.containsKey(beacons.iterator().next().id1.toString())) createPayload(contacts!!)
             }
         }
         try {
@@ -310,12 +316,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createPayload(contacs : HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter: Int = 0
-        var db: DatabaseHelper = DatabaseHelper(this)
-        var jsonPayload: JSONObject = JSONObject()
-        var publicKey: String? = mViewModel.getServerPubKey()
+        val db: DatabaseHelper = DatabaseHelper(this)
+        val publicKey: String? = mViewModel.getServerPubKey()
 
         for (beacon in contacs) {
             for (char in beacon.value) {
@@ -326,8 +332,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             if (beaconCounter == 5) {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
-                    contactsUUIDs!!.put(uuidContactHex, System.currentTimeMillis().toString())
-                    var cookie: Cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
+                    val cookie: Cookie = Cookie(uuidContactHex, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKey)
                 }
             }

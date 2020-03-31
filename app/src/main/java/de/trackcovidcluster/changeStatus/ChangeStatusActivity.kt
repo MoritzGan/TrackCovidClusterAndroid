@@ -2,11 +2,13 @@ package de.trackcovidcluster.changeStatus
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
+import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.status.Constants
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
@@ -33,13 +35,16 @@ class ChangeStatusActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
 
+        val db: DatabaseHelper = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
+        val encounters = db.cookieBundle
+        val encountersSend: Array<String> = arrayOf(String())
 
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
             if (status == Constants.INFECTED) {
-                mViewModel.sendStatus()
+                mViewModel.sendStatus(encounters.toString())
             }
             startActivity(
                 Intent(this, StatusActivity::class.java)

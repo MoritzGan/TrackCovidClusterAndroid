@@ -8,5 +8,7 @@ data class Answer(
     @SerializedName("ServerPubKey")
     val publicKey: String?,
     @SerializedName("BLEUUIDs")
-    val uuids: List<String>?
+    val uuids: List<String>?,
+    @SerializedName("Clusters")
+    val clusters: List<String>?
 )

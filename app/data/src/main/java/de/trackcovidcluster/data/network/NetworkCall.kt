@@ -34,4 +34,15 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
                 response.answer.uuids
             }
     }
+
+    fun sendBundle(userUUID: String) : Observable<String> {
+        val body = Request(
+            command = "ClusterSubmission",
+            uuid = userUUID
+        )
+        return trackCovidAPI.sendBundle(body = body)
+            .map { response ->
+                response.answer.clusters.toString()
+            }
+    }
 }

@@ -12,5 +12,7 @@ interface IUserStorageSource {
 
     fun getUUIDsFromUser(): String?
 
+    fun getUserUUID(): String?
+
     fun getUUIDsFromServerOvr()
 }

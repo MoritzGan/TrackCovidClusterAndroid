@@ -24,7 +24,7 @@ class UserStorageSource @Inject constructor(
         private const val PK_ID = "SERVER_PUBLIC_KEY"
         private const val UUID_LIST = "UUIDS"
         private const val USER_PUBLIC_KEY_ID = "PUBLIC_KEY"
-        private const val USER_PRIVATE_KEY_ID = "SERVER_PRIVATE_KEY"
+        private const val USER_PRIVATE_KEY_ID = "USER_PRIVATE_KEY_ID"
     }
 
     override fun isUserExisting(): Boolean =
@@ -35,6 +35,10 @@ class UserStorageSource @Inject constructor(
         mSharedPreferences.edit()
             .putString(USER_ID, UUID.randomUUID().toString()).apply()
         getPublicKey()
+    }
+
+    override fun getUserUUID():String? {
+        return mSharedPreferences.getString(USER_PRIVATE_KEY_ID,null)
     }
 
     override fun getUUIDsFromServerOvr() {
