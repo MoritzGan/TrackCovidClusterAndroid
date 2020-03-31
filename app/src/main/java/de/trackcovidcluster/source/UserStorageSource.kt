@@ -35,6 +35,9 @@ class UserStorageSource @Inject constructor(
         mSharedPreferences.edit()
             .putString(USER_ID, UUID.randomUUID().toString()).apply()
         getPublicKey()
+    }
+
+    override fun getUUIDsFromServerOvr() {
         getUUIDsFromServer()
     }
 

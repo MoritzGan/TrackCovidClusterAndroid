@@ -98,6 +98,4 @@ class StatusViewModel @Inject constructor(
 
         return jsonRep
     }
-
-
 }

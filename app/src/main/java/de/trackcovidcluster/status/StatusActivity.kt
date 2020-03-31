@@ -36,6 +36,7 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     // region members
     private lateinit var mViewModel: StatusViewModel
+    private var uuids: JSONObject?= null
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -58,6 +59,7 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
             ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
 
         mViewModel.getStatus()
+        uuids = mViewModel.getUUIDs()
 
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
@@ -262,6 +264,7 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllMonitorNotifiers()
+
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
                 Log.i(
