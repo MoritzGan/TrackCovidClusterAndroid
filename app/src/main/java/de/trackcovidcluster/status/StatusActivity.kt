@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
+import de.trackcovidcluster.MonitoringTest
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.status.Constants.INFECTED
@@ -111,7 +112,8 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     )
             )
         }
-
+        var intent: Intent = Intent(this, MonitoringTest::class.java)
+        startActivity(intent)
         startAdvertising()
     }
 
