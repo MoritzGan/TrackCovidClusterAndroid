@@ -28,7 +28,6 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.json.JSONObject
 import java.math.BigInteger
-import java.security.Timestamp
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -76,7 +75,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    private var uuids: JSONObject?= null
+    private var uuids: JSONObject? = null
     private var contacts: HashMap<String, String>? = null
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
@@ -256,13 +255,19 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
-                Log.i("See Beacon","The first beacon I see is about " + beacons.iterator().next().distance + " meters away.")
-                Log.i("Details:", "Found :" + beacons.size +
-                        " Beacons. UUID: " + beacons.iterator().next().id1 )
+                Log.i(
+                    "See Beacon",
+                    "The first beacon I see is about " + beacons.iterator().next().distance + " meters away."
+                )
+                Log.i(
+                    "Details:", "Found :" + beacons.size +
+                            " Beacons. UUID: " + beacons.iterator().next().id1
+                )
 
                 for (beacon in beacons) {
-                    if(!contacts!!.containsKey(beacon.id1.toString())) {
-                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+                    if (!contacts!!.containsKey(beacon.id1.toString())) {
+                        contacts!![beacon.id1.toString()] =
+                            beacon.id2.toString() + (beacon.id3).toString()
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                     }
                     createPayload(contacts!!)
@@ -292,8 +297,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 builder.setMessage("Please enable bluetooth in settings and restart this application.")
                 builder.setPositiveButton(android.R.string.ok, null)
                 builder.setOnDismissListener {
-                    //finish();
-                    //System.exit(0);
                 }
                 builder.show()
             }
@@ -303,19 +306,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             builder.setMessage("Sorry, this device does not support Bluetooth LE.")
             builder.setPositiveButton(android.R.string.ok, null)
             builder.setOnDismissListener {
-                //finish();
-                //System.exit(0);
             }
             builder.show()
         }
     }
 
-    private fun createPayload(contacs : HashMap<String, String>) {
+    private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter: Int = 0
-        var db: DatabaseHelper = DatabaseHelper(this)
-        var jsonPayload: JSONObject = JSONObject()
-        var publicKey: String? = mViewModel.getServerPubKey()
+        val db = DatabaseHelper(this)
+        val publicKey: String? = mViewModel.getServerPubKey()
 
         for (beacon in contacs) {
             for (char in beacon.value) {
@@ -327,7 +327,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!!.put(uuidContactHex, System.currentTimeMillis().toString())
-                    var cookie: Cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    var cookie = Cookie(uuidContactHex, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKey)
                 }
             }

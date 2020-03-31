@@ -1,8 +1,6 @@
 package de.trackcovidcluster.data.network
 
-import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
-import de.trackcovidcluster.data.entities.Answer
 import de.trackcovidcluster.data.entities.Request
 import io.reactivex.Observable
 
