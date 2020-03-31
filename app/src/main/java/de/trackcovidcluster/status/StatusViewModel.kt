@@ -1,5 +1,6 @@
 package de.trackcovidcluster.status
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.jakewharton.rxrelay2.PublishRelay
@@ -83,6 +84,7 @@ class StatusViewModel @Inject constructor(
             }
 
             val result: String = hex.substring(32)
+            Log.d("RESULT IN HEX?", result)
             return BigInteger(result, 16)
         }
 

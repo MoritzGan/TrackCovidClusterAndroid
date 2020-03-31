@@ -1,9 +1,13 @@
 package de.trackcovidcluster.status
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
 import android.util.Log
@@ -13,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
-import de.trackcovidcluster.MonitoringTest
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.status.Constants.INFECTED
@@ -29,24 +32,61 @@ import java.math.BigInteger
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class StatusActivity : AppCompatActivity(), BeaconConsumer {
+open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
+        protected val TAG = "MonitoringActivity"
+        private val PERMISSION_REQUEST_FINE_LOCATION = 1
+        private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
+        protected fun onRequestPermissionsResult(
+            statusActivity: StatusActivity, requestCode: Int,
+            permissions: Array<String?>?, grantResults: IntArray
+        ) {
+            when (requestCode) {
+                PERMISSION_REQUEST_FINE_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "fine location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
+                }
+                PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "background location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
+                }
+            }
+        }
     }
 
-    // region members
-    private lateinit var mViewModel: StatusViewModel
     private var uuids: JSONObject?= null
+    private var contacts: HashMap<String, String>? = null
+    private var mReceiver: BroadcastReceiver? = null
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private lateinit var mViewModel: StatusViewModel
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
-    private var mReceiver: BroadcastReceiver? = null
     private lateinit var mBeaconManager: BeaconManager
     private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
-    // endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -61,7 +101,7 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mViewModel.getStatus()
         uuids = mViewModel.getUUIDs()
-
+        contacts = HashMap()
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
 
@@ -112,11 +152,63 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     )
             )
         }
-        var intent: Intent = Intent(this, MonitoringTest::class.java)
-        startActivity(intent)
         startAdvertising()
-    }
 
+        verifyBluetooth()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("This app needs background location access")
+                            builder.setMessage("Please grant location access so this app can detect beacons in the background.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener {
+                                requestPermissions(
+                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                                    StatusActivity.PERMISSION_REQUEST_BACKGROUND_LOCATION
+                                )
+                            }
+                            builder.show()
+                        } else {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("Functionality limited")
+                            builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener { }
+                            builder.show()
+                        }
+                    }
+                }
+            } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        ),
+                        StatusActivity.PERMISSION_REQUEST_FINE_LOCATION
+                    )
+                } else {
+                    val builder =
+                        AlertDialog.Builder(this)
+                    builder.setTitle("Functionality limited")
+                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener { }
+                    builder.show()
+                }
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -151,6 +243,79 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mBeaconManager.unbind(this)
     }
 
+    /**
+     * Functions for monitoring
+     */
+    override fun onBeaconServiceConnect() {
+        mBeaconManager.removeAllMonitorNotifiers()
+
+        mBeaconManager.addRangeNotifier { beacons, _ ->
+            if (beacons.isNotEmpty()) {
+                Log.i("See Beacon","The first beacon I see is about " + beacons.iterator().next().distance + " meters away.")
+                Log.i("Details:", "Found :" + beacons.size +
+                        " Beacons. UUID: " + beacons.iterator().next().id1 )
+
+                for (beacon in beacons) {
+                    if(!contacts!!.containsKey(beacon.id1.toString())) {
+                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+                        // TODO Save the contacts encrypted to db
+                        Log.d("ADDED BEACON!", " " + contacts!![beacon.id1.toString()].toString())
+                    }
+                    createPayload(contacts!!)
+                }
+            }
+        }
+        try {
+            mBeaconManager.startRangingBeaconsInRegion(
+                Region(
+                    "myRangingUniqueId",
+                    null,
+                    null,
+                    null
+                )
+            )
+            Log.d("Looking for beacons", "looking for beacons ")
+        } catch (e: RemoteException) {
+            Log.e("Dont see Beacon", e.toString())
+        }
+    }
+
+    private fun verifyBluetooth() {
+        try {
+            if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Bluetooth not enabled")
+                builder.setMessage("Please enable bluetooth in settings and restart this application.")
+                builder.setPositiveButton(android.R.string.ok, null)
+                builder.setOnDismissListener {
+                    //finish();
+                    //System.exit(0);
+                }
+                builder.show()
+            }
+        } catch (e: RuntimeException) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Bluetooth LE not available")
+            builder.setMessage("Sorry, this device does not support Bluetooth LE.")
+            builder.setPositiveButton(android.R.string.ok, null)
+            builder.setOnDismissListener {
+                //finish();
+                //System.exit(0);
+            }
+            builder.show()
+        }
+    }
+
+    private fun createPayload(contacs : HashMap<String, String>) {
+        var uuidOfContact: String? = ""
+        for (beacon in contacs) {
+            for (char in beacon.value) {
+                uuidOfContact += "" + char
+            }
+            var uuidAsInteger: String = BigInteger(uuidOfContact).toString(16)
+            Log.d(" ", "UUID OF CONTACT USER: "+ uuidAsInteger);
+        }
+    }
     /**
      * Functions for setting the beacons to Advertise themselfs.
      */
@@ -202,12 +367,6 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
         beaconTransmitter.startAdvertising(beacon)
     }
 
-    /**
-     * Advertises the hashed truncated public key in major and minor of 5 beacons.
-     *
-     * TODO: Set the UUIDs of the beacons to the ordered one from the server
-     */
-
     private fun startAdvertising() {
 
         val hashedPubKey: BigInteger = mViewModel.getPublicKeyInInt()
@@ -248,6 +407,10 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    /**
+     * Update the users State
+     */
+
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
             when (status) {
@@ -262,31 +425,5 @@ class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
-    }
-
-    override fun onBeaconServiceConnect() {
-        mBeaconManager.removeAllMonitorNotifiers()
-
-        mBeaconManager.addRangeNotifier { beacons, _ ->
-            if (beacons.isNotEmpty()) {
-                Log.i(
-                    "See Beacon",
-                    "The first beacon I see is about " + beacons.iterator().next().distance + " meters away."
-                )
-            }
-        }
-        try {
-            mBeaconManager.startRangingBeaconsInRegion(
-                Region(
-                    "myRangingUniqueId",
-                    null,
-                    null,
-                    null
-                )
-            )
-            Log.d("Looking for beacons", "looking for beacons ")
-        } catch (e: RemoteException) {
-            Log.e("Dont see Beacon", e.toString())
-        }
     }
 }
