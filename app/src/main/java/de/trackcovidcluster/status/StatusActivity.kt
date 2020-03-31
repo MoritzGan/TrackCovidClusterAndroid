@@ -30,6 +30,7 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
 import java.math.BigInteger
+import java.security.Timestamp
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -77,7 +78,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    private var uuids: JSONObject?= null
+    private var uuids: JSONObject? = null
     private var contacts: HashMap<String, String>? = null
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
@@ -162,8 +163,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     )
             )
         }
-
         startAdvertising()
+
         verifyBluetooth()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -255,15 +256,19 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * Functions for monitoring
      */
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
-                Log.i("See Beacon","The first beacon I see is about " + beacons.iterator().next().distance + " meters away.")
-                Log.i("Details:", "Found :" + beacons.size +
-                        " Beacons. UUID: " + beacons.iterator().next().id1 )
+                Log.i(
+                    "See Beacon",
+                    "The first beacon I see is about " + beacons.iterator().next().distance + " meters away."
+                )
+                Log.i(
+                    "Details:", "Found :" + beacons.size +
+                            " Beacons. UUID: " + beacons.iterator().next().id1
+                )
 
                 for (beacon in beacons) {
                     if(!contacts!!.containsKey(beacon.id1.toString())) {
@@ -271,7 +276,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                     }
                 }
-
                 if(contacts!!.containsKey(beacons.iterator().next().id1.toString())) createPayload(contacts!!)
             }
         }

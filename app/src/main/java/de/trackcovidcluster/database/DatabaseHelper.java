@@ -5,21 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import org.libsodium.jni.Sodium;
 
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 import de.trackcovidcluster.models.Cookie;
-import kotlin.UByteArray;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -51,7 +45,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public long insertDataSet(Cookie cookie, String pkey) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -65,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 pkey.getBytes()
         );
 
-        String decoded = new String(Base64.getEncoder().encode(bytes));
+        String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
 
         Log.d("SQL_HELPER", "\n" +
                 " ADDED NEW DATASET TO LOCAL DB!\n" + decoded);
@@ -94,17 +87,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
 
                 Cookie cookie = new Cookie(
-                                String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)),
-                                cursor.getColumnIndex(LocationData.COLUMN_TIME)
+                        String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)),
+                        cursor.getColumnIndex(LocationData.COLUMN_TIME)
                 );
 
                 sensorData.add(cookie);
 
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
 
         db.close();
