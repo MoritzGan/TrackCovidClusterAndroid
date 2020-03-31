@@ -33,8 +33,8 @@ public class MonitoringTest extends Activity implements BeaconConsumer {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_status);
         verifyBluetooth();
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -191,14 +191,6 @@ public class MonitoringTest extends Activity implements BeaconConsumer {
 
         }
 
-    }
-
-    public void updateLog(final String log) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Log.d("", log);
-            }
-        });
     }
 
     @Override
