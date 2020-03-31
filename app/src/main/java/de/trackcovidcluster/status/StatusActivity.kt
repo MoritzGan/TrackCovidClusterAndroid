@@ -327,7 +327,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!!.put(uuidContactHex, System.currentTimeMillis().toString())
-                    var cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKey)
                 }
             }
