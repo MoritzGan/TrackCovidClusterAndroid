@@ -82,6 +82,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contacts: HashMap<String, String>? = null
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
+    private var contactsAlreadyInDb: ArrayList<String>? = null
     private var mReceiver: BroadcastReceiver? = null
 
     @Inject
@@ -109,6 +110,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         contacts = HashMap()
         contactsUUIDs = HashMap()
         contactsDistance = HashMap()
+        contactsAlreadyInDb = ArrayList() // TODO Sync with db
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
 
@@ -238,6 +240,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
         }
         this.registerReceiver(mReceiver, intentFilter)
+        startAdvertising()
     }
 
     override fun onPause() {
@@ -256,8 +259,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * Functions for monitoring
      */
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
-        mBeaconManager.removeAllRangeNotifiers()
+        //mBeaconManager.removeAllRangeNotifiers()
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
@@ -275,8 +279,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                     }
+                    if(!contactsAlreadyInDb?.contains(beacon.id1.toString())!!){
+                        contactsAlreadyInDb!!.add(beacon.id1.toString())
+                        createPayload(contacts!!)
+                    }
                 }
-                if(contacts!!.containsKey(beacons.iterator().next().id1.toString())) createPayload(contacts!!)
             }
         }
         try {
