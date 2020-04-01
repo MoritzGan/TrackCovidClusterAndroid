@@ -3,31 +3,29 @@ package de.trackcovidcluster.database;
 public class LocationData {
 
     public static final String TABLE_NAME = "locationData";
-
     public static final String COLUMN_ID   = "id";
-    public static final String COLUMN_POS = "position";
+    public static final String COLUMN_ENCRYPTED_COOKIE = "cookie";
     public static final String COLUMN_TIME = "timestamp";
 
     private int     id;
-    private String  position;
+    private String  cookie;
     private String  timestamp;
 
     /**
      *      Create the SQL table.
      */
     public static final String CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + "("
-                    + COLUMN_ID         + " VARCHAR,"
-                    + COLUMN_POS       + " VARCHAR,"
-                    + COLUMN_TIME       + " DATETIME DEFAULT CURRENT_TIMESTAMP"
+            "CREATE TABLE " + TABLE_NAME        + "("
+                    + COLUMN_ENCRYPTED_COOKIE   + " VARCHAR,"
+                    + COLUMN_TIME               + " DATETIME DEFAULT CURRENT_TIMESTAMP"
                     + ")";
 
     public LocationData() {
     }
 
-    public LocationData(int id, String position, String timestamp) {
+    public LocationData(int id, String cookie, String timestamp) {
         this.id = id;
-        this.position = position;
+        this.cookie = cookie;
         this.timestamp = timestamp;
     }
 
@@ -47,11 +45,11 @@ public class LocationData {
         this.timestamp = timestamp;
     }
 
-    public String getPosition() {
-        return position;
+    public String getCookie() {
+        return cookie;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
     }
 }

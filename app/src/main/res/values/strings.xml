@@ -68,5 +68,7 @@ Ansteckungsrisiko informiert.</string>
     <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
     <string name="notification_title">You might be infected</string>
     <string name="notification_body">You were in contact with someone who tested positive</string>
+    <string name="intro_text2">Erhalte frühzeitig eine Warnung, falls du mit einer Infiziert gemeldeten Person in Kontakt getreten bist. Damit hast du die Möglichkeit deine Liebsten vor einer Ansteckung zu bewahren, oder im Falle einer eigenen Infektion dies Anderen Leuten zu ermöglichen.</string>
+    <string name="change_status_to_infected">ändern. Deine Kontakte der letzten 14 Tage werden ANONYM benachrichtigt.</string>
 
 </resources>

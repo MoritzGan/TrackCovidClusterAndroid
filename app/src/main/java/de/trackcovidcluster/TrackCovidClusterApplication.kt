@@ -8,14 +8,11 @@ import dagger.android.*
 import de.trackcovidcluster.di.RxWorkerFactory
 import javax.inject.Inject
 
-class TrackCovidClusterApplication : Application(), HasActivityInjector {
+class TrackCovidClusterApplication : Application(), HasAndroidInjector{
 
-    @Inject
-    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+    @Inject lateinit var androidInjector : DispatchingAndroidInjector<Any>
 
-    override fun activityInjector(): AndroidInjector<Activity> {
-        return activityInjector
-    }
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     @Inject
     lateinit var mRxWorkerFactory: RxWorkerFactory

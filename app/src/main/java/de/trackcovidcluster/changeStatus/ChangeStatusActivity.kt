@@ -2,15 +2,21 @@ package de.trackcovidcluster.changeStatus
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.util.Base64
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
+import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.status.Constants
+import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
+import org.json.JSONObject
 import javax.inject.Inject
 
 class ChangeStatusActivity : AppCompatActivity() {
@@ -33,19 +39,22 @@ class ChangeStatusActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
 
-        val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
+        val db: DatabaseHelper = DatabaseHelper(this)
+        val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT) // TODO Does not change the Status
+        val encounters = db.getCookieBundle()
 
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
-            if (status == Constants.INFECTED) {
-                mViewModel.sendStatus()
-            }
+
+            mViewModel.sendStatus(encounters as ArrayList<String?>) // Send the encrypted cookies to the server
+            db.delteAllCookies()                    // Delete the local encounters
+
             startActivity(
                 Intent(this, StatusActivity::class.java)
                     .putExtra(
                         STATUS_KEY,
-                        status
+                        INFECTED
                     )
             )
         }
