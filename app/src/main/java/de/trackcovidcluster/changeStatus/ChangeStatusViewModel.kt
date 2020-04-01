@@ -1,5 +1,6 @@
 package de.trackcovidcluster.changeStatus
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.jakewharton.rxrelay2.PublishRelay
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
@@ -16,7 +17,8 @@ class ChangeStatusViewModel @Inject constructor(
         val uUID = mUserStorageSource.getUserUUID()
 
         val api: NetworkCall = NetworkCall(TrackCovidClusterAPI.create())
-
+        Log.d("Sending to Server: ", "-----------------------------------------\n" +
+                " " + jsonString + " \n --------------------------------------------------")
         api.sendBundle(jsonString)
     }
 

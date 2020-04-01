@@ -128,6 +128,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
 
         maybeInfectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -138,6 +139,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
 
         infectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -148,6 +150,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
 
         notInfectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -158,6 +161,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
 
         positiveButton.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -272,7 +276,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                             " in ca distance of " + beacons.iterator().next().distance + " m")
 
                 for (beacon in beacons) {
-                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0) {
+                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
 
                         contacts!![beacon.id1.toString()] =
                             beacon.id2.toString() + (beacon.id3).toString()
@@ -288,9 +292,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     Log.d("Counted as Contact!",
                             "This is saved as a contact!" + beacons.iterator().next().id1)
                     createPayload(contacts!!)
-                    // TODO Add a Contact Counter
                     var db: DatabaseHelper = DatabaseHelper(this)
-
                     mStatusTextView.text = db.profilesCount.toString()
                 }
             }

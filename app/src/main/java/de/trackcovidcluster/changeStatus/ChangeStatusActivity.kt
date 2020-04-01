@@ -11,6 +11,7 @@ import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.status.Constants
+import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
@@ -46,15 +47,15 @@ class ChangeStatusActivity : AppCompatActivity() {
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
-            if (status == Constants.INFECTED) {
-                mViewModel.sendStatus(encounters.toString()) // Send the encrypted cookies to the server
-                db.delteAllCookies()                         // Delete the local encounters
-            }
+
+            mViewModel.sendStatus(encounters.toString()) // Send the encrypted cookies to the server
+            db.delteAllCookies()                         // Delete the local encounters
+
             startActivity(
                 Intent(this, StatusActivity::class.java)
                     .putExtra(
                         STATUS_KEY,
-                        status
+                        INFECTED
                     )
             )
         }
