@@ -75,8 +75,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusImage = currentStatusImage
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
-        mReportTopText = reportTop
-        mReportBottomText = reportBottom
 
         /**
          * Setuo the beaconService to run in the foreground
@@ -104,11 +102,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
             mBeaconManager.setEnableScheduledScanJobs(false)
             mBeaconManager.bind(this)
-
         }
-        val medic: BluetoothMedic = BluetoothMedic.getInstance()
-        medic.enablePowerCycleOnFailures(this)
-        medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
 
         /**
          * Check the Status and change on change from Server or on Infection
@@ -420,13 +414,5 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
-
-        if (status == INFECTED) {
-            mReportTopText.visibility = View.VISIBLE
-            mReportBottomText.visibility = View.VISIBLE
-        } else {
-            mReportTopText.visibility = View.INVISIBLE
-            mReportBottomText.visibility = View.INVISIBLE
-        }
     }
 }

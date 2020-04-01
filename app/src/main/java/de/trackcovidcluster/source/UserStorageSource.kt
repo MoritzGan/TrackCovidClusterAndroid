@@ -68,7 +68,7 @@ class UserStorageSource @Inject constructor(
 
     override fun getUserPublicKey() = mSharedPreferences.getString(PK_ID, null)
 
-    override fun sendClusterSubmission(arrayList: ArrayList<String?>): String = sendClustersToServer(arrayList)
+    override fun sendClusterSubmission(list: List<String?>) = sendClustersToServer(list)
 
     /**
      * Server Communication
@@ -113,21 +113,20 @@ class UserStorageSource @Inject constructor(
      * TODO Test why this does not work
      */
 
-    private fun sendClustersToServer(clusters : ArrayList<String?>): String {
+    private fun sendClustersToServer(clusters : List<String?>) {
 
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
         val uuid: String? = mSharedPreferences.getString(USER_PUBLIC_KEY_ID,null)
-        var answer: String = ""
 
-        networkSource.sendBundle(uuid, clusters)
-            .subscribeOn(Schedulers.io())
-            .subscribe ({ serverClusters ->
-                Log.d("GOT FROM SERVER :", " $serverClusters")
-                answer = serverClusters.toString()
-            }, {
-                Log.e("No internet", "No internet connection")
-            })
+        val clustersT = clusters
 
-        return answer
+        if(clusters.isNotEmpty()){
+            networkSource.sendBundle(uuid, clusters)
+                .subscribeOn(Schedulers.io())
+                .subscribe ({ serverClusters ->
+                }, {
+                    Log.e("No internet", "No internet connection$it")
+                })
+        }
     }
 }

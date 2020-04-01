@@ -2,6 +2,7 @@ package de.trackcovidcluster.changeStatus
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -38,13 +39,14 @@ class ChangeStatusActivity : AppCompatActivity() {
         val db = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
         val encounters = db.getCookieBundle()
+        Log.d("Database", " " + db.cookieBundle)
 
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
 
             mViewModel.sendStatus(encounters as ArrayList<String?>) // Send the encrypted cookies to the server
-            db.delteAllCookies()                    // Delete the local encounters
+            db.delteAllCookies()                                    // Delete the local encounters
 
             startActivity(
                 Intent(this, StatusActivity::class.java)

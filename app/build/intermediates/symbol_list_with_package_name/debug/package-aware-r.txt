@@ -909,8 +909,6 @@ id positiveButton
 id progress_circular
 id progress_horizontal
 id radio
-id reportBottom
-id reportTop
 id right
 id right_icon
 id right_side
@@ -1106,6 +1104,9 @@ string start
 string status
 string status_bar_notification_info_overflow
 string status_body
+string tedpermission_close
+string tedpermission_confirm
+string tedpermission_setting
 string test_positive
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
@@ -1421,6 +1422,7 @@ style Theme_AppCompat_Light_Dialog_MinWidth
 style Theme_AppCompat_Light_DialogWhenLarge
 style Theme_AppCompat_Light_NoActionBar
 style Theme_AppCompat_NoActionBar
+style Theme_Transparent_Permission
 style ThemeOverlay_AppCompat
 style ThemeOverlay_AppCompat_ActionBar
 style ThemeOverlay_AppCompat_Dark

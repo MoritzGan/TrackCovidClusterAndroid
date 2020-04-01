@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.libsodium.jni.NaCl;
 import org.libsodium.jni.Sodium;
 
@@ -50,23 +52,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public long insertDataSet(Cookie cookie, String pkey) {
+    public long insertDataSet(Cookie cookie, String pkey) throws JSONException {
 
         SQLiteDatabase db = this.getWritableDatabase();
+        JSONObject jsonString = new JSONObject();
         ContentValues values = new ContentValues();
-        byte[] bytes = new byte[cookie.toString().getBytes().length];
+
+        jsonString.put("UUID", cookie.getHashedUUID());
+        jsonString.put("Timestamp", cookie.getTimestamp());
+
+        byte[] bytes = new byte[jsonString.toString().getBytes().length];
 
         NaCl.sodium();
         Sodium.crypto_box_seal(
                 bytes,
-                cookie.toString().getBytes(),
-                cookie.getHashedUUID().getBytes().length,
+                jsonString.toString().getBytes(),
+                jsonString.toString().getBytes().length,
                 pkey.getBytes()
         );
 
         String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
+        String substring = decoded.substring(0, decoded.length() - 1);
 
-        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, decoded);
+        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, substring);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(TABLE_NAME, null, values);
@@ -95,8 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                sensorData.add(String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)));
-
+                sensorData.add(String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
             } while (cursor.moveToNext());
         }
 

@@ -19,6 +19,7 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
     <application
         android:name=".TrackCovidClusterApplication"

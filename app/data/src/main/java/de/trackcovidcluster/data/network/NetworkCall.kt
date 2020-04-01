@@ -1,10 +1,12 @@
 package de.trackcovidcluster.data.network
 
 import android.util.Log
+import com.google.gson.Gson
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.data.entities.RequestClusters
 import io.reactivex.Observable
+import retrofit2.Response
 
 class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
@@ -37,22 +39,20 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
     // TODO: Debug the sending process. Does not work
 
-    fun sendBundle(userUUID: String?, clusters: ArrayList<String?>) : Observable<String> {
+    fun sendBundle(userUUID: String?, clusters: List<String?>) : Observable<String> {
         val body = RequestClusters(
             command = "ClusterSubmission",
             clusters = clusters,
             uuid = userUUID
         )
 
+        Log.d("", "" + clusters.toString())
+
         return trackCovidAPI.sendBundle(body = body)
-            .map { response ->
-                Log.d("Cluster Submission: ",
-                    "-----------------------------------------\n" +
-                        " Server Answer: "  + response.answer.toString() + "\n" +
-                        " Clusters : "      + response.answer.clusters.toString() + "\n" +
-                        " Response : "      + response.toString() +
-                        " \n            --------------------------------------------------")
-                response.answer.clusters.toString()
+            .map {
+                result -> Log.i("Serveranswer", " " + result.answer.toString())
+                clusters.toString()
+
             }
     }
 }

@@ -6,7 +6,7 @@ data class RequestClusters(
     @SerializedName("Command")
     val command: String,
     @SerializedName("Clusters")
-    val clusters: ArrayList<String?>,
+    val clusters: List<String?>,
     @SerializedName("UUID")
     val uuid: String? = null
 )

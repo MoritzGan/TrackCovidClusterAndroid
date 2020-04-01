@@ -11,11 +11,14 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.github.ybq.android.spinkit.style.DoubleBounce
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.status.StatusActivity
@@ -93,6 +96,30 @@ class MainActivity : AppCompatActivity() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, 100)
         }
+
+        val permissionlistener: PermissionListener = object : PermissionListener {
+            override fun onPermissionGranted() {
+                Toast.makeText(this@MainActivity, "Permission Granted", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onPermissionDenied(deniedPermissions: List<String?>) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Permission Denied\n$deniedPermissions",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        TedPermission.with(this)
+            .setPermissionListener(permissionlistener)
+            .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+            .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.NFC)
+            .check();
 
         mViewModel.getUUIDsFromServer()
 
