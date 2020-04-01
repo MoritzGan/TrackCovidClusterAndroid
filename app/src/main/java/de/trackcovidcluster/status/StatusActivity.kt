@@ -30,7 +30,6 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
 import java.math.BigInteger
-import java.security.Timestamp
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -82,8 +81,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contacts: HashMap<String, String>? = null
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
-    private var contactsAlreadyInDb: ArrayList<String>? = null
     private var mReceiver: BroadcastReceiver? = null
+    private var mShouldCreatePayload : Boolean = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -110,7 +109,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         contacts = HashMap()
         contactsUUIDs = HashMap()
         contactsDistance = HashMap()
-        contactsAlreadyInDb = ArrayList() // TODO Sync with db
         mCurrentStatusImage = currentStatusImage
         mCurrentStatusText = currentStatusText
 
@@ -240,7 +238,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
         }
         this.registerReceiver(mReceiver, intentFilter)
-        startAdvertising()
     }
 
     override fun onPause() {
@@ -259,9 +256,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * Functions for monitoring
      */
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
-        //mBeaconManager.removeAllRangeNotifiers()
+        mBeaconManager.removeAllRangeNotifiers()
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
@@ -275,14 +271,17 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 )
 
                 for (beacon in beacons) {
-                    if(!contacts!!.containsKey(beacon.id1.toString())) {
-                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+                    if (!contacts!!.containsKey(beacon.id1.toString())) {
+                        contacts!![beacon.id1.toString()] =
+                            beacon.id2.toString() + (beacon.id3).toString()
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
+                        mShouldCreatePayload = true
+                    }else{
+                        mShouldCreatePayload = false
                     }
-                    if(!contactsAlreadyInDb?.contains(beacon.id1.toString())!!){
-                        contactsAlreadyInDb!!.add(beacon.id1.toString())
-                        createPayload(contacts!!)
-                    }
+                }
+                if (mShouldCreatePayload) {
+                    createPayload(contacts!!)
                 }
             }
         }
@@ -309,8 +308,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 builder.setMessage("Please enable bluetooth in settings and restart this application.")
                 builder.setPositiveButton(android.R.string.ok, null)
                 builder.setOnDismissListener {
-                    //finish();
-                    //System.exit(0);
                 }
                 builder.show()
             }
@@ -320,18 +317,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             builder.setMessage("Sorry, this device does not support Bluetooth LE.")
             builder.setPositiveButton(android.R.string.ok, null)
             builder.setOnDismissListener {
-                //finish();
-                //System.exit(0);
             }
             builder.show()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createPayload(contacs : HashMap<String, String>) {
+    private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
-        var beaconCounter: Int = 0
-        val db: DatabaseHelper = DatabaseHelper(this)
+        var beaconCounter = 0
+        val db = DatabaseHelper(this)
         val publicKey: String? = mViewModel.getServerPubKey()
 
         for (beacon in contacs) {
@@ -344,7 +338,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
-                    val cookie: Cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKey)
                 }
             }

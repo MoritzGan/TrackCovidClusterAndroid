@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import android.util.Log;
 
+import org.libsodium.jni.NaCl;
 import org.libsodium.jni.Sodium;
 
 import java.util.ArrayList;
@@ -51,7 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         byte[] bytes = new byte[cookie.toString().getBytes().length];
 
-        int result = Sodium.crypto_box_seal(
+        NaCl.sodium();
+        Sodium.crypto_box_seal(
                 bytes,
                 cookie.toString().getBytes(),
                 cookie.getHashedUUID().getBytes().length,
