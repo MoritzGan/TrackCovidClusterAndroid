@@ -102,12 +102,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_status)
 
-        mBeaconManager = BeaconManager.getInstanceForApplication(this)
-        mBackgroudPowerSaver = BackgroundPowerSaver(this)
-
-        mViewModel =
-            ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
-
+        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
         mViewModel.getStatus()
         uuids = mViewModel.getUUIDs()
         contacts = HashMap()
@@ -117,14 +112,22 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
 
+        /**
+         * Setuo the beaconService to run in the foreground
+         */
+
+        mBeaconManager = BeaconManager.getInstanceForApplication(this)
+        mBackgroudPowerSaver = BackgroundPowerSaver(this)
+
         val builder: Builder = Builder(this)
         builder.setSmallIcon(R.mipmap.ic_launcher)
-        builder.setContentTitle("Scanning for Beacons")
+        builder.setContentTitle("Aktiv und Funktionstüchtig")
         val intent = Intent(this, this::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         builder.setContentIntent(pendingIntent)
+
         beaconParser = BeaconParser()
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
         mBeaconManager.beaconParsers.add(beaconParser)
@@ -138,6 +141,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         medic.enablePowerCycleOnFailures(this)
         medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
 
+        /**
+         * Check the Status and change on change from Server or on Infection
+         * submission.
+         * TODO Does not change
+         */
+
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
         if (status != DEFAULT) {
             updateStatus(status = status)
@@ -145,6 +154,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             val currentStatus = mViewModel.getStatusFromSource()
             updateStatus(status = currentStatus)
         }
+
+        /**
+         * TODO Do we need onClick here? Why?
+         */
 
         maybeInfectedContainer.setOnClickListener {
             mBeaconManager.unbind(this)
@@ -190,8 +203,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             )
         }
 
-        startAdvertising()
-        verifyBluetooth()
+        /**
+         * Check Permissions on Runtime for Location Service
+         */
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -245,6 +259,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
+
+        startAdvertising()
+        verifyBluetooth()
     }
 
     override fun onResume() {
@@ -279,7 +296,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
     /**
-     * Functions for monitoring
+     * BLE Functions for scanning and creating the encrypted payload
      */
 
     override fun onBeaconServiceConnect() {
@@ -376,7 +393,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
     /**
-     * Functions for setting the beacons to Advertise themselfs.
+     * Functions for setting the beacons to advertise themselves
      */
 
     private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
@@ -450,9 +467,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
-
-        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
-                + "----------------------------------------------------------------")
     }
 
     /**
