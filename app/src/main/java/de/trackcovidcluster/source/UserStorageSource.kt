@@ -12,6 +12,7 @@ import org.libsodium.jni.crypto.Random
 import org.libsodium.jni.keys.KeyPair
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class UserStorageSource @Inject constructor(
     private val mSharedPreferences: SharedPreferences
@@ -36,7 +37,7 @@ class UserStorageSource @Inject constructor(
     }
 
     override fun getUserUUID():String? {
-        return mSharedPreferences.getString(USER_PRIVATE_KEY_ID,null)
+        return mSharedPreferences.getString(USER_PUBLIC_KEY_ID,null)
     }
 
     override fun getUUIDsFromServerOvr() {
@@ -67,11 +68,13 @@ class UserStorageSource @Inject constructor(
 
         Log.d(
             "FIRST TIME USER:", "\n" + "GENERATED KEYPAIR \n" +
-                    encryptionPrivateKey.toString()
+                    Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)
         )
     }
 
     override fun getUserPublicKey() = mSharedPreferences.getString(PK_ID, null)
+
+    override fun sendClusterSubmission(arrayList: ArrayList<String?>): String = sendClustersToServer(arrayList)
 
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
@@ -106,5 +109,22 @@ class UserStorageSource @Inject constructor(
             })
 
         return uuidsJson.toString()
+    }
+
+    private fun sendClustersToServer(clusters : ArrayList<String?>): String {
+        val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
+        val uuid: String? = mSharedPreferences.getString(USER_PUBLIC_KEY_ID,null)
+        var answer: String = ""
+
+        networkSource.sendBundle(uuid, clusters)
+            .subscribeOn(Schedulers.io())
+            .subscribe ({ serverClusters ->
+                Log.d("GOT FROM SERVER :", " $serverClusters")
+                answer = serverClusters.toString()
+            }, {
+                Log.e("No internet", "No internet connection")
+            })
+
+        return answer
     }
 }

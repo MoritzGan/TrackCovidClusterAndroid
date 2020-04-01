@@ -3,6 +3,7 @@ package de.trackcovidcluster.data.network
 import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
+import de.trackcovidcluster.data.entities.RequestClusters
 import io.reactivex.Observable
 
 class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
@@ -34,16 +35,20 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
             }
     }
 
-    fun sendBundle(userUUID: String) : Observable<String> {
-        val body = Request(
+    // TODO: Debug the sending process. Does not work
+
+    fun sendBundle(userUUID: String?, clusters: ArrayList<String?>) : Observable<String> {
+        val body = RequestClusters(
+            clusters = clusters,
             command = "ClusterSubmission",
             uuid = userUUID
+
         )
 
         return trackCovidAPI.sendBundle(body = body)
             .map { response ->
                 Log.d("Got Fromm Server: ", "-----------------------------------------\n" +
-                        " " + response.answer.clusters.toString() + " \n --------------------------------------------------")
+                        " " + response.answer.toString() + " \n --------------------------------------------------")
                 response.answer.clusters.toString()
             }
     }

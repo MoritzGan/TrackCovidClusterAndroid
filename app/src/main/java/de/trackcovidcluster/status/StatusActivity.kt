@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
@@ -293,7 +294,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                             "This is saved as a contact!" + beacons.iterator().next().id1)
                     createPayload(contacts!!)
                     var db: DatabaseHelper = DatabaseHelper(this)
-                    mStatusTextView.text = db.profilesCount.toString()
+                    mStatusTextView.text = "Clustergröße: " + db.profilesCount
                 }
             }
         }

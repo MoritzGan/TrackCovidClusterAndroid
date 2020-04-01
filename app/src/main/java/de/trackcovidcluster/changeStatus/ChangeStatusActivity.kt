@@ -39,16 +39,19 @@ class ChangeStatusActivity : AppCompatActivity() {
 
         val db: DatabaseHelper = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
+        var listOfEncounters: ArrayList<String?> = ArrayList()
 
         val encounters = db.getCookieBundle(ReturnCookiesCallback { cookies ->
-            Log.d("Encounters:  ", " $cookies")
+            for (cookie in cookies) {
+                listOfEncounters.add(cookie.toString())
+            }
         })
 
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
 
-            mViewModel.sendStatus(encounters.toString()) // Send the encrypted cookies to the server
+            mViewModel.sendStatus(listOfEncounters) // Send the encrypted cookies to the server
             db.delteAllCookies()                         // Delete the local encounters
 
             startActivity(
