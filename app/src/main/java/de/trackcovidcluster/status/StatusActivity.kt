@@ -9,6 +9,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
@@ -265,7 +266,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onResume() {
         super.onResume()
-        if (applicationContext != null)startAdvertising()
+
+        if (applicationContext != null) startAdvertising()
+
+        var db: DatabaseHelper = DatabaseHelper(this)
+        mStatusTextView.text = "Clustergröße: " + db.profilesCount
+
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
@@ -465,9 +471,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
-
-        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
-                + "----------------------------------------------------------------")
     }
 
     /**

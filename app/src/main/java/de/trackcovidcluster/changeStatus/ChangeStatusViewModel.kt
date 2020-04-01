@@ -16,9 +16,6 @@ class ChangeStatusViewModel @Inject constructor(
     fun sendStatus(listOfEncounters: ArrayList<String?>) {
         val uuid = mUserStorageSource.getUserUUID()
 
-        Log.d("Sending to Server: ", "-----------------------------------------\n" +
-                " " + listOfEncounters.toString() + " " + uuid + " \n --------------------------------------------------")
-
         mUserStorageSource.sendClusterSubmission(listOfEncounters)
     }
 
