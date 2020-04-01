@@ -24,14 +24,6 @@ class StatusViewModel @Inject constructor(
         private const val GET_STATUS_TAG = "GET_STATUS"
     }
 
-    // region Members
-    private val mStatus = PublishRelay.create<Int>()
-    // endregion
-
-    // region Observables
-    fun onGetStatus(): Observable<Int> = mStatus
-    // endregion
-
     fun getStatus() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -55,7 +47,6 @@ class StatusViewModel @Inject constructor(
 
     fun setMaybeInfected() {
         mStatusStorageSource.setMaybeInfectedStatus()
-        onGetStatus()
     }
 
     fun getBeacon(uuid: String, major: String, minor: String): Beacon? {

@@ -19,7 +19,6 @@ class UserStorageSource @Inject constructor(
 ) : IUserStorageSource {
 
     companion object {
-        private const val USER_ID = "USER_ID"
         private const val PK_ID = "SERVER_PUBLIC_KEY"
         private const val UUID_LIST = "UUIDS"
         private const val USER_PUBLIC_KEY_ID = "PUBLIC_KEY"
@@ -27,15 +26,8 @@ class UserStorageSource @Inject constructor(
     }
 
     override fun isUserExisting(): Boolean =
-        !mSharedPreferences.getString(USER_ID, null).isNullOrEmpty()
+        !mSharedPreferences.getString(PK_ID, null).isNullOrEmpty()
 
-
-    override fun createUser() {
-
-        mSharedPreferences.edit()
-            .putString(USER_ID, UUID.randomUUID().toString()).apply()
-        getPublicKey()
-    }
 
     override fun getUserUUID():String? {
         return mSharedPreferences.getString(USER_PUBLIC_KEY_ID,null)
@@ -67,6 +59,7 @@ class UserStorageSource @Inject constructor(
             )
         }.apply()
 
+        getPublicKey()
         Log.d(
             "FIRST TIME USER:", "\n" + "GENERATED KEYPAIR \n" +
                     Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)

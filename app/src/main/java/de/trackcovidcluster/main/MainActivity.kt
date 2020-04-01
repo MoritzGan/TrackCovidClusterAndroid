@@ -3,10 +3,8 @@ package de.trackcovidcluster.main
 import android.Manifest
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.PermissionGroupInfo
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -17,7 +15,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
@@ -30,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private val PERMISSION_REQUEST_FINE_LOCATION = 1
     private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
-    private val TAG = "MainActivity"
+
     private fun onRequestPermissionsResult(
         statusActivity: StatusActivity, requestCode: Int,
         permissions: Array<String?>?, grantResults: IntArray
@@ -83,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             ViewModelProviders.of(this, mViewModelFactory).get(MainActivityViewModel::class.java)
 
         val progressBar = findViewById<View>(R.id.spin_kit) as ProgressBar
-        val doubleBounce: Sprite = DoubleBounce()
+        val doubleBounce = DoubleBounce()
         progressBar.indeterminateDrawable = doubleBounce
         progressBar.visibility = View.VISIBLE
 
@@ -152,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Handler().postDelayed(Runnable {
+        Handler().postDelayed({
             // Log User in
             if (mViewModel.isFirstTimeUser()) {
                 mainScreen.visibility = View.VISIBLE

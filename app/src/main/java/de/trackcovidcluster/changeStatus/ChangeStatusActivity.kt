@@ -2,9 +2,6 @@ package de.trackcovidcluster.changeStatus
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Base64
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -16,7 +13,6 @@ import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
-import org.json.JSONObject
 import javax.inject.Inject
 
 class ChangeStatusActivity : AppCompatActivity() {
