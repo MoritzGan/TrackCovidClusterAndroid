@@ -16,15 +16,6 @@
         android:layout_marginEnd="24dp"
         tools:context=".main.MainActivity">
 
-        <com.github.ybq.android.spinkit.SpinKitView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/spin_kit"
-            style="@style/SpinKitView.Large.Circle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            app:SpinKit_Color="@color/colorAccent"/>
-
         <ImageView
             android:id="@+id/wirVsVirus"
             android:layout_width="wrap_content"

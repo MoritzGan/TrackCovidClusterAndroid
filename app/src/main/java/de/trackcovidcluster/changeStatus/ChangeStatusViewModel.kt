@@ -12,7 +12,6 @@ class ChangeStatusViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun sendStatus(listOfEncounters: ArrayList<String?>) {
-        val uuid = mUserStorageSource.getUserUUID()
         mStatusStorageSource.setStatus(INFECTED)
 
         mUserStorageSource.sendClusterSubmission(listOfEncounters.toList())
