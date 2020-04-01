@@ -29,6 +29,7 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -89,6 +90,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mViewModel: StatusViewModel
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
+    private lateinit var mStatusTextView: TextView
     private lateinit var mBeaconManager: BeaconManager
     private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
     private lateinit var mSharedPreferences: SharedPreferences
@@ -110,6 +112,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         contactsUUIDs = HashMap()
         contactsDistance = HashMap()
         mCurrentStatusImage = currentStatusImage
+        mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
 
         val medic: BluetoothMedic = BluetoothMedic.getInstance()
@@ -285,6 +288,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     Log.d("Counted as Contact!",
                             "This is saved as a contact!" + beacons.iterator().next().id1)
                     createPayload(contacts!!)
+                    // TODO Add a Contact Counter
+                    var db: DatabaseHelper = DatabaseHelper(this)
+
+                    mStatusTextView.text = db.profilesCount.toString()
                 }
             }
         }
@@ -328,7 +335,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter = 0
-        val db = DatabaseHelper(this)
+        val db: DatabaseHelper = DatabaseHelper(this)
         val publicKey: String? = mViewModel.getServerPubKey()
 
         for (beacon in contacs) {
@@ -337,7 +344,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
             beaconCounter++
 
-            if (beaconCounter == 5) {
+            if (beaconCounter == 4) {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
@@ -407,7 +414,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             var oneStr: String?
             var twoStr: String?
 
-            if ((x % 8 == 0 && x != 0 && x <= keyAsString.length) || x == 4) {
+            if ((x % 8 == 0 && x != 0 && x <= keyAsString.length) || x == 4 && counter <= 5) {
 
                 if ((x + 4) < keyAsString.length) {
 
@@ -416,25 +423,25 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         twoStr = keyAsString.substring(4, 8)
                         setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
 
-                        Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
                         counter++
                     } else {
                         oneStr = keyAsString.substring(x - 4, x)
                         twoStr = keyAsString.substring(x, x + 4)
                         setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
 
-                        Log.d("SET BEACON (", " " + oneStr + "  " + twoStr + ")\n");
                         counter++
                     }
 
                 } else if ((x + 4) > keyAsString.length) {
                     setBeaconTransmitterLast(keyAsString.substring(x).toInt(), counter)
 
-                    Log.d("SET BEACON (", " " + keyAsString.substring(x).toInt() + ")\n");
                     counter++
                 }
             }
         }
+
+        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
+                + "----------------------------------------------------------------")
     }
 
     /**

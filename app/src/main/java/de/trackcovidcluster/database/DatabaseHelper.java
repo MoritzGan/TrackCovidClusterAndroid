@@ -3,6 +3,7 @@ package de.trackcovidcluster.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
@@ -16,6 +17,8 @@ import java.util.List;
 
 import de.trackcovidcluster.changeStatus.ReturnCookiesCallback;
 import de.trackcovidcluster.models.Cookie;
+
+import static de.trackcovidcluster.database.LocationData.TABLE_NAME;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -34,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + LocationData.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 
         onCreate(db);
     }
@@ -66,7 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, decoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
-        long id = db.insert(LocationData.TABLE_NAME, null, values);
+        long id = db.insert(TABLE_NAME, null, values);
 
         db.close();
 
@@ -85,7 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Cookie> getCookieBundle(ReturnCookiesCallback returnCookiesCallback) {
         List<Cookie> sensorData = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + LocationData.TABLE_NAME + " ORDER BY " + LocationData.COLUMN_TIME + " ASC";
+        String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + LocationData.COLUMN_TIME + " ASC";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -115,6 +118,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void delteAllCookies() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(LocationData.TABLE_NAME, null, null);
+        db.delete(TABLE_NAME, null, null);
+    }
+
+    public long getProfilesCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
+        db.close();
+        return count;
     }
 }

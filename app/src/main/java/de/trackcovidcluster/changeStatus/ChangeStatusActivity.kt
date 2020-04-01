@@ -47,7 +47,8 @@ class ChangeStatusActivity : AppCompatActivity() {
 
         changeStatusButton.setOnClickListener {
             if (status == Constants.INFECTED) {
-                mViewModel.sendStatus(encounters.toString())
+                mViewModel.sendStatus(encounters.toString()) // Send the encrypted cookies to the server
+                db.delteAllCookies()                         // Delete the local encounters
             }
             startActivity(
                 Intent(this, StatusActivity::class.java)
