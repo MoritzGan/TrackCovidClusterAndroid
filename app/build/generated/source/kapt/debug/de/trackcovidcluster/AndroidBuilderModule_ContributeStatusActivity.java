@@ -18,11 +18,11 @@ public abstract class AndroidBuilderModule_ContributeStatusActivity {
   @IntoMap
   @ClassKey(StatusActivity.class)
   abstract AndroidInjector.Factory<?> bindAndroidInjectorFactory(
-      StatusActivitySubcomponent.Builder builder);
+      StatusActivitySubcomponent.Factory builder);
 
   @Subcomponent
   public interface StatusActivitySubcomponent extends AndroidInjector<StatusActivity> {
-    @Subcomponent.Builder
-    abstract class Builder extends AndroidInjector.Builder<StatusActivity> {}
+    @Subcomponent.Factory
+    interface Factory extends AndroidInjector.Factory<StatusActivity> {}
   }
 }

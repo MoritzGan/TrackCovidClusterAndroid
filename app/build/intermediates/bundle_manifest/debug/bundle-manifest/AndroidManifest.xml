@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="18"
-        android:targetSdkVersion="29" />
+        android:targetSdkVersion="24" />
 
     <!-- Permisions -->
     <uses-permission
@@ -22,19 +22,20 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- For 10 or above -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name="de.trackcovidcluster.TrackCovidClusterApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
@@ -43,27 +44,22 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
-        <service
-            android:name="de.trackcovidcluster.tracking.MonitoringService"
-            android:exported="false" />
-
         <activity
             android:name="de.trackcovidcluster.changeStatus.ChangeStatusActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name="de.trackcovidcluster.status.StatusActivity"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleInstance"
+            android:screenOrientation="fullSensor" />
         <activity
             android:name="de.trackcovidcluster.main.MainActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="fullSensor" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="de.trackcovidcluster.MonitoringActivity" />
-        <activity android:name="de.trackcovidcluster.tracking.MonitoringActivity" />
         <activity
             android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
             android:excludeFromRecents="true"
@@ -204,15 +200,15 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name="androidx.room.MultiInstanceInvalidationService"
-            android:exported="false" />
-
         <provider
             android:name="androidx.lifecycle.ProcessLifecycleOwnerInitializer"
             android:authorities="de.trackcovidcluster.lifecycle-process"
             android:exported="false"
             android:multiprocess="true" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:exported="false" />
     </application>
 
 </manifest>

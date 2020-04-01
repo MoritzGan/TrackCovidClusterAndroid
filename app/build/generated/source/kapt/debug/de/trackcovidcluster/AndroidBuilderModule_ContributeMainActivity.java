@@ -16,11 +16,11 @@ public abstract class AndroidBuilderModule_ContributeMainActivity {
   @IntoMap
   @ClassKey(MainActivity.class)
   abstract AndroidInjector.Factory<?> bindAndroidInjectorFactory(
-      MainActivitySubcomponent.Builder builder);
+      MainActivitySubcomponent.Factory builder);
 
   @Subcomponent
   public interface MainActivitySubcomponent extends AndroidInjector<MainActivity> {
-    @Subcomponent.Builder
-    abstract class Builder extends AndroidInjector.Builder<MainActivity> {}
+    @Subcomponent.Factory
+    interface Factory extends AndroidInjector.Factory<MainActivity> {}
   }
 }

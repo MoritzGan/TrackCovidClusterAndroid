@@ -19,11 +19,11 @@ public abstract class AndroidBuilderModule_ContributeChangeStatusActivity {
   @IntoMap
   @ClassKey(ChangeStatusActivity.class)
   abstract AndroidInjector.Factory<?> bindAndroidInjectorFactory(
-      ChangeStatusActivitySubcomponent.Builder builder);
+      ChangeStatusActivitySubcomponent.Factory builder);
 
   @Subcomponent
   public interface ChangeStatusActivitySubcomponent extends AndroidInjector<ChangeStatusActivity> {
-    @Subcomponent.Builder
-    abstract class Builder extends AndroidInjector.Builder<ChangeStatusActivity> {}
+    @Subcomponent.Factory
+    interface Factory extends AndroidInjector.Factory<ChangeStatusActivity> {}
   }
 }
