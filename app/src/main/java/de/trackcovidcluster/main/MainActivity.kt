@@ -2,10 +2,15 @@ package de.trackcovidcluster.main
 
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.PermissionGroupInfo
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -26,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
 
     // endregion
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)

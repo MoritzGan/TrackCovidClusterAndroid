@@ -42,7 +42,6 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
             command = "ClusterSubmission",
             clusters = clusters,
             uuid = userUUID
-
         )
 
         return trackCovidAPI.sendBundle(body = body)
