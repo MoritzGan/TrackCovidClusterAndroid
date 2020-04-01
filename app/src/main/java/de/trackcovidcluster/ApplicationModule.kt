@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
-import de.trackcovidcluster.data.network.NetworkCall
-import de.trackcovidcluster.server.ServerAdapter
 
 @Module
 class ApplicationModule {

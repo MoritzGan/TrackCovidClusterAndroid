@@ -7,4 +7,12 @@ interface IUserStorageSource {
     fun createUserKeys()
 
     fun getUserPublicKey(): String?
+
+    fun getUUIDsFromUser(): String?
+
+    fun getUserUUID(): String?
+
+    fun getUUIDsFromServerOvr()
+
+    fun sendClusterSubmission(arrayList: ArrayList<String?>) : String?
 }

@@ -4,20 +4,20 @@ import java.util.Date;
 
 public class Cookie {
 
-    private String position;
+    private String hashedUUID;
     private long   timestamp;
 
-    public Cookie(String position, long timestamp) {
-        this.position = position;
+    public Cookie(String hashedUUID, long timestamp) {
+        this.hashedUUID = hashedUUID;
         this.timestamp = timestamp;
     }
 
-    public String getPosition() {
-        return position;
+    public String getHashedUUID() {
+        return hashedUUID;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setHashedUUID(String hashedUUID) {
+        this.hashedUUID = hashedUUID;
     }
 
     public long getTimestamp() {

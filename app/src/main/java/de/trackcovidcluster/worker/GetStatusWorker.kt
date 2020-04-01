@@ -43,7 +43,7 @@ class GetStatusWorker @Inject constructor(
             )
         ).firstOrError()
             .flatMap { encounters ->
-                if (!encounters.toString().isNullOrEmpty()) {
+                if (encounters.toString().isNotEmpty()) {
                     if (!isForeground()) {
                         sendPushNotification()
                     }

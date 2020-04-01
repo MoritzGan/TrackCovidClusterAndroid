@@ -15,6 +15,8 @@ class MainActivityViewModel @Inject constructor(
     fun createUser() = mUserStorageSource.createUserKeys()
 
     fun generateKeyPair() = mUserStorageSource.createUserKeys()
+
+    fun getUUIDsFromServer() = mUserStorageSource.getUUIDsFromServerOvr()
 }
 
 

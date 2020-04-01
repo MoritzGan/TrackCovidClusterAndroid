@@ -1,27 +1,68 @@
 package de.trackcovidcluster.main
 
 import android.Manifest
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.widget.ProgressBar
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_REQUEST_FINE_LOCATION = 1
+    private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
+
+    private fun onRequestPermissionsResult(
+        statusActivity: StatusActivity, requestCode: Int,
+        permissions: Array<String?>?, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSION_REQUEST_FINE_LOCATION -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("TAG", "fine location permission granted")
+                } else {
+                    val builder =
+                        AlertDialog.Builder(statusActivity)
+                    builder.setTitle("Functionality limited")
+                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener { }
+                    builder.show()
+                }
+                return
+            }
+            PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("MainActivity", "background location permission granted")
+                } else {
+                    val builder =
+                        AlertDialog.Builder(statusActivity)
+                    builder.setTitle("Functionality limited")
+                    builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener { }
+                    builder.show()
+                }
+                return
+            }
+        }
+    }
 
     // region members
     private lateinit var mViewModel: MainActivityViewModel
@@ -29,6 +70,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
 
     // endregion
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)
@@ -36,6 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(MainActivityViewModel::class.java)
+
+        val progressBar = findViewById<View>(R.id.spin_kit) as ProgressBar
+        val doubleBounce = DoubleBounce()
+        progressBar.indeterminateDrawable = doubleBounce
+        progressBar.visibility = View.VISIBLE
 
         val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
@@ -47,35 +94,93 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(enableBtIntent, 100)
         }
 
-        // Log User in
-        if (mViewModel.isFirstTimeUser()) {
-            mainScreen.visibility = View.VISIBLE
-            startButtonBottom.setOnClickListener {
+        mViewModel.getUUIDsFromServer()
 
-                mViewModel.createUser()
-                mViewModel.generateKeyPair()
-
-                startActivity(
-                    Intent(this, StatusActivity::class.java)
-                )
-                finish()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("This app needs background location access")
+                            builder.setMessage("Please grant location access so this app can detect beacons in the background.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener {
+                                requestPermissions(
+                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                                    2
+                                )
+                            }
+                            builder.show()
+                        } else {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("Functionality limited")
+                            builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener { }
+                            builder.show()
+                        }
+                    }
+                }
+            } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        ),
+                        1
+                    )
+                } else {
+                    val builder =
+                        AlertDialog.Builder(this)
+                    builder.setTitle("Functionality limited")
+                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener { }
+                    builder.show()
+                }
             }
-            startButtonTop.setOnClickListener {
-
-                mViewModel.createUser()
-                mViewModel.generateKeyPair()
-
-                startActivity(
-                    Intent(this, StatusActivity::class.java)
-                )
-                finish()
-            }
-        } else {
-            startActivity(
-                Intent(this, StatusActivity::class.java)
-            )
-            finish()
         }
+
+        Handler().postDelayed({
+            // Log User in
+            if (mViewModel.isFirstTimeUser()) {
+                mainScreen.visibility = View.VISIBLE
+                startButtonBottom.setOnClickListener {
+
+                    mViewModel.createUser()
+                    mViewModel.generateKeyPair()
+
+                    startActivity(
+                        Intent(this, StatusActivity::class.java)
+                    )
+                    finish()
+                }
+                startButtonTop.setOnClickListener {
+
+                    mViewModel.createUser()
+                    mViewModel.generateKeyPair()
+
+                    startActivity(
+                        Intent(this, StatusActivity::class.java)
+                    )
+                    finish()
+                }
+            } else {
+                startActivity(
+                    Intent(this, StatusActivity::class.java)
+                )
+                finish()
+            }
+        }, 5000)
+
     }
 
 

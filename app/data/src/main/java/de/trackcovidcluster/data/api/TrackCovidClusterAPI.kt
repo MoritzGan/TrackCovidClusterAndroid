@@ -1,6 +1,7 @@
 package de.trackcovidcluster.data.api
 
 import de.trackcovidcluster.data.entities.Request
+import de.trackcovidcluster.data.entities.RequestClusters
 import de.trackcovidcluster.data.entities.Result
 import io.reactivex.Observable
 import retrofit2.Retrofit
@@ -16,6 +17,12 @@ interface TrackCovidClusterAPI {
 
     @POST("json")
     fun getPublicKey(@Body body: Request): Observable<Result>
+
+    @POST("json")
+    fun getUUIDs(@Body body: Request): Observable<Result>
+
+    @POST("json")
+    fun sendBundle(@Body body: RequestClusters): Observable<Result>
 
     companion object {
         fun create(): TrackCovidClusterAPI {

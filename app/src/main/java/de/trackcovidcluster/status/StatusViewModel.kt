@@ -10,6 +10,7 @@ import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import org.bouncycastle.jcajce.provider.digest.SHA3
+import org.json.JSONObject
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -48,7 +49,7 @@ class StatusViewModel @Inject constructor(
         mStatusStorageSource.setMaybeInfectedStatus()
     }
 
-    fun getBeacon(uuid : String, major : String, minor : String): Beacon? {
+    fun getBeacon(uuid: String, major: String, minor: String): Beacon? {
 
         return Beacon.Builder()
             .setId1(uuid)
@@ -59,11 +60,11 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt() : BigInteger {
+    fun getPublicKeyInInt(): BigInteger {
 
         mUserStorageSource.getUserPublicKey()?.let { publicKey ->
 
-            val digestSHA3 : SHA3.DigestSHA3 = SHA3.Digest256()
+            val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
             val digest = digestSHA3.digest(publicKey.toByteArray())
 
             var hex = ""
@@ -71,22 +72,25 @@ class StatusViewModel @Inject constructor(
                 hex += String.format("%02X", it)
             }
 
-            var result : String = hex.substring(32)
-            val resultAsInt : BigInteger = BigInteger(result, 16)
-            val test : String = resultAsInt.toString(16)
-
-            Log.d("HASH OF USER PUBKEY HEX", "\n    " + result + "\n");
-            Log.d("HASH OF USER PUBKEY INT", "\n    " + resultAsInt + "\n");
-            Log.d("HASH OF USER PUBKEY HEX", "\n    " + test + "\n");
-
-            return resultAsInt;
+            val result: String = hex.substring(32)
+            Log.d("RESULT IN HEX?", result)
+            return BigInteger(result, 16)
         }
 
-        return BigInteger("0");
+        return BigInteger("0")
     }
 
-    // TODO: Implement stop work
-    //    fun stopTrackLocation() {
-    //        WorkManager.getInstance().cancelAllWorkByTag(LOCATION_WORK_TAG)
-    //    }
+    fun getUUIDs(): JSONObject {
+        val stringRep = mUserStorageSource.getUUIDsFromUser()
+
+        var jsonRep = JSONObject()
+
+        if (!stringRep.equals("")) jsonRep = JSONObject(stringRep!!)
+
+        return jsonRep
+    }
+
+    fun getServerPubKey(): String {
+        return mUserStorageSource.getUserPublicKey().toString()
+    }
 }
