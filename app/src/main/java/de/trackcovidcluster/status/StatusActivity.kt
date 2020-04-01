@@ -128,6 +128,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         beaconParser = BeaconParser()
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
         mBeaconManager.beaconParsers.add(beaconParser)
+        mBeaconManager.backgroundBetweenScanPeriod = 0;
+        mBeaconManager.backgroundScanPeriod = 1100;
         mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
         mBeaconManager.setEnableScheduledScanJobs(false)
         mBeaconManager.bind(this)
