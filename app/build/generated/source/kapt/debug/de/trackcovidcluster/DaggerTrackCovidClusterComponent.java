@@ -125,7 +125,7 @@ public final class DaggerTrackCovidClusterComponent implements TrackCovidCluster
     this.factoryProvider = GetStatusWorker_Factory_Factory.create((Provider) userStorageSourceProvider, (Provider) statusStorageSourceProvider);
     this.mainActivityViewModelProvider = MainActivityViewModel_Factory.create(userStorageSourceProvider);
     this.statusViewModelProvider = StatusViewModel_Factory.create((Provider) statusStorageSourceProvider, (Provider) userStorageSourceProvider);
-    this.changeStatusViewModelProvider = ChangeStatusViewModel_Factory.create(userStorageSourceProvider);
+    this.changeStatusViewModelProvider = ChangeStatusViewModel_Factory.create(userStorageSourceProvider, statusStorageSourceProvider);
     this.mapOfClassOfAndProviderOfViewModelProvider = MapProviderFactory.<Class<? extends ViewModel>, ViewModel>builder(3).put(MainActivityViewModel.class, (Provider) mainActivityViewModelProvider).put(StatusViewModel.class, (Provider) statusViewModelProvider).put(ChangeStatusViewModel.class, (Provider) changeStatusViewModelProvider).build();
     this.viewModelFactoryProvider = DoubleCheck.provider(ViewModelFactory_Factory.create(mapOfClassOfAndProviderOfViewModelProvider));
   }

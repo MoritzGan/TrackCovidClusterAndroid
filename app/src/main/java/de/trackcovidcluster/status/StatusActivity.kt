@@ -190,6 +190,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
             mBeaconManager.setEnableScheduledScanJobs(false)
             mBeaconManager.bind(this)
+            startAdvertising()
         }
 
         val db = DatabaseHelper(this)

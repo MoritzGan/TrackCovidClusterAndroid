@@ -61,7 +61,7 @@
 34-->[androidx.work:work-runtime:2.3.4] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\6c308e2bc361b712030dbe371488965b\work-runtime-2.3.4\AndroidManifest.xml:28:22-74
 35
 36    <application
-36-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:23:5-52:19
+36-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:23:5-55:19
 37        android:name="de.trackcovidcluster.TrackCovidClusterApplication"
 37-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:24:9-53
 38        android:allowBackup="false"
@@ -81,34 +81,34 @@
 46        android:theme="@style/AppTheme" >
 46-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:29:9-40
 47        <activity
-47-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:30:9-32:54
+47-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:30:9-33:56
 48            android:name="de.trackcovidcluster.changeStatus.ChangeStatusActivity"
 48-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:31:13-62
-49            android:screenOrientation="fullSensor" />
-49-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:32:13-51
+49            android:screenOrientation="portrait" />
+49-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:32:13-49
 50        <activity
-50-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:33:9-36:54
+50-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:34:9-38:56
 51            android:name="de.trackcovidcluster.status.StatusActivity"
-51-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:34:13-50
+51-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:35:13-50
 52            android:launchMode="singleInstance"
-52-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:35:13-48
-53            android:screenOrientation="fullSensor" />
-53-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:36:13-51
+52-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:36:13-48
+53            android:screenOrientation="portrait" />
+53-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:37:13-49
 54        <activity
-54-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:37:9-45:20
+54-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:39:9-48:20
 55            android:name="de.trackcovidcluster.main.MainActivity"
-55-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:38:13-46
-56            android:screenOrientation="fullSensor" >
-56-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:39:13-51
+55-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:40:13-46
+56            android:screenOrientation="portrait" >
+56-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:13-49
 57            <intent-filter>
-57-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:40:13-44:29
+57-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:13-47:29
 58                <action android:name="android.intent.action.MAIN" />
-58-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:17-69
-58-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:25-66
+58-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:44:17-69
+58-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:44:25-66
 59
 60                <category android:name="android.intent.category.LAUNCHER" />
-60-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:17-77
-60-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:27-74
+60-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:46:17-77
+60-->C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:46:27-74
 61            </intent-filter>
 62        </activity>
 63        <activity

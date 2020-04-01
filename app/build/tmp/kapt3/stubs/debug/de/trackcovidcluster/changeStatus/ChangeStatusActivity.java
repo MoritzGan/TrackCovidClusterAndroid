@@ -8,7 +8,7 @@ public final class ChangeStatusActivity extends androidx.appcompat.app.AppCompat
     @org.jetbrains.annotations.NotNull()
     @javax.inject.Inject()
     public androidx.lifecycle.ViewModelProvider.Factory mViewModelFactory;
-    private static final int DEFAULT = 0;
+    private static final int DEFAULT = -1;
     public static final de.trackcovidcluster.changeStatus.ChangeStatusActivity.Companion Companion = null;
     private java.util.HashMap _$_findViewCache;
     

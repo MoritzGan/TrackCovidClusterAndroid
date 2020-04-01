@@ -1,21 +1,21 @@
 -- Merging decision tree log ---
 provider#androidx.work.impl.WorkManagerInitializer
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:47:9-51:51
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:50:9-54:51
 REJECTED from [androidx.work:work-runtime:2.3.4] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\6c308e2bc361b712030dbe371488965b\work-runtime-2.3.4\AndroidManifest.xml:31:9-37:35
 	tools:node
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:50:13-32
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:53:13-32
 	android:authorities
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:49:13-68
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:52:13-68
 	tools:replace
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:51:13-48
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:54:13-48
 	android:name
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:48:13-69
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:51:13-69
 manifest
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
 MERGED from [androidx.multidex:multidex:2.0.1] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\8fa3242ced2a7c1d47a1fd295a375b0a\multidex-2.0.1\AndroidManifest.xml:17:1-22:12
 MERGED from [:app:data] C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat:1.1.0] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\2b148e518eda77160cf61ab3a409b406\appcompat-1.1.0\AndroidManifest.xml:17:1-24:12
@@ -62,22 +62,22 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Mo
 MERGED from [androidx.sqlite:sqlite-framework:2.1.0] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\1478a3ba0e3c8cbd19a79fd3fea7b597\sqlite-framework-2.1.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.sqlite:sqlite:2.1.0] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\919338622e34d1e0c822816cf99b04bf\sqlite-2.1.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\9ad8b6ba5a2fb803cbaf11a7a0a5aaa9\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
-INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
 	package
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:4:5-35
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
 	xmlns:tools
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:3:5-51
 	android:versionCode
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-54:12
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:1-57:12
 		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:2:11-69
@@ -128,7 +128,7 @@ ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\Andr
 	android:name
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:20:9-53
 application
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:23:5-52:19
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:23:5-55:19
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\73b202a5238964809e4b7d7de7be764b\constraintlayout-1.1.3\AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\73b202a5238964809e4b7d7de7be764b\constraintlayout-1.1.3\AndroidManifest.xml:9:5-20
 MERGED from [com.google.android.gms:play-services-auth:17.0.0] C:\Users\Mo\.gradle\caches\transforms-2\files-2.1\06a22674ab45c14cddb24bfbd6cb506e\jetified-play-services-auth-17.0.0\AndroidManifest.xml:22:5-37:19
@@ -172,35 +172,41 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Mo
 	android:name
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:24:9-53
 activity#de.trackcovidcluster.changeStatus.ChangeStatusActivity
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:30:9-32:54
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:30:9-33:56
 	android:screenOrientation
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:32:13-51
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:32:13-49
+	tools:ignore
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:33:13-53
 	android:name
 		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:31:13-62
 activity#de.trackcovidcluster.status.StatusActivity
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:33:9-36:54
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:34:9-38:56
 	android:screenOrientation
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:36:13-51
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:37:13-49
 	android:launchMode
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:35:13-48
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:36:13-48
+	tools:ignore
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:38:13-53
 	android:name
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:34:13-50
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:35:13-50
 activity#de.trackcovidcluster.main.MainActivity
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:37:9-45:20
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:39:9-48:20
 	android:screenOrientation
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:39:13-51
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:13-49
+	tools:ignore
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:42:13-53
 	android:name
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:38:13-46
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:40:13-46
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:40:13-44:29
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:13-47:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:17-69
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:44:17-69
 	android:name
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:41:25-66
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:44:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:17-77
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:46:17-77
 	android:name
-		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:43:27-74
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml:46:27-74
 uses-sdk
 INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\src\main\AndroidManifest.xml

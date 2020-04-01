@@ -46,14 +46,14 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="de.trackcovidcluster.changeStatus.ChangeStatusActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name="de.trackcovidcluster.status.StatusActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
         <activity
             android:name="de.trackcovidcluster.main.MainActivity"
-            android:screenOrientation="fullSensor" >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
