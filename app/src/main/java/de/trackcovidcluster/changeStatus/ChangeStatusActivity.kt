@@ -3,6 +3,7 @@ package de.trackcovidcluster.changeStatus
 import android.content.Intent
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -37,8 +38,10 @@ class ChangeStatusActivity : AppCompatActivity() {
 
         val db: DatabaseHelper = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
-        val encounters = db.cookieBundle
-        val encountersSend: Array<String> = arrayOf(String())
+
+        val encounters = db.getCookieBundle(ReturnCookiesCallback { cookies ->
+            Log.d("Encounters:  ", " $cookies")
+        })
 
         getNextStatus(status)
 

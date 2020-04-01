@@ -163,8 +163,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     )
             )
         }
-        startAdvertising()
 
+        startAdvertising()
         verifyBluetooth()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -223,6 +223,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onResume() {
         super.onResume()
+        startAdvertising()
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
@@ -261,26 +262,28 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
-                Log.i(
-                    "See Beacon",
-                    "The first beacon I see is about " + beacons.iterator().next().distance + " meters away."
-                )
+
                 Log.i(
                     "Details:", "Found :" + beacons.size +
-                            " Beacons. UUID: " + beacons.iterator().next().id1
-                )
+                            " Beacons. UUID: " + beacons.iterator().next().id1 +
+                            " in ca distance of " + beacons.iterator().next().distance + " m")
 
                 for (beacon in beacons) {
-                    if (!contacts!!.containsKey(beacon.id1.toString())) {
+                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0) {
+
                         contacts!![beacon.id1.toString()] =
                             beacon.id2.toString() + (beacon.id3).toString()
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                         mShouldCreatePayload = true
+
                     }else{
                         mShouldCreatePayload = false
                     }
                 }
+
                 if (mShouldCreatePayload) {
+                    Log.d("Counted as Contact!",
+                            "This is saved as a contact!" + beacons.iterator().next().id1)
                     createPayload(contacts!!)
                 }
             }
@@ -355,8 +358,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         if (!uuids.isNull("0")) {
             var uuid: String = uuids.getString(counter.toString())
-
-            Log.d("UUIDS", "   " + uuids)
 
             val beacon: Beacon? = mViewModel.getBeacon(
                 uuid, major.toString(), minor.toString()

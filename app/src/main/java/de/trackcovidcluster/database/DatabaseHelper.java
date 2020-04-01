@@ -14,6 +14,7 @@ import org.libsodium.jni.Sodium;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.trackcovidcluster.changeStatus.ReturnCookiesCallback;
 import de.trackcovidcluster.models.Cookie;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -62,15 +63,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
 
-        Log.d("SQL_HELPER", "\n" +
-                " ADDED NEW DATASET TO LOCAL DB!\n" + decoded);
-
         values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, decoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(LocationData.TABLE_NAME, null, values);
 
         db.close();
+
+        Log.d("SQL_HELPER", "\n" +
+                " ADDED NEW DATASET TO LOCAL DB!\n" + decoded + " IN ROW NUMBER " + id);
 
         return id;
     }
@@ -81,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public List<Cookie> getCookieBundle() {
+    public List<Cookie> getCookieBundle(ReturnCookiesCallback returnCookiesCallback) {
         List<Cookie> sensorData = new ArrayList<>();
 
         String selectQuery = "SELECT * FROM " + LocationData.TABLE_NAME + " ORDER BY " + LocationData.COLUMN_TIME + " ASC";
@@ -100,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 sensorData.add(cookie);
 
             } while (cursor.moveToNext());
+            returnCookiesCallback.returnCookiesCallback(sensorData);
         }
 
         db.close();
