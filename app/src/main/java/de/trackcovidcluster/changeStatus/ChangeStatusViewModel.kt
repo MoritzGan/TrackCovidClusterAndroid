@@ -13,13 +13,13 @@ class ChangeStatusViewModel @Inject constructor(
     private val mUserStorageSource: UserStorageSource
 ) : ViewModel() {
 
-    fun sendStatus(jsonString: String) {
-        val uUID = mUserStorageSource.getUserUUID()
+    fun sendStatus(listOfEncounters: ArrayList<String?>) {
+        val uuid = mUserStorageSource.getUserUUID()
 
-        val api: NetworkCall = NetworkCall(TrackCovidClusterAPI.create())
         Log.d("Sending to Server: ", "-----------------------------------------\n" +
-                " " + jsonString + " \n --------------------------------------------------")
-        api.sendBundle(jsonString)
+                " " + listOfEncounters.toString() + " " + uuid + " \n --------------------------------------------------")
+
+        mUserStorageSource.sendClusterSubmission(listOfEncounters)
     }
 
 }

@@ -2,6 +2,9 @@ package de.trackcovidcluster.status
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.Notification
+import android.app.Notification.*
+import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
@@ -10,7 +13,6 @@ import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -29,7 +31,6 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -94,6 +95,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mBeaconManager: BeaconManager
     private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var beaconParser: BeaconParser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -114,6 +116,23 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusImage = currentStatusImage
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
+
+        val builder: Builder = Builder(this)
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setContentTitle("Scanning for Beacons")
+        val intent = Intent(this, this::class.java)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        builder.setContentIntent(pendingIntent)
+        beaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+        mBeaconManager.beaconParsers.add(beaconParser)
+        mBeaconManager.backgroundBetweenScanPeriod = 0;
+        mBeaconManager.backgroundScanPeriod = 1100;
+        mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
+        mBeaconManager.setEnableScheduledScanJobs(false)
+        mBeaconManager.bind(this)
 
         val medic: BluetoothMedic = BluetoothMedic.getInstance()
         medic.enablePowerCycleOnFailures(this)
@@ -250,14 +269,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onPause() {
         super.onPause()
-
+        startAdvertising()
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        mBeaconManager.unbind(this)
+        startAdvertising()
     }
 
     /**
@@ -293,7 +311,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                             "This is saved as a contact!" + beacons.iterator().next().id1)
                     createPayload(contacts!!)
                     var db: DatabaseHelper = DatabaseHelper(this)
-                    mStatusTextView.text = db.profilesCount.toString()
+                    mStatusTextView.text = "Clustergröße: " + db.profilesCount
                 }
             }
         }
@@ -378,8 +396,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
 
-            mBeaconManager.beaconParsers.add(beaconParser)
-            mBeaconManager.bind(this)
 
             beaconTransmitter.startAdvertising(beacon)
         }
@@ -392,13 +408,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val beacon: Beacon? = mViewModel.getBeacon(
             uuids.getString(counter.toString()), major.toString(), ""
         )
-
-
-        val beaconParser: BeaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-
-        mBeaconManager.beaconParsers.add(beaconParser)
-        mBeaconManager.bind(this)
 
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)

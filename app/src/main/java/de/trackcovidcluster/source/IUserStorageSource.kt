@@ -15,4 +15,6 @@ interface IUserStorageSource {
     fun getUserUUID(): String?
 
     fun getUUIDsFromServerOvr()
+
+    fun sendClusterSubmission(arrayList: ArrayList<String?>) : String?
 }
