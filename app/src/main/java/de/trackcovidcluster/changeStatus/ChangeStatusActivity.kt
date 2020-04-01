@@ -36,8 +36,9 @@ class ChangeStatusActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(ChangeStatusViewModel::class.java)
 
-        val db = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
+
+        val db = DatabaseHelper(this)
         val encounters = db.getCookieBundle()
         Log.d("Database", " " + db.cookieBundle)
 
