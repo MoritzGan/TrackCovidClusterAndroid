@@ -132,7 +132,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
         mBeaconManager.beaconParsers.add(beaconParser)
         mBeaconManager.backgroundBetweenScanPeriod = 0;
-        mBeaconManager.backgroundScanPeriod = 1100;
         mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
         mBeaconManager.setEnableScheduledScanJobs(false)
         mBeaconManager.bind(this)
@@ -266,7 +265,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onResume() {
         super.onResume()
-        startAdvertising()
+        if (applicationContext != null)startAdvertising()
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
@@ -286,13 +285,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onPause() {
         super.onPause()
-        startAdvertising()
+        if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        startAdvertising()
+        if (applicationContext != null)startAdvertising()
     }
 
     /**
@@ -393,7 +392,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
     /**
-     * Functions for setting the beacons to advertise themselves
+     * Functions for setting the beacons to Advertise themselves
      */
 
     private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
@@ -409,10 +408,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
             val beaconParser: BeaconParser = BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
-
 
             beaconTransmitter.startAdvertising(beacon)
         }
@@ -425,7 +422,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val beacon: Beacon? = mViewModel.getBeacon(
             uuids.getString(counter.toString()), major.toString(), ""
         )
-
+        val beaconParser: BeaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
 
@@ -467,6 +465,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
+
+        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
+                + "----------------------------------------------------------------")
     }
 
     /**
