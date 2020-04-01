@@ -9,13 +9,19 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.RemoteException
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.github.ybq.android.spinkit.sprite.Sprite
+import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
@@ -39,44 +45,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
-        protected val TAG = "MonitoringActivity"
-        private val PERMISSION_REQUEST_FINE_LOCATION = 1
-        private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
-        protected fun onRequestPermissionsResult(
-            statusActivity: StatusActivity, requestCode: Int,
-            permissions: Array<String?>?, grantResults: IntArray
-        ) {
-            when (requestCode) {
-                PERMISSION_REQUEST_FINE_LOCATION -> {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "fine location permission granted")
-                    } else {
-                        val builder =
-                            AlertDialog.Builder(statusActivity)
-                        builder.setTitle("Functionality limited")
-                        builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener { }
-                        builder.show()
-                    }
-                    return
-                }
-                PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "background location permission granted")
-                    } else {
-                        val builder =
-                            AlertDialog.Builder(statusActivity)
-                        builder.setTitle("Functionality limited")
-                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener { }
-                        builder.show()
-                    }
-                    return
-                }
-            }
-        }
     }
 
     private var uuids: JSONObject? = null
@@ -119,23 +87,27 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-        val builder: Builder = Builder(this)
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-        builder.setContentTitle("Aktiv und Funktionstüchtig")
-        val intent = Intent(this, this::class.java)
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        builder.setContentIntent(pendingIntent)
+        if (!mBeaconManager.isAnyConsumerBound){
+            val builder: Builder = Builder(this)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+            builder.setContentTitle("Aktiv und Funktionstüchtig")
+            val intent = Intent(this, this::class.java)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(pendingIntent)
 
-        beaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        mBeaconManager.beaconParsers.add(beaconParser)
-        mBeaconManager.backgroundBetweenScanPeriod = 0;
-        mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
-        mBeaconManager.setEnableScheduledScanJobs(false)
-        mBeaconManager.bind(this)
+            beaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.backgroundBetweenScanPeriod = 0;
+            mBeaconManager.backgroundScanPeriod = 2000;
+            mBeaconManager.foregroundScanPeriod = 2000;
+            mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
+            mBeaconManager.setEnableScheduledScanJobs(false)
+            mBeaconManager.bind(this)
 
+        }
         val medic: BluetoothMedic = BluetoothMedic.getInstance()
         medic.enablePowerCycleOnFailures(this)
         medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
@@ -206,66 +178,44 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
          * Check Permissions on Runtime for Location Service
          */
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                            val builder =
-                                AlertDialog.Builder(this)
-                            builder.setTitle("This app needs background location access")
-                            builder.setMessage("Please grant location access so this app can detect beacons in the background.")
-                            builder.setPositiveButton(android.R.string.ok, null)
-                            builder.setOnDismissListener {
-                                requestPermissions(
-                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                                    StatusActivity.PERMISSION_REQUEST_BACKGROUND_LOCATION
-                                )
-                            }
-                            builder.show()
-                        } else {
-                            val builder =
-                                AlertDialog.Builder(this)
-                            builder.setTitle("Functionality limited")
-                            builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
-                            builder.setPositiveButton(android.R.string.ok, null)
-                            builder.setOnDismissListener { }
-                            builder.show()
-                        }
-                    }
-                }
-            } else {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        ),
-                        StatusActivity.PERMISSION_REQUEST_FINE_LOCATION
-                    )
-                } else {
-                    val builder =
-                        AlertDialog.Builder(this)
-                    builder.setTitle("Functionality limited")
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
-                    builder.setPositiveButton(android.R.string.ok, null)
-                    builder.setOnDismissListener { }
-                    builder.show()
-                }
-            }
-        }
-
-        startAdvertising()
         verifyBluetooth()
+
+        Handler().postDelayed({
+            startAdvertising()
+            Log.d("Started Advertising", " ")
+        }, 5000)
     }
 
     override fun onResume() {
         super.onResume()
-        if (applicationContext != null)startAdvertising()
+
+        if (!mBeaconManager.isAnyConsumerBound) {
+            mBeaconManager = BeaconManager.getInstanceForApplication(this)
+            mBackgroudPowerSaver = BackgroundPowerSaver(this)
+
+            val builder: Builder = Builder(this)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+            builder.setContentTitle("Aktiv und Funktionstüchtig")
+            val intent = Intent(this, this::class.java)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(pendingIntent)
+
+            beaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.backgroundBetweenScanPeriod = 0;
+            mBeaconManager.backgroundScanPeriod = 2000;
+            mBeaconManager.foregroundScanPeriod = 2000;
+            mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
+            mBeaconManager.setEnableScheduledScanJobs(false)
+            mBeaconManager.bind(this)
+        }
+
+        val db = DatabaseHelper(this)
+        mStatusTextView.text = "Clustergröße: " + db.profilesCount
+
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
@@ -411,13 +361,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
 
-            beaconTransmitter.startAdvertising(beacon)
+            if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
+            else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setBeaconTransmitterLast(major: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
-        var uuids: JSONObject = mViewModel.getUUIDs()
+        val uuids: JSONObject = mViewModel.getUUIDs()
 
         val beacon: Beacon? = mViewModel.getBeacon(
             uuids.getString(counter.toString()), major.toString(), ""
@@ -427,7 +378,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
 
-        beaconTransmitter.startAdvertising(beacon)
+        if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
+        else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
     }
 
     private fun startAdvertising() {
@@ -465,9 +417,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 }
             }
         }
-
-        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
-                + "----------------------------------------------------------------")
     }
 
     /**

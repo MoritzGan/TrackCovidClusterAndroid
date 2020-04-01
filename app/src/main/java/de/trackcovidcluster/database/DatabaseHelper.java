@@ -85,8 +85,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public List<Cookie> getCookieBundle(ReturnCookiesCallback returnCookiesCallback) {
-        List<Cookie> sensorData = new ArrayList<>();
+    public List<String> getCookieBundle() {
+        List<String> sensorData = new ArrayList<>();
 
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + LocationData.COLUMN_TIME + " ASC";
 
@@ -95,16 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-
-                Cookie cookie = new Cookie(
-                        String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)),
-                        cursor.getColumnIndex(LocationData.COLUMN_TIME)
-                );
-
-                sensorData.add(cookie);
+                sensorData.add(String.valueOf(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)));
 
             } while (cursor.moveToNext());
-            returnCookiesCallback.returnCookiesCallback(sensorData);
         }
 
         db.close();

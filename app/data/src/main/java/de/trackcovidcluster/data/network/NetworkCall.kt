@@ -39,16 +39,19 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
     fun sendBundle(userUUID: String?, clusters: ArrayList<String?>) : Observable<String> {
         val body = RequestClusters(
-            clusters = clusters,
             command = "ClusterSubmission",
+            clusters = clusters,
             uuid = userUUID
-
         )
 
         return trackCovidAPI.sendBundle(body = body)
             .map { response ->
-                Log.d("Got Fromm Server: ", "-----------------------------------------\n" +
-                        " " + response.answer.toString() + " \n --------------------------------------------------")
+                Log.d("Cluster Submission: ",
+                    "-----------------------------------------\n" +
+                        " Server Answer: "  + response.answer.toString() + "\n" +
+                        " Clusters : "      + response.answer.clusters.toString() + "\n" +
+                        " Response : "      + response.toString() +
+                        " \n            --------------------------------------------------")
                 response.answer.clusters.toString()
             }
     }

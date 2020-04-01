@@ -3,6 +3,7 @@ package de.trackcovidcluster.changeStatus
 import android.content.Intent
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,7 @@ import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
+import org.json.JSONObject
 import javax.inject.Inject
 
 class ChangeStatusActivity : AppCompatActivity() {
@@ -39,19 +41,13 @@ class ChangeStatusActivity : AppCompatActivity() {
 
         val db: DatabaseHelper = DatabaseHelper(this)
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT) // TODO Does not change the Status
-        var listOfEncounters: ArrayList<String?> = ArrayList()
-
-        val encounters = db.getCookieBundle(ReturnCookiesCallback { cookies ->
-            for (cookie in cookies) {
-                listOfEncounters.add(cookie.toString())
-            }
-        })
+        val encounters = db.getCookieBundle()
 
         getNextStatus(status)
 
         changeStatusButton.setOnClickListener {
 
-            mViewModel.sendStatus(listOfEncounters) // Send the encrypted cookies to the server
+            mViewModel.sendStatus(encounters as ArrayList<String?>) // Send the encrypted cookies to the server
             db.delteAllCookies()                    // Delete the local encounters
 
             startActivity(

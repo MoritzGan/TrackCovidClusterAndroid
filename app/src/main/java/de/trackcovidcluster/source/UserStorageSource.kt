@@ -31,6 +31,7 @@ class UserStorageSource @Inject constructor(
 
 
     override fun createUser() {
+
         mSharedPreferences.edit()
             .putString(USER_ID, UUID.randomUUID().toString()).apply()
         getPublicKey()
@@ -120,6 +121,7 @@ class UserStorageSource @Inject constructor(
      */
 
     private fun sendClustersToServer(clusters : ArrayList<String?>): String {
+
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
         val uuid: String? = mSharedPreferences.getString(USER_PUBLIC_KEY_ID,null)
         var answer: String = ""
