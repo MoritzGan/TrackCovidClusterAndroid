@@ -76,6 +76,10 @@ class UserStorageSource @Inject constructor(
 
     override fun sendClusterSubmission(arrayList: ArrayList<String?>): String = sendClustersToServer(arrayList)
 
+    /**
+     * Server Communication
+     */
+
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
         networkSource.getPublicKey()
@@ -110,6 +114,10 @@ class UserStorageSource @Inject constructor(
 
         return uuidsJson.toString()
     }
+
+    /**
+     * TODO Test why this does not work
+     */
 
     private fun sendClustersToServer(clusters : ArrayList<String?>): String {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
