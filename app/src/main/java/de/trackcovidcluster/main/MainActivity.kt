@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(enableBtIntent, 100)
         }
 
+        mViewModel.getUUIDsFromServer()
+
         // Log User in
         if (mViewModel.isFirstTimeUser()) {
             mainScreen.visibility = View.VISIBLE

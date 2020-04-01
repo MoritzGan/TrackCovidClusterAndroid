@@ -1,7 +1,7 @@
 package de.trackcovidcluster.data.network
 
+import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
-import de.trackcovidcluster.data.entities.Answer
 import de.trackcovidcluster.data.entities.Request
 import io.reactivex.Observable
 
@@ -21,6 +21,30 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
         return trackCovidAPI.getPublicKey(body = body)
             .map { response ->
                 response.answer.publicKey
+            }
+    }
+
+    fun getUUIDs() : Observable<List<String>?> {
+        val body = Request(
+            command = "UUIDPoll"
+        )
+        return trackCovidAPI.getUUIDs(body = body)
+            .map { response ->
+                response.answer.uuids
+            }
+    }
+
+    fun sendBundle(userUUID: String) : Observable<String> {
+        val body = Request(
+            command = "ClusterSubmission",
+            uuid = userUUID
+        )
+
+        return trackCovidAPI.sendBundle(body = body)
+            .map { response ->
+                Log.d("Got Fromm Server: ", "-----------------------------------------\n" +
+                        " " + response.answer.clusters.toString() + " \n --------------------------------------------------")
+                response.answer.clusters.toString()
             }
     }
 }

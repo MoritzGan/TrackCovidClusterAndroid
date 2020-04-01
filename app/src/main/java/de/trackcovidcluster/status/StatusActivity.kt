@@ -1,76 +1,123 @@
 package de.trackcovidcluster.status
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseSettings
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.AlertDialog
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
-import de.trackcovidcluster.source.IUserStorageSource
+import de.trackcovidcluster.database.DatabaseHelper
+import de.trackcovidcluster.models.Cookie
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
-import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.BeaconTransmitter
+import org.altbeacon.beacon.*
+import org.altbeacon.beacon.powersave.BackgroundPowerSaver
+import org.altbeacon.bluetooth.BluetoothMedic
+import org.json.JSONObject
+import org.w3c.dom.Text
 import java.math.BigInteger
-import java.util.*
 import javax.inject.Inject
 
-
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class StatusActivity : AppCompatActivity() {
+open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
+        protected val TAG = "MonitoringActivity"
+        private val PERMISSION_REQUEST_FINE_LOCATION = 1
+        private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
+        protected fun onRequestPermissionsResult(
+            statusActivity: StatusActivity, requestCode: Int,
+            permissions: Array<String?>?, grantResults: IntArray
+        ) {
+            when (requestCode) {
+                PERMISSION_REQUEST_FINE_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "fine location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
+                }
+                PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "background location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
+                }
+            }
+        }
     }
 
-    // region members
-    private lateinit var mViewModel: StatusViewModel
-    private val PERMISSIONS_REQUEST = 100
-    private lateinit var mUserStorageSource: IUserStorageSource
+    private var uuids: JSONObject? = null
+    private var contacts: HashMap<String, String>? = null
+    private var contactsDistance: HashMap<String, String>? = null
+    private var contactsUUIDs: HashMap<String, String>? = null
+    private var mReceiver: BroadcastReceiver? = null
+    private var mShouldCreatePayload : Boolean = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private lateinit var mViewModel: StatusViewModel
     private lateinit var mCurrentStatusImage: ImageView
     private lateinit var mCurrentStatusText: TextView
-    private var mReceiver: BroadcastReceiver? = null
-
-    // endregion
+    private lateinit var mStatusTextView: TextView
+    private lateinit var mBeaconManager: BeaconManager
+    private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
+    private lateinit var mSharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_status)
 
+        mBeaconManager = BeaconManager.getInstanceForApplication(this)
+        mBackgroudPowerSaver = BackgroundPowerSaver(this)
+
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(StatusViewModel::class.java)
 
         mViewModel.getStatus()
-
+        uuids = mViewModel.getUUIDs()
+        contacts = HashMap()
+        contactsUUIDs = HashMap()
+        contactsDistance = HashMap()
         mCurrentStatusImage = currentStatusImage
+        mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
+
+        val medic: BluetoothMedic = BluetoothMedic.getInstance()
+        medic.enablePowerCycleOnFailures(this)
+        medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
 
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
         if (status != DEFAULT) {
@@ -80,17 +127,8 @@ class StatusActivity : AppCompatActivity() {
             updateStatus(status = currentStatus)
         }
 
-        // Will return sth. like 266290753698018418588485362138100705178
-        var hashedPubKey : BigInteger = mViewModel.getPublicKeyInInt()
-
-        // TODO split the hashedPubKey to minor/majors of the beacons
-
-        setBeaconTransmitter()
-        setBeaconTransmitter()
-        setBeaconTransmitter()
-        setBeaconTransmitter()
-
         maybeInfectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -101,6 +139,7 @@ class StatusActivity : AppCompatActivity() {
         }
 
         infectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -111,6 +150,7 @@ class StatusActivity : AppCompatActivity() {
         }
 
         notInfectedContainer.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -121,6 +161,7 @@ class StatusActivity : AppCompatActivity() {
         }
 
         positiveButton.setOnClickListener {
+            mBeaconManager.unbind(this)
             startActivity(
                 Intent(this, ChangeStatusActivity::class.java)
                     .putExtra(
@@ -129,10 +170,67 @@ class StatusActivity : AppCompatActivity() {
                     )
             )
         }
+
+        startAdvertising()
+        verifyBluetooth()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("This app needs background location access")
+                            builder.setMessage("Please grant location access so this app can detect beacons in the background.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener {
+                                requestPermissions(
+                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                                    StatusActivity.PERMISSION_REQUEST_BACKGROUND_LOCATION
+                                )
+                            }
+                            builder.show()
+                        } else {
+                            val builder =
+                                AlertDialog.Builder(this)
+                            builder.setTitle("Functionality limited")
+                            builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
+                            builder.setPositiveButton(android.R.string.ok, null)
+                            builder.setOnDismissListener { }
+                            builder.show()
+                        }
+                    }
+                }
+            } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        ),
+                        StatusActivity.PERMISSION_REQUEST_FINE_LOCATION
+                    )
+                } else {
+                    val builder =
+                        AlertDialog.Builder(this)
+                    builder.setTitle("Functionality limited")
+                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener { }
+                    builder.show()
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        startAdvertising()
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
@@ -147,42 +245,210 @@ class StatusActivity : AppCompatActivity() {
                 }
             }
         }
-
-        //registering our receiver
         this.registerReceiver(mReceiver, intentFilter)
     }
 
     override fun onPause() {
-        // TODO Auto-generated method stub
         super.onPause()
 
-        //unregister our receiver
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
-        // TODO Auto-generated method stub
         super.onDestroy()
 
-        //unregister our receiver
-        this.unregisterReceiver(this.mReceiver)
+        mBeaconManager.unbind(this)
     }
 
-    private fun setBeaconTransmitter() {
+    /**
+     * Functions for monitoring
+     */
+
+    override fun onBeaconServiceConnect() {
+        mBeaconManager.removeAllRangeNotifiers()
+
+        mBeaconManager.addRangeNotifier { beacons, _ ->
+            if (beacons.isNotEmpty()) {
+
+                Log.i(
+                    "Details:", "Found :" + beacons.size +
+                            " Beacons. UUID: " + beacons.iterator().next().id1 +
+                            " in ca distance of " + beacons.iterator().next().distance + " m")
+
+                for (beacon in beacons) {
+                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
+
+                        contacts!![beacon.id1.toString()] =
+                            beacon.id2.toString() + (beacon.id3).toString()
+                        contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
+                        mShouldCreatePayload = true
+
+                    }else{
+                        mShouldCreatePayload = false
+                    }
+                }
+
+                if (mShouldCreatePayload) {
+                    Log.d("Counted as Contact!",
+                            "This is saved as a contact!" + beacons.iterator().next().id1)
+                    createPayload(contacts!!)
+                    var db: DatabaseHelper = DatabaseHelper(this)
+                    mStatusTextView.text = db.profilesCount.toString()
+                }
+            }
+        }
+        try {
+            mBeaconManager.startRangingBeaconsInRegion(
+                Region(
+                    "myRangingUniqueId",
+                    null,
+                    null,
+                    null
+                )
+            )
+            Log.d("Looking for beacons", "looking for beacons ")
+        } catch (e: RemoteException) {
+            Log.e("Dont see Beacon", e.toString())
+        }
+    }
+
+    private fun verifyBluetooth() {
+        try {
+            if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Bluetooth not enabled")
+                builder.setMessage("Please enable bluetooth in settings and restart this application.")
+                builder.setPositiveButton(android.R.string.ok, null)
+                builder.setOnDismissListener {
+                }
+                builder.show()
+            }
+        } catch (e: RuntimeException) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Bluetooth LE not available")
+            builder.setMessage("Sorry, this device does not support Bluetooth LE.")
+            builder.setPositiveButton(android.R.string.ok, null)
+            builder.setOnDismissListener {
+            }
+            builder.show()
+        }
+    }
+
+    private fun createPayload(contacs: HashMap<String, String>) {
+        var uuidOfContact: String? = ""
+        var beaconCounter = 0
+        val db: DatabaseHelper = DatabaseHelper(this)
+        val publicKey: String? = mViewModel.getServerPubKey()
+
+        for (beacon in contacs) {
+            for (char in beacon.value) {
+                uuidOfContact += "" + char
+            }
+            beaconCounter++
+
+            if (beaconCounter == 4) {
+                val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
+                if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
+                    contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
+                    val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                    db.insertDataSet(cookie, publicKey)
+                }
+            }
+        }
+    }
+
+    /**
+     * Functions for setting the beacons to Advertise themselfs.
+     */
+
+    private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
+        val uuids: JSONObject = mViewModel.getUUIDs()
+
+        if (!uuids.isNull("0")) {
+            var uuid: String = uuids.getString(counter.toString())
+
+            val beacon: Beacon? = mViewModel.getBeacon(
+                uuid, major.toString(), minor.toString()
+            )
+
+            val beaconParser: BeaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+            val beaconTransmitter =
+                BeaconTransmitter(applicationContext, beaconParser)
+
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.bind(this)
+
+            beaconTransmitter.startAdvertising(beacon)
+        }
+    }
+
+    private fun setBeaconTransmitterLast(major: Int?, counter: Int) {
+        // TODO Change UUID to one of the Server ones
+        var uuids: JSONObject = mViewModel.getUUIDs()
 
         val beacon: Beacon? = mViewModel.getBeacon(
-            UUID.randomUUID().toString(), "1", "f")
+            uuids.getString(counter.toString()), major.toString(), ""
+        )
 
 
         val beaconParser: BeaconParser = BeaconParser()
             .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+
+        mBeaconManager.beaconParsers.add(beaconParser)
+        mBeaconManager.bind(this)
 
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
 
         beaconTransmitter.startAdvertising(beacon)
     }
+
+    private fun startAdvertising() {
+
+        val hashedPubKey: BigInteger = mViewModel.getPublicKeyInInt()
+        val keyAsString = hashedPubKey.toString()
+        var counter = 0
+
+        for (x in keyAsString.indices) {
+            var oneStr: String?
+            var twoStr: String?
+
+            if ((x % 8 == 0 && x != 0 && x <= keyAsString.length) || x == 4 && counter <= 5) {
+
+                if ((x + 4) < keyAsString.length) {
+
+                    if (x == 4) {
+                        oneStr = keyAsString.substring(0, 4)
+                        twoStr = keyAsString.substring(4, 8)
+                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
+
+                        counter++
+                    } else {
+                        oneStr = keyAsString.substring(x - 4, x)
+                        twoStr = keyAsString.substring(x, x + 4)
+                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
+
+                        counter++
+                    }
+
+                } else if ((x + 4) > keyAsString.length) {
+                    setBeaconTransmitterLast(keyAsString.substring(x).toInt(), counter)
+
+                    counter++
+                }
+            }
+        }
+
+        Log.d("BEACON SPAWN ", "\n Spawned " + counter + " Beacons! \n"
+                + "----------------------------------------------------------------")
+    }
+
+    /**
+     * Update the users State
+     */
 
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
