@@ -13,9 +13,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:background">@drawable/buttons</item>
-        <item name="android:padding">15dp</item>
+        <item name="android:padding">18dp</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="textAllCaps">false</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="title">

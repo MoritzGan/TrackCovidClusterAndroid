@@ -1,27 +1,23 @@
 package de.trackcovidcluster.status
 
-import android.Manifest
 import android.app.AlertDialog
-import android.app.Notification
-import android.app.Notification.*
+import android.app.Notification.Builder
 import android.app.PendingIntent
-import android.content.*
-import android.content.pm.PackageManager
-import android.os.Build
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.RemoteException
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.github.ybq.android.spinkit.sprite.Sprite
-import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
@@ -29,7 +25,6 @@ import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.models.Cookie
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
-import de.trackcovidcluster.status.Constants.NOT_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
 import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
@@ -52,7 +47,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
-    private var mShouldCreatePayload : Boolean = false
+    private var mShouldCreatePayload: Boolean = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -62,8 +57,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mStatusTextView: TextView
     private lateinit var mBeaconManager: BeaconManager
     private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
-    private lateinit var mSharedPreferences: SharedPreferences
     private lateinit var beaconParser: BeaconParser
+    private lateinit var mReportBottomText: TextView
+    private lateinit var mReportTopText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -79,6 +75,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusImage = currentStatusImage
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
+        mReportTopText = reportTop
+        mReportBottomText = reportBottom
 
         /**
          * Setuo the beaconService to run in the foreground
@@ -87,8 +85,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-        if (!mBeaconManager.isAnyConsumerBound){
-            val builder: Builder = Builder(this)
+        if (!mBeaconManager.isAnyConsumerBound) {
+            val builder = Builder(this)
             builder.setSmallIcon(R.mipmap.ic_launcher)
             builder.setContentTitle("Aktiv und Funktionstüchtig")
             val intent = Intent(this, this::class.java)
@@ -115,52 +113,18 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         /**
          * Check the Status and change on change from Server or on Infection
          * submission.
-         * TODO Does not change
          */
 
         val status = intent.getIntExtra(STATUS_KEY, DEFAULT)
-        if (status != DEFAULT) {
-            updateStatus(status = status)
-        } else {
-            val currentStatus = mViewModel.getStatusFromSource()
-            updateStatus(status = currentStatus)
-        }
+        val statusApi = intent.getIntExtra(STATUS_API_KEY, DEFAULT)
 
-        /**
-         * TODO Do we need onClick here? Why?
-         */
-
-        maybeInfectedContainer.setOnClickListener {
-            mBeaconManager.unbind(this)
-            startActivity(
-                Intent(this, ChangeStatusActivity::class.java)
-                    .putExtra(
-                        STATUS_KEY,
-                        MAYBE_INFECTED
-                    )
-            )
-        }
-
-        infectedContainer.setOnClickListener {
-            mBeaconManager.unbind(this)
-            startActivity(
-                Intent(this, ChangeStatusActivity::class.java)
-                    .putExtra(
-                        STATUS_KEY,
-                        INFECTED
-                    )
-            )
-        }
-
-        notInfectedContainer.setOnClickListener {
-            mBeaconManager.unbind(this)
-            startActivity(
-                Intent(this, ChangeStatusActivity::class.java)
-                    .putExtra(
-                        STATUS_KEY,
-                        NOT_INFECTED
-                    )
-            )
+        when {
+            statusApi != DEFAULT -> updateStatus(status = statusApi)
+            status != DEFAULT -> updateStatus(status = status)
+            else -> {
+                val currentStatus = mViewModel.getStatusFromSource()
+                updateStatus(status = currentStatus)
+            }
         }
 
         positiveButton.setOnClickListener {
@@ -186,6 +150,21 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }, 5000)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val status = intent?.getIntExtra(STATUS_KEY, DEFAULT)
+
+        status?.let {
+            when {
+                status != DEFAULT -> updateStatus(status = status)
+                else -> {
+                    val currentStatus = mViewModel.getStatusFromSource()
+                    updateStatus(status = currentStatus)
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -193,7 +172,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             mBeaconManager = BeaconManager.getInstanceForApplication(this)
             mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-            val builder: Builder = Builder(this)
+            val builder = Builder(this)
             builder.setSmallIcon(R.mipmap.ic_launcher)
             builder.setContentTitle("Aktiv und Funktionstüchtig")
             val intent = Intent(this, this::class.java)
@@ -241,7 +220,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (applicationContext != null)startAdvertising()
+        if (applicationContext != null) startAdvertising()
     }
 
     /**
@@ -257,7 +236,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 Log.i(
                     "Details:", "Found :" + beacons.size +
                             " Beacons. UUID: " + beacons.iterator().next().id1 +
-                            " in ca distance of " + beacons.iterator().next().distance + " m")
+                            " in ca distance of " + beacons.iterator().next().distance + " m"
+                )
 
                 for (beacon in beacons) {
                     if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
@@ -267,14 +247,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                         mShouldCreatePayload = true
 
-                    }else{
+                    } else {
                         mShouldCreatePayload = false
                     }
                 }
 
                 if (mShouldCreatePayload) {
-                    Log.d("Counted as Contact!",
-                            "This is saved as a contact!" + beacons.iterator().next().id1)
+                    Log.d(
+                        "Counted as Contact!",
+                        "This is saved as a contact!" + beacons.iterator().next().id1
+                    )
                     createPayload(contacts!!)
                     var db: DatabaseHelper = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
@@ -321,7 +303,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter = 0
-        val db: DatabaseHelper = DatabaseHelper(this)
+        val db = DatabaseHelper(this)
         val publicKey: String? = mViewModel.getServerPubKey()
 
         for (beacon in contacs) {
@@ -437,5 +419,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+
+        if (status == INFECTED) {
+            mReportTopText.visibility = View.VISIBLE
+            mReportBottomText.visibility = View.VISIBLE
+        } else {
+            mReportTopText.visibility = View.INVISIBLE
+            mReportBottomText.visibility = View.INVISIBLE
+        }
     }
 }
