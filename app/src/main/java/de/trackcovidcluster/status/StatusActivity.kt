@@ -12,12 +12,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.RemoteException
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.github.ybq.android.spinkit.sprite.Sprite
+import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
@@ -41,44 +45,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
         private const val DEFAULT = -1
-        protected val TAG = "MonitoringActivity"
-        private val PERMISSION_REQUEST_FINE_LOCATION = 1
-        private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
-        protected fun onRequestPermissionsResult(
-            statusActivity: StatusActivity, requestCode: Int,
-            permissions: Array<String?>?, grantResults: IntArray
-        ) {
-            when (requestCode) {
-                PERMISSION_REQUEST_FINE_LOCATION -> {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "fine location permission granted")
-                    } else {
-                        val builder =
-                            AlertDialog.Builder(statusActivity)
-                        builder.setTitle("Functionality limited")
-                        builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener { }
-                        builder.show()
-                    }
-                    return
-                }
-                PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "background location permission granted")
-                    } else {
-                        val builder =
-                            AlertDialog.Builder(statusActivity)
-                        builder.setTitle("Functionality limited")
-                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener { }
-                        builder.show()
-                    }
-                    return
-                }
-            }
-        }
     }
 
     private var uuids: JSONObject? = null
@@ -211,59 +177,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         /**
          * Check Permissions on Runtime for Location Service
          */
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                            val builder =
-                                AlertDialog.Builder(this)
-                            builder.setTitle("This app needs background location access")
-                            builder.setMessage("Please grant location access so this app can detect beacons in the background.")
-                            builder.setPositiveButton(android.R.string.ok, null)
-                            builder.setOnDismissListener {
-                                requestPermissions(
-                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                                    StatusActivity.PERMISSION_REQUEST_BACKGROUND_LOCATION
-                                )
-                            }
-                            builder.show()
-                        } else {
-                            val builder =
-                                AlertDialog.Builder(this)
-                            builder.setTitle("Functionality limited")
-                            builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
-                            builder.setPositiveButton(android.R.string.ok, null)
-                            builder.setOnDismissListener { }
-                            builder.show()
-                        }
-                    }
-                }
-            } else {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        ),
-                        StatusActivity.PERMISSION_REQUEST_FINE_LOCATION
-                    )
-                } else {
-                    val builder =
-                        AlertDialog.Builder(this)
-                    builder.setTitle("Functionality limited")
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
-                    builder.setPositiveButton(android.R.string.ok, null)
-                    builder.setOnDismissListener { }
-                    builder.show()
-                }
-            }
-        }
 
         verifyBluetooth()
 
