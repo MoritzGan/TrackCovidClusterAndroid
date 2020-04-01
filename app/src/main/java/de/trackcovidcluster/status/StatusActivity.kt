@@ -14,6 +14,7 @@ import android.os.RemoteException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -120,23 +121,25 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-        val builder: Builder = Builder(this)
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-        builder.setContentTitle("Aktiv und Funktionstüchtig")
-        val intent = Intent(this, this::class.java)
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        builder.setContentIntent(pendingIntent)
+        if (!mBeaconManager.isAnyConsumerBound){
+            val builder: Builder = Builder(this)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+            builder.setContentTitle("Aktiv und Funktionstüchtig")
+            val intent = Intent(this, this::class.java)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(pendingIntent)
 
-        beaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        mBeaconManager.beaconParsers.add(beaconParser)
-        mBeaconManager.backgroundBetweenScanPeriod = 0;
-        mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
-        mBeaconManager.setEnableScheduledScanJobs(false)
-        mBeaconManager.bind(this)
+            beaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.backgroundBetweenScanPeriod = 0;
+            mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
+            mBeaconManager.setEnableScheduledScanJobs(false)
+            mBeaconManager.bind(this)
 
+        }
         val medic: BluetoothMedic = BluetoothMedic.getInstance()
         medic.enablePowerCycleOnFailures(this)
         medic.enablePeriodicTests(this, BluetoothMedic.SCAN_TEST or BluetoothMedic.TRANSMIT_TEST)
@@ -260,16 +263,40 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
         }
 
-        startAdvertising()
         verifyBluetooth()
+
+        Handler().postDelayed({
+            startAdvertising()
+            Log.d("Started Advertising", " ")
+        }, 5000)
     }
 
     override fun onResume() {
         super.onResume()
 
-        if (applicationContext != null) startAdvertising()
+        if (!mBeaconManager.isAnyConsumerBound) {
+            mBeaconManager = BeaconManager.getInstanceForApplication(this)
+            mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-        var db: DatabaseHelper = DatabaseHelper(this)
+            val builder: Builder = Builder(this)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+            builder.setContentTitle("Aktiv und Funktionstüchtig")
+            val intent = Intent(this, this::class.java)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(pendingIntent)
+
+            beaconParser = BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+            mBeaconManager.beaconParsers.add(beaconParser)
+            mBeaconManager.backgroundBetweenScanPeriod = 0;
+            mBeaconManager.enableForegroundServiceScanning(builder.build(), 456)
+            mBeaconManager.setEnableScheduledScanJobs(false)
+            mBeaconManager.bind(this)
+        }
+
+        val db = DatabaseHelper(this)
         mStatusTextView.text = "Clustergröße: " + db.profilesCount
 
         val intentFilter = IntentFilter(
@@ -417,13 +444,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             val beaconTransmitter =
                 BeaconTransmitter(applicationContext, beaconParser)
 
-            beaconTransmitter.startAdvertising(beacon)
+            if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
+            else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setBeaconTransmitterLast(major: Int?, counter: Int) {
         // TODO Change UUID to one of the Server ones
-        var uuids: JSONObject = mViewModel.getUUIDs()
+        val uuids: JSONObject = mViewModel.getUUIDs()
 
         val beacon: Beacon? = mViewModel.getBeacon(
             uuids.getString(counter.toString()), major.toString(), ""
@@ -433,7 +461,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val beaconTransmitter =
             BeaconTransmitter(applicationContext, beaconParser)
 
-        beaconTransmitter.startAdvertising(beacon)
+        if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
+        else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
     }
 
     private fun startAdvertising() {
