@@ -1,27 +1,19 @@
 package de.trackcovidcluster.status
 
-import android.Manifest
 import android.app.AlertDialog
-import android.app.Notification
-import android.app.Notification.*
+import android.app.Notification.Builder
 import android.app.PendingIntent
 import android.content.*
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.RemoteException
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.github.ybq.android.spinkit.sprite.Sprite
-import com.github.ybq.android.spinkit.style.DoubleBounce
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
@@ -52,7 +44,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
-    private var mShouldCreatePayload : Boolean = false
+    private var mShouldCreatePayload: Boolean = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -87,7 +79,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroudPowerSaver = BackgroundPowerSaver(this)
 
-        if (!mBeaconManager.isAnyConsumerBound){
+        if (!mBeaconManager.isAnyConsumerBound) {
             val builder: Builder = Builder(this)
             builder.setSmallIcon(R.mipmap.ic_launcher)
             builder.setContentTitle("Aktiv und Funktionstüchtig")
@@ -241,7 +233,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (applicationContext != null)startAdvertising()
+        if (applicationContext != null) startAdvertising()
     }
 
     /**
@@ -257,7 +249,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 Log.i(
                     "Details:", "Found :" + beacons.size +
                             " Beacons. UUID: " + beacons.iterator().next().id1 +
-                            " in ca distance of " + beacons.iterator().next().distance + " m")
+                            " in ca distance of " + beacons.iterator().next().distance + " m"
+                )
 
                 for (beacon in beacons) {
                     if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
@@ -267,14 +260,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                         mShouldCreatePayload = true
 
-                    }else{
+                    } else {
                         mShouldCreatePayload = false
                     }
                 }
 
                 if (mShouldCreatePayload) {
-                    Log.d("Counted as Contact!",
-                            "This is saved as a contact!" + beacons.iterator().next().id1)
+                    Log.d(
+                        "Counted as Contact!",
+                        "This is saved as a contact!" + beacons.iterator().next().id1
+                    )
                     createPayload(contacts!!)
                     var db: DatabaseHelper = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
