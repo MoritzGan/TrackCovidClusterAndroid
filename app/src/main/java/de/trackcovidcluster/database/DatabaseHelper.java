@@ -62,19 +62,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         jsonString.put("Timestamp", cookie.getTimestamp());
 
         byte[] bytes = new byte[jsonString.toString().getBytes().length];
+        byte[] jsonInBytes = jsonString.toString().getBytes();
 
         NaCl.sodium();
         Sodium.crypto_box_seal(
                 bytes,
-                jsonString.toString().getBytes(),
-                jsonString.toString().getBytes().length,
+                jsonInBytes,
+                jsonInBytes.length,
                 pkey.getBytes()
         );
 
         String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
         String substring = decoded.substring(0, decoded.length() - 1);
+        String subsubstring = substring.replace("\n","");
 
-        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, substring);
+        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, subsubstring);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(TABLE_NAME, null, values);
@@ -104,6 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 sensorData.add(String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
+                Log.d("Database", " " + String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
             } while (cursor.moveToNext());
         }
 

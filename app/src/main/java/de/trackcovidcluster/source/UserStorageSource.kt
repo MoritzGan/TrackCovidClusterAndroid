@@ -123,7 +123,8 @@ class UserStorageSource @Inject constructor(
         if(clusters.isNotEmpty()){
             networkSource.sendBundle(uuid, clusters)
                 .subscribeOn(Schedulers.io())
-                .subscribe ({ serverClusters ->
+                .subscribe ({
+                    Log.i("Server Success", "Connected and sent POST.")
                 }, {
                     Log.e("No internet", "No internet connection$it")
                 })

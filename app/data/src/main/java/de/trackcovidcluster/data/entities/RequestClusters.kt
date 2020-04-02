@@ -8,5 +8,5 @@ data class RequestClusters(
     @SerializedName("Clusters")
     val clusters: List<String?>,
     @SerializedName("UUID")
-    val uuid: String? = null
+    val uuid: String?
 )

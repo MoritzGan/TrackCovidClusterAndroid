@@ -38,7 +38,7 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
     // TODO: Debug the sending process. Does not work
 
-    fun sendBundle(userUUID: String?, clusters: ArrayList<String?>) : Observable<String> {
+    fun sendBundle(userUUID: String?, clusters: List<String?>) : Observable<String> {
         val body = RequestClusters(
             command = "ClusterSubmission",
             clusters = clusters,
@@ -50,10 +50,11 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
                 Log.d("Cluster Submission: ",
                     "-----------------------------------------\n" +
                         " Server Answer: "  + response.answer.toString() + "\n" +
-                        " Clusters : "      + response.answer.clusters.toString() + "\n" +
-                        " Response : "      + response.toString() +
+                        " Clusters   : "      + response.answer.encounters.toString() + "\n" +
+                        " Response   : "      + response.toString() +
+                        " Body o Req : "      + body.toString() +
                         " \n            --------------------------------------------------")
-                response.answer.clusters.toString()
+                response.answer.encounters.toString()
             }
     }
 }
