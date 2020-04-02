@@ -62,7 +62,11 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt(): ByteArray {
+    fun getUserUUID(): String? {
+        return  mUserStorageSource.getUserUUID()
+    }
+
+    fun getPublicKeyByteArray(): ByteArray {
         var testArray: ByteArray = ByteArray(16)
 
         mUserStorageSource.getUserUUID()?.let { publicKey ->

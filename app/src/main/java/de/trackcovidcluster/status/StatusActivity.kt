@@ -25,6 +25,7 @@ import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.models.Cookie
+import de.trackcovidcluster.source.UserStorageSource
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
@@ -32,9 +33,7 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
-import org.bouncycastle.jcajce.provider.symmetric.ARC4
 import org.json.JSONObject
-import java.math.BigInteger
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -358,8 +357,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     @ExperimentalUnsignedTypes
     private fun startAdvertising() {
 
-        val hashedPubKey: ByteArray = mViewModel.getPublicKeyInInt()
+        val hashedPubKey: ByteArray = mViewModel.getPublicKeyByteArray()
         val arrayOfBytesAsShort: ArrayList<Int> = ArrayList()
+        val arrayOhUShorts: ArrayList<UShort> = ArrayList()
 
         var byteCounter = 1
         var beaconCounter = 0
@@ -368,7 +368,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         for(byte in hashedPubKey) {
 
-            if(byteCounter % 2 == 0 && byteCounter != 0) {
+            /*if(byteCounter % 2 == 0 && byteCounter != 0) {
 
                 var bytesAsShort: Int = bytesToUnsignedShort(
                     hashedPubKey[byteCounter - 2],
@@ -376,7 +376,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     true)
 
                 arrayOfBytesAsShort.add(bytesAsShort)
-            }
+            }*/
+            arrayOhUShorts.add(byte.toUShort())
             byteCounter++
         }
 
@@ -396,16 +397,27 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
         }
 
-        Log.i("BEACON_SPAWNER", "Spawned $beaconCounter Beacons representing ${arrayOfBytesAsShort.toString()} ")
+        var test: String = ""
+        var counter = 0
+        Log.i("BEACON_SPAWNER", "Spawned $beaconCounter Beacons representing ${arrayOfBytesAsShort.toString()} " +
+                    " Which is the UUID: " + arrayOfBytesAsShort + "\n")
+
+        for (x in arrayOhUShorts) {
+            test +=  x
+            counter++
+            Log.d("BEACON", "" + test)
+        }
+
+        Log.d("Beacon_SERVER", " " + hashedPubKey)
+        Log.i("BEACON_SPAWNER", " The Represented UUID as a byte Array: " + test.toByteArray() + "\n")
+        Log.i("BEACON_SPAWNER", " REAL UUID: " + mViewModel.getPublicKeyByteArray())
     }
 
     fun bytesToUnsignedShort(byte1 : Byte, byte2 : Byte, bigEndian : Boolean) : Int {
         if (bigEndian)
             return (((byte1.toInt() and 255) shl 8) or (byte2.toInt() and 255))
 
-
         return (((byte2.toInt() and 255) shl 8) or (byte1.toInt() and 255))
-
     }
 
     /**
