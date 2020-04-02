@@ -7,14 +7,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.RemoteException
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -31,6 +34,8 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.altbeacon.bluetooth.BluetoothMedic
+import org.bouncycastle.jcajce.provider.symmetric.ARC4
+import org.bouncycastle.util.encoders.Hex
 import org.json.JSONObject
 import java.math.BigInteger
 import javax.inject.Inject
@@ -222,6 +227,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * BLE Functions for scanning and creating the encrypted payload
      */
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
 
@@ -295,11 +301,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter = 0
         val db = DatabaseHelper(this)
-        val publicKey: String? = mViewModel.getServerPubKey()
+        val publicKey = mViewModel.getServerPubKey()
+        var publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.DEFAULT)
 
         for (beacon in contacs) {
             for (char in beacon.value) {
@@ -308,12 +316,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             beaconCounter++
 
             if (beaconCounter == 4) {
-                val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
+                val uuidContactHex: String = Base64.encodeToString(
+                    BigInteger(uuidOfContact).toString(16).toByteArray(),
+                    Base64.NO_WRAP);
 
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
                     val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
-                    db.insertDataSet(cookie, publicKey)
+                    db.insertDataSet(cookie, publicKeyDecoded)
                 }
             }
         }

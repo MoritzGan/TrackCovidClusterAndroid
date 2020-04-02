@@ -1,8 +1,10 @@
 package de.trackcovidcluster.source
 
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.network.NetworkCall
 import io.reactivex.schedulers.Schedulers
@@ -41,6 +43,7 @@ class UserStorageSource @Inject constructor(
         return mSharedPreferences.getString(UUID_LIST, "")
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun createUserKeys() {
         val seed: ByteArray = Random().randomBytes(SodiumConstants.SECRETKEY_BYTES)
 
@@ -74,13 +77,13 @@ class UserStorageSource @Inject constructor(
      * Server Communication
      */
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getPublicKey() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
         networkSource.getPublicKey()
             .subscribeOn(Schedulers.io())
             .subscribe({ publicKey ->
                 mSharedPreferences.edit().putString(PK_ID, publicKey).apply()
-                Log.d("SERVER    ", "PUBLICKEY FROM SERVER :" + publicKey);
             }, {
                 Log.e("No internet", "No internet connection")
             })

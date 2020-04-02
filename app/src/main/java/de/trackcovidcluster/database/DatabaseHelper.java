@@ -6,15 +6,21 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Base64;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.libsodium.jni.NaCl;
 import org.libsodium.jni.Sodium;
+import org.libsodium.jni.SodiumConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 import de.trackcovidcluster.changeStatus.ReturnCookiesCallback;
@@ -52,27 +58,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public long insertDataSet(Cookie cookie, String pkey) throws JSONException {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public long insertDataSet(Cookie cookie, byte[] pkey) throws JSONException {
 
         SQLiteDatabase db = this.getWritableDatabase();
         JSONObject jsonString = new JSONObject();
         ContentValues values = new ContentValues();
 
         jsonString.put("UUID", cookie.getHashedUUID());
-        jsonString.put("Timestamp", cookie.getTimestamp());
+        jsonString.put("Timestamp", cookie.getTimestamp() / 1000);
 
-        byte[] bytes = new byte[jsonString.toString().getBytes().length];
         byte[] jsonInBytes = jsonString.toString().getBytes();
+        byte[] bytes = new byte[Sodium.crypto_box_sealbytes() + jsonInBytes.length];
 
         NaCl.sodium();
         Sodium.crypto_box_seal(
                 bytes,
                 jsonInBytes,
                 jsonInBytes.length,
-                pkey.getBytes()
+                pkey
         );
 
-        String decoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
+        String decoded = Base64.getEncoder().encodeToString(bytes);
 
         values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, decoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
@@ -82,9 +89,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         Log.d("SQL_HELPER", "\n" +
-                " ADDED NEW DATASET TO LOCAL DB!\n" + decoded + " IN ROW NUMBER " + id);
+                " ADDED NEW DATASET TO LOCAL DB!\n" + jsonString + " IN ROW NUMBER " + id + "\n" );
 
         return id;
+    }
+
+    public static int unsignedToBytes(byte b) {
+        return b & 0xFF;
     }
 
     /**

@@ -73,7 +73,9 @@ class StatusViewModel @Inject constructor(
             }
 
             val result: String = hex.substring(32)
+
             Log.d("RESULT IN HEX?", result)
+
             return BigInteger(result, 16)
         }
 
@@ -90,7 +92,7 @@ class StatusViewModel @Inject constructor(
         return jsonRep
     }
 
-    fun getServerPubKey(): String {
-        return mUserStorageSource.getUserPublicKey().toString()
+    fun getServerPubKey(): String? {
+        return mUserStorageSource.getUserPublicKey()
     }
 }

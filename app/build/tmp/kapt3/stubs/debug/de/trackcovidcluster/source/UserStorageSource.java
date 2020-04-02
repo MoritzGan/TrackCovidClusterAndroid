@@ -2,7 +2,7 @@ package de.trackcovidcluster.source;
 
 import java.lang.System;
 
-@kotlin.Metadata(mv = {1, 1, 16}, bv = {1, 0, 3}, k = 1, d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0005\n\u0002\u0010\u000b\n\u0002\b\u0002\n\u0002\u0010 \n\u0002\b\u0004\u0018\u0000 \u00152\u00020\u0001:\u0001\u0015B\u000f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\b\u0010\u0005\u001a\u00020\u0006H\u0016J\b\u0010\u0007\u001a\u00020\u0006H\u0002J\n\u0010\b\u001a\u0004\u0018\u00010\tH\u0002J\b\u0010\n\u001a\u00020\u0006H\u0016J\n\u0010\u000b\u001a\u0004\u0018\u00010\tH\u0016J\n\u0010\f\u001a\u0004\u0018\u00010\tH\u0016J\n\u0010\r\u001a\u0004\u0018\u00010\tH\u0016J\b\u0010\u000e\u001a\u00020\u000fH\u0016J\u0018\u0010\u0010\u001a\u00020\u00062\u000e\u0010\u0011\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\t0\u0012H\u0016J\u0018\u0010\u0013\u001a\u00020\u00062\u000e\u0010\u0014\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\t0\u0012H\u0002R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u0016"}, d2 = {"Lde/trackcovidcluster/source/UserStorageSource;", "Lde/trackcovidcluster/source/IUserStorageSource;", "mSharedPreferences", "Landroid/content/SharedPreferences;", "(Landroid/content/SharedPreferences;)V", "createUserKeys", "", "getPublicKey", "getUUIDsFromServer", "", "getUUIDsFromServerOvr", "getUUIDsFromUser", "getUserPublicKey", "getUserUUID", "isUserExisting", "", "sendClusterSubmission", "list", "", "sendClustersToServer", "clusters", "Companion", "app_debug"})
+@kotlin.Metadata(mv = {1, 1, 16}, bv = {1, 0, 3}, k = 1, d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0005\n\u0002\u0010\u000b\n\u0002\b\u0002\n\u0002\u0010 \n\u0002\b\u0004\u0018\u0000 \u00152\u00020\u0001:\u0001\u0015B\u000f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\b\u0010\u0005\u001a\u00020\u0006H\u0017J\b\u0010\u0007\u001a\u00020\u0006H\u0003J\n\u0010\b\u001a\u0004\u0018\u00010\tH\u0002J\b\u0010\n\u001a\u00020\u0006H\u0016J\n\u0010\u000b\u001a\u0004\u0018\u00010\tH\u0016J\n\u0010\f\u001a\u0004\u0018\u00010\tH\u0016J\n\u0010\r\u001a\u0004\u0018\u00010\tH\u0016J\b\u0010\u000e\u001a\u00020\u000fH\u0016J\u0018\u0010\u0010\u001a\u00020\u00062\u000e\u0010\u0011\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\t0\u0012H\u0016J\u0018\u0010\u0013\u001a\u00020\u00062\u000e\u0010\u0014\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\t0\u0012H\u0002R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u0016"}, d2 = {"Lde/trackcovidcluster/source/UserStorageSource;", "Lde/trackcovidcluster/source/IUserStorageSource;", "mSharedPreferences", "Landroid/content/SharedPreferences;", "(Landroid/content/SharedPreferences;)V", "createUserKeys", "", "getPublicKey", "getUUIDsFromServer", "", "getUUIDsFromServerOvr", "getUUIDsFromUser", "getUserPublicKey", "getUserUUID", "isUserExisting", "", "sendClusterSubmission", "list", "", "sendClustersToServer", "clusters", "Companion", "app_debug"})
 public final class UserStorageSource implements de.trackcovidcluster.source.IUserStorageSource {
     private final android.content.SharedPreferences mSharedPreferences = null;
     private static final java.lang.String PK_ID = "SERVER_PUBLIC_KEY";
@@ -32,6 +32,7 @@ public final class UserStorageSource implements de.trackcovidcluster.source.IUse
         return null;
     }
     
+    @androidx.annotation.RequiresApi(value = android.os.Build.VERSION_CODES.O)
     @java.lang.Override()
     public void createUserKeys() {
     }
@@ -50,6 +51,7 @@ public final class UserStorageSource implements de.trackcovidcluster.source.IUse
     /**
      * Server Communication
      */
+    @androidx.annotation.RequiresApi(value = android.os.Build.VERSION_CODES.O)
     private final void getPublicKey() {
     }
     

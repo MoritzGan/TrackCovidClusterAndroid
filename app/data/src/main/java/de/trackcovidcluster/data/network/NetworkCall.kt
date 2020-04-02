@@ -1,11 +1,15 @@
 package de.trackcovidcluster.data.network
 
+import android.os.Build
+import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.gson.JsonObject
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.data.entities.RequestClusters
 import io.reactivex.Observable
+import java.nio.charset.Charset
 
 class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
@@ -16,6 +20,7 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getPublicKey(): Observable<String> {
         val body = Request(
             command = "RequestServerPubKey"
