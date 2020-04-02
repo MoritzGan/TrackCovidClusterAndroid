@@ -32,6 +32,7 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
+import org.bouncycastle.jcajce.provider.symmetric.ARC4
 import org.json.JSONObject
 import java.math.BigInteger
 import javax.inject.Inject
@@ -317,13 +318,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             beaconCounter++
 
             if (beaconCounter == 4) {
-                val uuidContactHex: String = Base64.encodeToString(
-                    BigInteger(uuidOfContact).toString().toByteArray(),
-                    Base64.NO_WRAP);
+                val uuidByteArray: ByteArray? = uuidOfContact?.toByteArray()
+                val uuidBase64: String = Base64.encodeToString(uuidByteArray, Base64.NO_WRAP)
 
-                if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
-                    contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
-                    val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                if (!contactsUUIDs!!.containsKey(uuidBase64)) {
+                    contactsUUIDs!![uuidBase64] = System.currentTimeMillis().toString()
+                    val cookie = Cookie(uuidBase64, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKeyDecoded)
                 }
             }
@@ -399,7 +399,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         Log.i("BEACON_SPAWNER", "Spawned $beaconCounter Beacons representing ${arrayOfBytesAsShort.toString()} ")
     }
 
-    public fun bytesToUnsignedShort(byte1 : Byte, byte2 : Byte, bigEndian : Boolean) : Int {
+    fun bytesToUnsignedShort(byte1 : Byte, byte2 : Byte, bigEndian : Boolean) : Int {
         if (bigEndian)
             return (((byte1.toInt() and 255) shl 8) or (byte2.toInt() and 255))
 
