@@ -78,7 +78,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusText = currentStatusText
 
         /**
-         * Setuo the beaconService to run in the foreground
+         * Setup the beaconService to run in the foreground
          */
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
@@ -241,9 +241,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
                     if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
 
-                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+                        contacts!![beacon.id1.toString()] =
+                            beacon.id2.toString() + (beacon.id3).toString()
 
-                        //contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                         mShouldCreatePayload = true
 
                     } else {
@@ -258,7 +258,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                         "This is saved as a contact!" + beacons.iterator().next().id1
                     )
                     createPayload(contacts!!)
-                    var db: DatabaseHelper = DatabaseHelper(this)
+                    var db = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
                 }
             }
@@ -306,7 +306,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         var beaconCounter = 0
         val db = DatabaseHelper(this)
         val publicKey = mViewModel.getServerPubKey()
-        var publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.DEFAULT)
+        val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.DEFAULT)
 
         for (beacon in contacs) {
 
@@ -319,7 +319,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             if (beaconCounter == 4) {
                 val uuidContactHex: String = Base64.encodeToString(
                     BigInteger(uuidOfContact).toString().toByteArray(),
-                    Base64.NO_WRAP);
+                    Base64.NO_WRAP
+                );
 
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
@@ -363,32 +364,33 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         var byteCounter = 1
         var beaconCounter = 0
-        var minor = ""
-        var major = ""
+        var minor: String
+        var major: String
 
-        for(byte in hashedPubKey) {
+        for (byte in hashedPubKey) {
 
-            if(byteCounter % 2 == 0 && byteCounter != 0) {
+            if (byteCounter % 2 == 0 && byteCounter != 0) {
 
-                var bytesAsShort: Int = bytesToUnsignedShort(
+                val bytesAsShort: Int = bytesToUnsignedShort(
                     hashedPubKey[byteCounter - 2],
                     hashedPubKey[byteCounter - 1],
-                    true)
+                    true
+                )
 
                 arrayOfBytesAsShort.add(bytesAsShort)
             }
             byteCounter++
         }
 
-        for (i in 1 .. arrayOfBytesAsShort.size) {
-            if(i % 2 == 0) {
+        for (i in 1..arrayOfBytesAsShort.size) {
+            if (i % 2 == 0) {
                 minor = arrayOfBytesAsShort[i - 2].toString()
                 major = arrayOfBytesAsShort[i - 1].toString()
 
                 setBeaconTransmitter(minor, major, beaconCounter)
                 beaconCounter++
             }
-            if(i == arrayOfBytesAsShort.size - 1 && i % 2 != 0) {
+            if (i == arrayOfBytesAsShort.size - 1 && i % 2 != 0) {
                 minor = arrayOfBytesAsShort[i - 2].toString()
                 major = ""
                 setBeaconTransmitter(minor, major, beaconCounter)
@@ -396,10 +398,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             }
         }
 
-        Log.i("BEACON_SPAWNER", "Spawned $beaconCounter Beacons representing ${arrayOfBytesAsShort.toString()} ")
+        Log.i(
+            "BEACON_SPAWNER",
+            "Spawned $beaconCounter Beacons representing $arrayOfBytesAsShort "
+        )
     }
 
-    public fun bytesToUnsignedShort(byte1 : Byte, byte2 : Byte, bigEndian : Boolean) : Int {
+    private fun bytesToUnsignedShort(byte1: Byte, byte2: Byte, bigEndian: Boolean): Int {
         if (bigEndian)
             return (((byte1.toInt() and 255) shl 8) or (byte2.toInt() and 255))
 
