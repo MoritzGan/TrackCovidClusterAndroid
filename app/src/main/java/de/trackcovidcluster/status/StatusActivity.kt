@@ -30,7 +30,6 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
-import org.altbeacon.bluetooth.BluetoothMedic
 import org.json.JSONObject
 import java.math.BigInteger
 import javax.inject.Inject
@@ -75,6 +74,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusImage = currentStatusImage
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
+        mReportTopText = reportTop
+        mReportBottomText = reportBottom
 
         /**
          * Setuo the beaconService to run in the foreground
@@ -399,7 +400,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     /**
      * Update the users State
      */
-
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
             when (status) {
@@ -414,5 +414,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+
+        if (status == INFECTED) {
+            mReportTopText.visibility = View.VISIBLE
+            mReportBottomText.visibility = View.VISIBLE
+        } else {
+            mReportTopText.visibility = View.INVISIBLE
+            mReportBottomText.visibility = View.INVISIBLE
+        }
     }
 }
