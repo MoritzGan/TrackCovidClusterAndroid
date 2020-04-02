@@ -1,19 +1,13 @@
 package de.trackcovidcluster.status
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
-import com.jakewharton.rxrelay2.PublishRelay
 import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
-import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import org.bouncycastle.jcajce.provider.digest.SHA3
-import org.bouncycastle.util.encoders.Hex
 import org.json.JSONObject
-import org.libsodium.jni.Sodium
-import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -62,15 +56,15 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt(): ByteArray {
-        var testArray: ByteArray = ByteArray(16)
+    fun getPublicKeyByteArray(): ByteArray {
+        val testArray = ByteArray(16)
 
         mUserStorageSource.getUserUUID()?.let { publicKey ->
 
             val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
-            var digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
+            val digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
 
-            for (i in 0 .. 15) {
+            for (i in 0..15) {
                 testArray[i] = digest[i]
             }
 

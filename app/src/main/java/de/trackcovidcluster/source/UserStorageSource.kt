@@ -42,17 +42,17 @@ class UserStorageSource @Inject constructor(
         mSharedPreferences.edit().apply {
             putString(
                 USER_PRIVATE_KEY_ID,
-                Base64.encodeToString(encryptionPrivateKey, Base64.DEFAULT).substring(0, 44)
+                Base64.encodeToString(encryptionPrivateKey, Base64.NO_WRAP)
             )
             putString(
                 USER_PUBLIC_KEY_ID,
-                Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)
+                Base64.encodeToString(encryptionPublicKey, Base64.NO_WRAP)
             )
         }.apply()
 
         Log.d(
             "FIRST TIME USER:", "\n" + "GENERATED KEYPAIR \n" +
-                    Base64.encodeToString(encryptionPublicKey, Base64.DEFAULT).substring(0, 44)
+                    Base64.encodeToString(encryptionPublicKey, Base64.NO_WRAP)
         )
     }
 

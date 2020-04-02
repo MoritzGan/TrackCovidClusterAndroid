@@ -6,11 +6,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,14 +86,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public static int unsignedToBytes(byte b) {
-        return b & 0xFF;
-    }
-
     /**
      * Returns all Cookies from database
      *
-     * @return
      */
 
     public List<String> getCookieBundle() {
@@ -110,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 sensorData.add(String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
-                Log.d("Database", " " + String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
+                Log.d("Database", " " + cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)));
             } while (cursor.moveToNext());
         }
 

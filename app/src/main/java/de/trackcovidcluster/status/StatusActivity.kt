@@ -32,7 +32,6 @@ import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.json.JSONObject
-import java.math.BigInteger
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -307,7 +306,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         var beaconCounter = 0
         val db = DatabaseHelper(this)
         val publicKey = mViewModel.getServerPubKey()
-        val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.DEFAULT)
+        val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.NO_WRAP)
 
         for (beacon in contacs) {
 
@@ -318,14 +317,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             beaconCounter++
 
             if (beaconCounter == 4) {
-                val uuidContactHex: String = Base64.encodeToString(
-                    BigInteger(uuidOfContact).toString().toByteArray(),
-                    Base64.NO_WRAP
-                );
+                val uuidByteArray: ByteArray? = uuidOfContact?.toByteArray()
+                val uuidBase64: String = Base64.encodeToString(uuidByteArray, Base64.NO_WRAP)
 
-                if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
-                    contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
-                    val cookie = Cookie(uuidContactHex, System.currentTimeMillis())
+                if (!contactsUUIDs!!.containsKey(uuidBase64)) {
+                    contactsUUIDs!![uuidBase64] = System.currentTimeMillis().toString()
+                    val cookie = Cookie(uuidBase64, System.currentTimeMillis())
                     db.insertDataSet(cookie, publicKeyDecoded)
                 }
             }
@@ -341,7 +338,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val uuids: JSONObject = mViewModel.getUUIDs()
 
         if (!uuids.isNull("0") && counter < 5) {
-            var uuid: String = uuids.getString(counter.toString())
+            val uuid: String = uuids.getString(counter.toString())
 
             val beacon: Beacon? = mViewModel.getBeacon(
                 uuid, major.toString(), minor.toString()
@@ -360,27 +357,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     @ExperimentalUnsignedTypes
     private fun startAdvertising() {
 
-        val hashedPubKey: ByteArray = mViewModel.getPublicKeyInInt()
-        val arrayOfBytesAsShort: ArrayList<Int> = ArrayList()
+        val hashedPubKey: ByteArray = mViewModel.getPublicKeyByteArray()
+        val arrayOfBytesAsShort: ArrayList<UShort> = ArrayList()
 
-        var byteCounter = 1
         var beaconCounter = 0
         var minor: String
         var major: String
 
-        for (byte in hashedPubKey) {
-
-            if (byteCounter % 2 == 0 && byteCounter != 0) {
-
-                val bytesAsShort: Int = bytesToUnsignedShort(
-                    hashedPubKey[byteCounter - 2],
-                    hashedPubKey[byteCounter - 1],
-                    true
-                )
-
-                arrayOfBytesAsShort.add(bytesAsShort)
-            }
-            byteCounter++
+        hashedPubKey.map { byte ->
+            arrayOfBytesAsShort.add(byte.toUShort())
         }
 
         for (i in 1..arrayOfBytesAsShort.size) {
@@ -403,15 +388,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             "BEACON_SPAWNER",
             "Spawned $beaconCounter Beacons representing $arrayOfBytesAsShort "
         )
-    }
-
-    private fun bytesToUnsignedShort(byte1: Byte, byte2: Byte, bigEndian: Boolean): Int {
-        if (bigEndian)
-            return (((byte1.toInt() and 255) shl 8) or (byte2.toInt() and 255))
-
-
-        return (((byte2.toInt() and 255) shl 8) or (byte1.toInt() and 255))
-
     }
 
     /**
