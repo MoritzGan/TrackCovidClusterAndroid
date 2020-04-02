@@ -7,16 +7,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -76,6 +75,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusImage = currentStatusImage
         mStatusTextView = statusTextView
         mCurrentStatusText = currentStatusText
+        mReportTopText = reportTop
+        mReportBottomText = reportBottom
 
         /**
          * Setup the beaconService to run in the foreground
@@ -210,12 +211,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onPause() {
         super.onPause()
+        mBeaconManager.unbind(this)
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        mBeaconManager.unbind(this)
         if (applicationContext != null) startAdvertising()
     }
 
@@ -223,7 +226,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * BLE Functions for scanning and creating the encrypted payload
      */
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
         var counter = 0
@@ -300,7 +302,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createPayload(contacs: HashMap<String, String>) {
         var uuidOfContact: String? = ""
         var beaconCounter = 0
@@ -416,7 +417,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     /**
      * Update the users State
      */
-
     private fun updateStatus(status: Int) {
         mCurrentStatusImage.setImageResource(
             when (status) {
@@ -431,5 +431,13 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+
+        if (status == INFECTED) {
+            mReportTopText.visibility = View.VISIBLE
+            mReportBottomText.visibility = View.VISIBLE
+        } else {
+            mReportTopText.visibility = View.INVISIBLE
+            mReportBottomText.visibility = View.INVISIBLE
+        }
     }
 }

@@ -7,23 +7,19 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.libsodium.jni.NaCl;
 import org.libsodium.jni.Sodium;
-import org.libsodium.jni.SodiumConstants;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
-import de.trackcovidcluster.changeStatus.ReturnCookiesCallback;
 import de.trackcovidcluster.models.Cookie;
 
 import static de.trackcovidcluster.database.LocationData.TABLE_NAME;
@@ -58,7 +54,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public long insertDataSet(Cookie cookie, byte[] pkey) throws JSONException {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -68,18 +63,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         jsonString.put("UUID", cookie.getHashedUUID());
         jsonString.put("Timestamp", cookie.getTimestamp() / 1000);
 
+        NaCl.sodium();
+
         byte[] jsonInBytes = jsonString.toString().getBytes();
         byte[] bytes = new byte[Sodium.crypto_box_sealbytes() + jsonInBytes.length];
 
-        NaCl.sodium();
         Sodium.crypto_box_seal(
                 bytes,
                 jsonInBytes,
                 jsonInBytes.length,
                 pkey
         );
-
-        String encoded = Base64.getEncoder().encodeToString(bytes);
+        String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
         values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, encoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
@@ -89,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         Log.d("SQL_HELPER", "\n" +
-                " ADDED NEW DATASET TO LOCAL DB!\n" + jsonString + " IN ROW NUMBER " + id + "\n" );
+                " ADDED NEW DATASET TO LOCAL DB!\n" + jsonString + " IN ROW NUMBER " + id + "\n");
 
         return id;
     }

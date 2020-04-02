@@ -1,5 +1,7 @@
 package de.trackcovidcluster.source
 
+import org.json.JSONObject
+
 interface IUserStorageSource {
 
     fun isUserExisting(): Boolean
@@ -8,11 +10,11 @@ interface IUserStorageSource {
 
     fun getUserPublicKey(): String?
 
+    fun setPublicKey(publicKey: String)
+
     fun getUUIDsFromUser(): String?
 
     fun getUserUUID(): String?
 
-    fun getUUIDsFromServerOvr()
-
-    fun sendClusterSubmission(list: List<String?>)
+    fun setUUIDsFromServer(uuidsJson: JSONObject)
 }
