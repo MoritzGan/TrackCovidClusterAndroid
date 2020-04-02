@@ -309,6 +309,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
             if (beaconCounter == 4) {
                 val uuidContactHex: String = BigInteger(uuidOfContact).toString(16)
+
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
                     contactsUUIDs!![uuidContactHex] = System.currentTimeMillis().toString()
                     val cookie = Cookie(uuidContactHex, System.currentTimeMillis())

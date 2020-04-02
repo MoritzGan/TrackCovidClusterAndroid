@@ -54,7 +54,8 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
                         " Response   : "      + response.toString() +
                         " Body o Req : "      + body.toString() +
                         " \n            --------------------------------------------------")
-                response.answer.encounters.toString()
+
+                response.answer.status.toString()
             }
     }
 }

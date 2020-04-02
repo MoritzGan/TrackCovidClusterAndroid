@@ -72,11 +72,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 pkey.getBytes()
         );
 
-        String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
-        String substring = decoded.substring(0, decoded.length() - 1);
-        String subsubstring = substring.replace("\n","");
+        String decoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
-        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, subsubstring);
+        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, decoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(TABLE_NAME, null, values);
