@@ -13,7 +13,6 @@ import android.os.Handler
 import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -33,9 +32,6 @@ import de.trackcovidcluster.status.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
-import org.altbeacon.bluetooth.BluetoothMedic
-import org.bouncycastle.jcajce.provider.symmetric.ARC4
-import org.bouncycastle.util.encoders.Hex
 import org.json.JSONObject
 import java.math.BigInteger
 import javax.inject.Inject
@@ -230,6 +226,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
+        var counter = 0
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
@@ -241,16 +238,18 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 )
 
                 for (beacon in beacons) {
+
                     if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
 
-                        contacts!![beacon.id1.toString()] =
-                            beacon.id2.toString() + (beacon.id3).toString()
-                        contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
+                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+
+                        //contactsDistance!![beacon.id1.toString()] = beacon.distance.toString()
                         mShouldCreatePayload = true
 
                     } else {
                         mShouldCreatePayload = false
                     }
+                    counter++
                 }
 
                 if (mShouldCreatePayload) {
@@ -310,14 +309,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         var publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.DEFAULT)
 
         for (beacon in contacs) {
-            for (char in beacon.value) {
+
+            for (char in contacs["434c5553-5445-5254-5241-434b3030303$beaconCounter"].toString()) {
                 uuidOfContact += "" + char
             }
+
             beaconCounter++
 
             if (beaconCounter == 4) {
                 val uuidContactHex: String = Base64.encodeToString(
-                    BigInteger(uuidOfContact).toString(16).toByteArray(),
+                    BigInteger(uuidOfContact).toString().toByteArray(),
                     Base64.NO_WRAP);
 
                 if (!contactsUUIDs!!.containsKey(uuidContactHex)) {
@@ -333,11 +334,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * Functions for setting the beacons to Advertise themselves
      */
 
-    private fun setBeaconTransmitter(major: Int?, minor: Int?, counter: Int) {
+    private fun setBeaconTransmitter(major: String?, minor: String?, counter: Int) {
         // TODO Change UUID to one of the Server ones
         val uuids: JSONObject = mViewModel.getUUIDs()
 
-        if (!uuids.isNull("0")) {
+        if (!uuids.isNull("0") && counter < 5) {
             var uuid: String = uuids.getString(counter.toString())
 
             val beacon: Beacon? = mViewModel.getBeacon(
@@ -354,57 +355,57 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    private fun setBeaconTransmitterLast(major: Int?, counter: Int) {
-        // TODO Change UUID to one of the Server ones
-        val uuids: JSONObject = mViewModel.getUUIDs()
-
-        val beacon: Beacon? = mViewModel.getBeacon(
-            uuids.getString(counter.toString()), major.toString(), ""
-        )
-        val beaconParser: BeaconParser = BeaconParser()
-            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        val beaconTransmitter =
-            BeaconTransmitter(applicationContext, beaconParser)
-
-        if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
-        else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
-    }
-
+    @ExperimentalUnsignedTypes
     private fun startAdvertising() {
 
-        val hashedPubKey: BigInteger = mViewModel.getPublicKeyInInt()
-        val keyAsString = hashedPubKey.toString()
-        var counter = 0
+        val hashedPubKey: ByteArray = mViewModel.getPublicKeyInInt()
+        val arrayOfBytesAsShort: ArrayList<Int> = ArrayList()
 
-        for (x in keyAsString.indices) {
-            var oneStr: String?
-            var twoStr: String?
+        var byteCounter = 1
+        var beaconCounter = 0
+        var minor = ""
+        var major = ""
 
-            if ((x % 8 == 0 && x != 0 && x <= keyAsString.length) || x == 4 && counter <= 5) {
+        for(byte in hashedPubKey) {
 
-                if ((x + 4) < keyAsString.length) {
+            if(byteCounter % 2 == 0 && byteCounter != 0) {
 
-                    if (x == 4) {
-                        oneStr = keyAsString.substring(0, 4)
-                        twoStr = keyAsString.substring(4, 8)
-                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
+                var bytesAsShort: Int = bytesToUnsignedShort(
+                    hashedPubKey[byteCounter - 2],
+                    hashedPubKey[byteCounter - 1],
+                    true)
 
-                        counter++
-                    } else {
-                        oneStr = keyAsString.substring(x - 4, x)
-                        twoStr = keyAsString.substring(x, x + 4)
-                        setBeaconTransmitter(oneStr.toInt(), twoStr.toInt(), counter)
+                arrayOfBytesAsShort.add(bytesAsShort)
+            }
+            byteCounter++
+        }
 
-                        counter++
-                    }
+        for (i in 1 .. arrayOfBytesAsShort.size) {
+            if(i % 2 == 0) {
+                minor = arrayOfBytesAsShort[i - 2].toString()
+                major = arrayOfBytesAsShort[i - 1].toString()
 
-                } else if ((x + 4) > keyAsString.length) {
-                    setBeaconTransmitterLast(keyAsString.substring(x).toInt(), counter)
-
-                    counter++
-                }
+                setBeaconTransmitter(minor, major, beaconCounter)
+                beaconCounter++
+            }
+            if(i == arrayOfBytesAsShort.size - 1 && i % 2 != 0) {
+                minor = arrayOfBytesAsShort[i - 2].toString()
+                major = ""
+                setBeaconTransmitter(minor, major, beaconCounter)
+                beaconCounter++
             }
         }
+
+        Log.i("BEACON_SPAWNER", "Spawned $beaconCounter Beacons representing ${arrayOfBytesAsShort.toString()} ")
+    }
+
+    public fun bytesToUnsignedShort(byte1 : Byte, byte2 : Byte, bigEndian : Boolean) : Int {
+        if (bigEndian)
+            return (((byte1.toInt() and 255) shl 8) or (byte2.toInt() and 255))
+
+
+        return (((byte2.toInt() and 255) shl 8) or (byte1.toInt() and 255))
+
     }
 
     /**

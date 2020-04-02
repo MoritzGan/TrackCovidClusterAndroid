@@ -10,7 +10,9 @@ import de.trackcovidcluster.worker.GetStatusWorker
 import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import org.bouncycastle.jcajce.provider.digest.SHA3
+import org.bouncycastle.util.encoders.Hex
 import org.json.JSONObject
+import org.libsodium.jni.Sodium
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -60,26 +62,22 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt(): BigInteger {
+    fun getPublicKeyInInt(): ByteArray {
+        var testArray: ByteArray = ByteArray(16)
 
-        mUserStorageSource.getUserPublicKey()?.let { publicKey ->
+        mUserStorageSource.getUserUUID()?.let { publicKey ->
 
             val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
-            val digest = digestSHA3.digest(publicKey.toByteArray())
+            var digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
 
-            var hex = ""
-            digest.map {
-                hex += String.format("%02X", it)
+            for (i in 0 .. 15) {
+                testArray[i] = digest[i]
             }
 
-            val result: String = hex.substring(32)
-
-            Log.d("RESULT IN HEX?", result)
-
-            return BigInteger(result, 16)
+            return testArray
         }
 
-        return BigInteger("0")
+        return testArray
     }
 
     fun getUUIDs(): JSONObject {
