@@ -237,8 +237,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             if (beacons.isNotEmpty()) {
 
                 for (beacon in beacons) {
-                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 4) {
-                        // Save the minor and major as seperated bytes
+                    if (!contacts!!.containsValue(beacon) && beacon.distance < 2.0 && beacons.size == 4)
+                    {
                         contacts!![beacon.id1.toString()] = beacon
                         newBeaconFound = true
                         contactsCounter++
