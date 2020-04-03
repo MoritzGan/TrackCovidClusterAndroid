@@ -71,6 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 jsonInBytes.length,
                 pkey
         );
+
         String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
         values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, encoded);
