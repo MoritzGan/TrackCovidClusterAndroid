@@ -41,6 +41,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         private const val DEFAULT = -1
     }
 
+    private val SCANNER_TAG = "Scanning"
+    private val ADVERTISING_TAG = "Advertising"
+    private val UUID_PROTOTYPE = "434c5553-5445-5254-5241-434b3030303"
+
     private var uuids: JSONObject? = null
     private var contacts: HashMap<String, Beacon>? = null
     private var contactsDistance: HashMap<String, String>? = null
@@ -55,11 +59,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mCurrentStatusText: TextView
     private lateinit var mStatusTextView: TextView
     private lateinit var mBeaconManager: BeaconManager
-    private lateinit var mBackgroudPowerSaver: BackgroundPowerSaver
+    private lateinit var mBackgroundPowerSaver: BackgroundPowerSaver
     private lateinit var beaconParser: BeaconParser
     private lateinit var mReportBottomText: TextView
     private lateinit var mReportTopText: TextView
 
+    @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
         super.onCreate(savedInstanceState)
@@ -82,17 +87,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
          */
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
-        mBackgroudPowerSaver = BackgroundPowerSaver(this)
+        mBackgroundPowerSaver = BackgroundPowerSaver(this)
 
         if (!mBeaconManager.isAnyConsumerBound) {
-            val builder = Builder(this)
-            builder.setSmallIcon(R.mipmap.ic_launcher)
-            builder.setContentTitle("Aktiv und Funktionstüchtig")
             val intent = Intent(this, this::class.java)
-            val pendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            builder.setContentIntent(pendingIntent)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val builder = Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Aktiv und Funktionstüchtig")
+                .setContentIntent(pendingIntent)
 
             beaconParser = BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -141,7 +144,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         Handler().postDelayed({
             startAdvertising()
-            Log.d("Started Advertising", " ")
+            Log.d(ADVERTISING_TAG, " Started Advertising onCreate() after a delay of 5s")
         }, 5000)
     }
 
@@ -160,21 +163,20 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalUnsignedTypes
     override fun onResume() {
         super.onResume()
 
         if (!mBeaconManager.isAnyConsumerBound) {
             mBeaconManager = BeaconManager.getInstanceForApplication(this)
-            mBackgroudPowerSaver = BackgroundPowerSaver(this)
+            mBackgroundPowerSaver = BackgroundPowerSaver(this)
 
-            val builder = Builder(this)
-            builder.setSmallIcon(R.mipmap.ic_launcher)
-            builder.setContentTitle("Aktiv und Funktionstüchtig")
             val intent = Intent(this, this::class.java)
-            val pendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            builder.setContentIntent(pendingIntent)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val builder = Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Aktiv und Funktionstüchtig")
+                .setContentIntent(pendingIntent)
 
             beaconParser = BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -194,6 +196,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
         )
+
         mReceiver = object : BroadcastReceiver() {
             override fun onReceive(
                 context: Context?,
@@ -225,10 +228,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * BLE Functions for scanning and creating the encrypted payload
      */
 
+    @ExperimentalUnsignedTypes
     override fun onBeaconServiceConnect() {
+
         mBeaconManager.removeAllRangeNotifiers()
-        val uuidProt = "434c5553-5445-5254-5241-434b3030303"
-        var counter = 0
         var newBeaconFound = false
         var contactsCounter = 0
         var receivedBytes: ArrayList<Int> = arrayListOf<Int>()
@@ -246,9 +249,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
                     if(contactsCounter == 4 && newBeaconFound) {
                         for(i in 0 .. 3) {
-                            if (contacts!!.containsKey(uuidProt + i)) {
-                                receivedBytes.add(contacts!![uuidProt + i]!!.id2.toInt())
-                                receivedBytes.add(contacts!![uuidProt + i]!!.id3.toInt())
+                            if (contacts!!.containsKey(UUID_PROTOTYPE + i)) {
+                                receivedBytes.add(contacts!![UUID_PROTOTYPE + i]!!.id2.toInt())
+                                receivedBytes.add(contacts!![UUID_PROTOTYPE + i]!!.id3.toInt())
                                 if(i == 3) {
                                     mShouldCreatePayload = true
                                     newBeaconFound = false
@@ -261,21 +264,20 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     }
                 }
 
-
                 if (mShouldCreatePayload) {
                     Log.d(
-                        "Counted as Contact!",
-                        "This is saved as a contact!" + beacons.iterator().next().id1 +
+                        SCANNER_TAG,"This is saved as a contact! " +
                                 " Payload " + receivedBytes.toString()
                     )
                     createPayload(receivedBytes)
-                    var db = DatabaseHelper(this)
+                    val db = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
                     mShouldCreatePayload = false
                 }
             }
         }
         try {
+            // TODO Set regions to UUIDS with our signiture
             mBeaconManager.startRangingBeaconsInRegion(
                 Region(
                     "myRangingUniqueId",
@@ -284,9 +286,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     null
                 )
             )
-            Log.d("Looking for beacons", "looking for beacons ")
         } catch (e: RemoteException) {
-            Log.e("Dont see Beacon", e.toString())
+            Log.e(SCANNER_TAG, e.toString())
         }
     }
 
@@ -313,33 +314,31 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
     @ExperimentalUnsignedTypes
-    private fun createPayload(contacs: ArrayList<Int>) {
+    private fun createPayload(contactsAsInteger: ArrayList<Int>) {
         var byteCounter = 1
-        val resultAsUShoert: ArrayList<UShort> = ArrayList()
         var resultAsByteArray: ByteArray = byteArrayOf()
-        val db = DatabaseHelper(this)
-        val publicKey = mViewModel.getServerPubKey()
-        val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.NO_WRAP)
 
-        // TODO: sort
-        for (int in contacs) {
-            resultAsUShoert.add(int.toUShort())
+        val resultAsUnsignedShort: ArrayList<UShort> = ArrayList()
+        val db = DatabaseHelper(this)
+        val publicKeyFromServer = mViewModel.getServerPubKey()
+        val publicKeyFromServerDecoded: ByteArray = Base64.decode(publicKeyFromServer, Base64.NO_WRAP)
+
+        for (int in contactsAsInteger) {
+            resultAsUnsignedShort.add(int.toUShort())
         }
 
-        for (byteAsShort in resultAsUShoert) {
+        for (byteAsShort in resultAsUnsignedShort) {
            resultAsByteArray += (byteAsShort.toByte())
 
             if (byteCounter == 8) {
-                Log.d("SCANNER_RESULT", "Resulted ByteArray   "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
-                Log.d("SCANNER_RESULT", "This users ByteArray "  + Base64.encodeToString(mViewModel.getPublicKeyByteArray(), Base64.NO_WRAP))
-                Log.d("SCANNER_RESULT", "For Comparison: fetched $resultAsUShoert")
+                Log.d(SCANNER_TAG, "Fetched UUID : "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
 
-                val uuidBase64: String = Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
+                val fetchedUUIDDecoded: String = Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
 
-                if (!contactsUUIDs!!.containsKey(uuidBase64)) {
-                    contactsUUIDs!![uuidBase64] = System.currentTimeMillis().toString()
-                    val cookie = Cookie(uuidBase64, System.currentTimeMillis())
-                    db.insertDataSet(cookie, publicKeyDecoded)
+                if (!contactsUUIDs!!.containsKey(fetchedUUIDDecoded)) {
+                    contactsUUIDs!![fetchedUUIDDecoded] = System.currentTimeMillis().toString()
+                    val cookie = Cookie(fetchedUUIDDecoded, System.currentTimeMillis())
+                    db.insertDataSet(cookie, publicKeyFromServerDecoded)
                 }
             }
 
@@ -353,7 +352,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      */
 
     private fun setBeaconTransmitter(major: String?, minor: String?, counter: Int) {
-        // TODO Change UUID to one of the Server ones
         val uuids: JSONObject = mViewModel.getUUIDs()
 
         if (!uuids.isNull("0") && counter < 5) {
@@ -380,26 +378,26 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val arrayOfBytesAsShort: ArrayList<UShort> = ArrayList()
 
         var beaconCounter = 0
-        var minor: String
-        var major: String
 
         hashedPubKey.map { byte ->
             arrayOfBytesAsShort.add(byte.toUShort())
         }
 
-        // Should create 4 Beacons
         for (i in 1..arrayOfBytesAsShort.size) {
             if (i % 2 == 0) {
-                minor = arrayOfBytesAsShort[i - 2].toString()
-                major = arrayOfBytesAsShort[i - 1].toString()
 
-                setBeaconTransmitter(minor, major, beaconCounter)
+                setBeaconTransmitter(
+                    arrayOfBytesAsShort[i - 2].toString(),
+                    arrayOfBytesAsShort[i - 1].toString(),
+                    beaconCounter
+                )
+
                 beaconCounter++
             }
         }
 
         Log.i(
-            "BEACON_SPAWNER_SCANNER",
+            ADVERTISING_TAG,
             "Spawned $beaconCounter Beacons representing $arrayOfBytesAsShort "
         )
     }
