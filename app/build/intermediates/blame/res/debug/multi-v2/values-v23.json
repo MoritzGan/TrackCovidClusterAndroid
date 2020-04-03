@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v23\\values-v23.xml",
+            "outputFile": "/Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Mo\\.gradle\\caches\\transforms-2\\files-2.1\\d74d9d65a8447f85240428fae86cff99\\work-runtime-2.3.4\\res\\values-v23\\values-v23.xml",
+                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/d74d9d65a8447f85240428fae86cff99/work-runtime-2.3.4/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Mo\\.gradle\\caches\\transforms-2\\files-2.1\\153c093b872ce71fbc12cfe7b8584cdf\\appcompat-1.1.0\\res\\values-v23\\values-v23.xml",
+                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/153c093b872ce71fbc12cfe7b8584cdf/appcompat-1.1.0/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,37,41,42,43,44",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",

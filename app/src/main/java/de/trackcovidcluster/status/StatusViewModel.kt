@@ -19,7 +19,7 @@ class StatusViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val GET_STATUS_TAG = "GET_STATUS"
+        private const val GET_STATUS_TAG = "GET_STATUS1"
     }
 
     fun getStatus() {

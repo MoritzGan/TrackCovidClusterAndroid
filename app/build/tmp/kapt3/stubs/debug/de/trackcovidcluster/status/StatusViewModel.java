@@ -6,7 +6,7 @@ import java.lang.System;
 public final class StatusViewModel extends androidx.lifecycle.ViewModel {
     private final de.trackcovidcluster.source.IStatusStorageSource mStatusStorageSource = null;
     private final de.trackcovidcluster.source.IUserStorageSource mUserStorageSource = null;
-    private static final java.lang.String GET_STATUS_TAG = "GET_STATUS";
+    private static final java.lang.String GET_STATUS_TAG = "GET_STATUS1";
     public static final de.trackcovidcluster.status.StatusViewModel.Companion Companion = null;
     
     public final void getStatus() {
