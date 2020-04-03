@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-watch-v21/values-watch-v21.xml",
+            "outputFile": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-watch-v21\\values-watch-v21.xml",
             "map": [
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/153c093b872ce71fbc12cfe7b8584cdf/appcompat-1.1.0/res/values-watch-v21/values-watch-v21.xml",
+                    "source": "C:\\Users\\Mo\\.gradle\\caches\\transforms-2\\files-2.1\\153c093b872ce71fbc12cfe7b8584cdf\\appcompat-1.1.0\\res\\values-watch-v21\\values-watch-v21.xml",
                     "from": {
                         "startLines": "2,6,10",
                         "startColumns": "4,4,4",

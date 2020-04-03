@@ -1093,7 +1093,6 @@ string future_status_subtitle_2
 string infected_text
 string introText2
 string introTitle2
-string intro_text
 string intro_text2
 string intro_title
 string maybe_infected

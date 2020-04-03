@@ -12,6 +12,13 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
     fun getStatus(body: Request): Observable<Answer> {
         return trackCovidAPI.getStatusFromAPI(body = body)
             .map { response ->
+                Log.d(
+                    "Cluster Submission: ",
+                    "-----------------------------------------\n" +
+                            " Server Answer: " + response.answer.toString() + "\n" +
+                            " Encounters   : " + response.answer.encounters.toString() + "\n" +
+                            " \n            --------------------------------------------------"
+                )
                 response.answer
             }
     }

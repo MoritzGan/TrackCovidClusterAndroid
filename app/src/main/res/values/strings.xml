@@ -1,57 +1,8 @@
 <resources>
     <string name="app_name">TrackCovidCluster</string>
-    <string name="start">Macht micht und rette Leben</string>
+    <string name="start">Ja, ich möchte mithelfen!</string>
     <string name="intro_title">Wieso mitmachen?</string>
-    <string name="anonymous">Das mitmchen ist zu jeder Zeit Anonym</string>
-    <string name="intro_text">Thomas muss an diesem Tag für
-seinen wöchentlichen Einkauf das
-Haus verlassen.\n
-Beim Verlassen der Wohnung trifft er
-den Briefträger an der Haustür.
-Auf dem Weg holt er sich sein
-Frühstück in der Bäckerei und an der
-Ampel muss er kurz mit weiteren
-Personen warten. Danach wird er
-beim Überqueren der Straße von
-Fahrradfahrern überholt.
-Im Supermarkt begegnet er weiteren
-Personen.\n
-Wieder zuhause angekommen trifft
-Thomas eine Nachbarin im
-Waschkeller des Hauses.
-Alleine an diesem kurzen Tag hat
-Thomas 20 Personen in einem
-Abstand von 2 Metern getroffen.\n\n
-
-Eine Woche später hat Thomas
-grippeartige Symptome und bekommt
-hohes Fieber. Sein Corona Test ist
-positiv. In seiner App erfasst Thomas,
-das Testergebnis.\n
-Alle Kontaktpersonen seit diesem
-Samstag erhalten daraufhin durch
-ihre TrackCovidCluster App eine
-anonymisierte Warnung und einen
-verschlüsselten Code, dass sie mit
-einer Corona-infizierten Person im
-Kontakt waren.\n
-Die Warnung und der Code lässt
-keine Rückschlüsse zu, wann und wo
-sie einer infizierten Person begegnet
-sind. Sie wissen lediglich, dass sie
-das Risiko haben, ebenfalls infiziert
-worden zu sein.\n
-Mit dem erhaltenen Code können sie
-sich bei der Gesundheitsbehörde
-melden und einen Test durchführen
-oder sicherheitshalber in häusliche
-Quarantäne gehen.\n\n
-
-Die Anonymität von Thomas ist zu
-jedem Zeitpunkt geschützt. Trotzdem
-werden Kontaktpersonen
-schnellstmöglich über ein
-Ansteckungsrisiko informiert.</string>
+    <string name="anonymous">Das mitmachen ist zu jeder Zeit anonym!</string>
     <string name="test_positive">Positiv getestet worden?</string>
     <string name="not_infected">nicht infiziert</string>
     <string name="maybe_infected">möglicherweise infiziert</string>
@@ -59,18 +10,19 @@ Ansteckungsrisiko informiert.</string>
     <string name="status">Status</string>
     <string name="status_body">Hier wird dir der Status angezeigt. Falls sich eine Person als Infiziert meldet, die sich in den letzten Tagen in deiner unmittelbaren Nähe auffand, wirst du benachrichtigt.</string>
     <string name="change_status">Status ändern</string>
-    <string name="change_status_body">Falls du positiv auf das Virus getestet bist, werden alle Menschen Anonym benachrichtigt die sich in deine Nähe in den letzten 14 Tagen aufhielten.</string>
+    <string name="change_status_body">Falls du positiv auf das Virus getestet wurden bist, werden alle Menschen Anonym benachrichtigt die sich in den letzten 14 Tagen in deiner Nähe aufhielten.</string>
     <string name="future_status_subtitle_1">Dein Status wird sich zu</string>
     <string name="future_status_subtitle_2">ändern!</string>
     <string name="save_lives">Ja, ich möchte Leben retten</string>
     <string name="change_status_reminder">Es ist nicht notwendig seinen Status wieder zu ändern. Nach der errechneten Zeit wird dein Status wieder automatisch zurückgesetzt. Falls es ein versehen war kannst du es hier dennoch tun</string>
-    <string name="report">Jemand hat sich positiv testen lassen! Melde dich bei deinem Gesundheitsamt unter der Nummer: 0049 0431 9999999</string>
+    <string name="report">Jemand hat sich positiv testen lassen! Bei Fragen, melden dich bei deinem Hausarzt oder unter: 116117</string>
     <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
     <string name="notification_title">You might be infected</string>
-    <string name="notification_body">You were in contact with someone who tested positive</string>
-    <string name="intro_text2">Erhalte frühzeitig eine Warnung, falls du mit einer Infiziert gemeldeten Person in Kontakt getreten bist. Damit hast du die Möglichkeit deine Liebsten vor einer Ansteckung zu bewahren, oder im Falle einer eigenen Infektion dies Anderen Leuten zu ermöglichen.</string>
-    <string name="change_status_to_infected">ändern. Deine Kontakte der letzten 14 Tage werden ANONYM benachrichtigt.</string>
+    <string name="notification_body">Du hattest Kontakt zu einer jetzt Infizierten Person!</string>
+    <string name="intro_text2">Erhalte frühzeitig eine Warnung, falls du mit einer Infiziert gemeldeten Person in Kontakt getreten bist.
+        Damit hast du die Möglichkeit deine Liebsten vor einer Ansteckung zu bewahren, oder im Falle einer eigenen Infektion dies Anderen Leuten zu ermöglichen.</string>
+    <string name="change_status_to_infected">ändern.
+        Deine Kontakte der letzten 14 Tage werden ANONYM benachrichtigt.</string>
     <string name="introText2">Unser Tracking funktioniert über Bluetooth Low Energy. Damit ihr Smartphone diese Technik nutzen kann, benötigt es auch Zugriff auf den Standort. Dieser wird jedoch nicht abgefragt oder aufgezeichnet.</string>
-    <string name="introTitle2">Warum braucht die App GPS, wenn kein Standort aufgezeichnet wird?</string>
-
+    <string name="introTitle2">Warum braucht die App einen Standortzugriff, obwohl kein Standort aufgezeichnet wird?</string>
 </resources>
