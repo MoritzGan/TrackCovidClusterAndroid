@@ -42,12 +42,12 @@ class GetStatusWorker @Inject constructor(
                 uuid = mUserStorageSource.getUserUUID()
             )
         ).firstOrError()
-            .flatMap { encounters ->
-                if (encounters.toString().isNotEmpty()) {
+            .flatMap { answer ->
+                if (answer.encounters.toString().isNotEmpty()) {
                     if (!isForeground()) {
                         sendPushNotification()
                     }
-                    mStatusStorageSource.setContactTime(time = encounters.toString().last().toInt())
+                    mStatusStorageSource.setContactTime(time = answer.encounters.toString().last().toInt())
                     applicationContext.sendBroadcast(
                         Intent(
                             "android.intent.action.MAYBE_INFECTED"

@@ -2,16 +2,17 @@ package de.trackcovidcluster.data.network
 
 import android.util.Log
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
+import de.trackcovidcluster.data.entities.Answer
 import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.data.entities.RequestClusters
 import io.reactivex.Observable
 
 class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
-    fun getStatus(body: Request): Observable<List<String>?> {
+    fun getStatus(body: Request): Observable<Answer> {
         return trackCovidAPI.getStatusFromAPI(body = body)
             .map { response ->
-                response.answer.encounters
+                response.answer
             }
     }
 
