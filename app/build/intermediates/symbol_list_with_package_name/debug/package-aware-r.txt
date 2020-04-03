@@ -838,7 +838,6 @@ id content
 id contentPanel
 id currentStatusContainer
 id currentStatusImage
-id currentStatusImageContainer
 id currentStatusText
 id custom
 id customPanel

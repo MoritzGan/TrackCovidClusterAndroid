@@ -1,4 +1,0 @@
-# Referenced at /Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml:39
--keep class androidx.core.app.CoreComponentFactory { <init>(); }
-# Referenced at /Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml:39
--keep class de.trackcovidcluster.TrackCovidClusterApplication { <init>(); }

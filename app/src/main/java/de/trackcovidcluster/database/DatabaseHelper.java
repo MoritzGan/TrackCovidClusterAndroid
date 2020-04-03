@@ -17,7 +17,6 @@ import org.libsodium.jni.Sodium;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.trackcovidcluster.changeStatus.ReturnCookiesCallback;
 import de.trackcovidcluster.models.Cookie;
 
 import static de.trackcovidcluster.database.LocationData.TABLE_NAME;
@@ -52,31 +51,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
 
-    public long insertDataSet(Cookie cookie, String pkey) throws JSONException {
+    public long insertDataSet(Cookie cookie, byte[] pkey) throws JSONException {
 
         SQLiteDatabase db = this.getWritableDatabase();
         JSONObject jsonString = new JSONObject();
         ContentValues values = new ContentValues();
 
         jsonString.put("UUID", cookie.getHashedUUID());
-        jsonString.put("Timestamp", cookie.getTimestamp());
-
-        byte[] bytes = new byte[jsonString.toString().getBytes().length];
-        byte[] jsonInBytes = jsonString.toString().getBytes();
+        jsonString.put("Timestamp", cookie.getTimestamp() / 1000);
 
         NaCl.sodium();
+
+        byte[] jsonInBytes = jsonString.toString().getBytes();
+        byte[] bytes = new byte[Sodium.crypto_box_sealbytes() + jsonInBytes.length];
+
         Sodium.crypto_box_seal(
                 bytes,
                 jsonInBytes,
                 jsonInBytes.length,
-                pkey.getBytes()
+                pkey
         );
+        String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
-        String decoded = new String(Base64.encode(bytes, Base64.DEFAULT));
-        String substring = decoded.substring(0, decoded.length() - 1);
-        String subsubstring = substring.replace("\n","");
-
-        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, subsubstring);
+        values.put(LocationData.COLUMN_ENCRYPTED_COOKIE, encoded);
         values.put(LocationData.COLUMN_TIME, cookie.getTimestamp());
 
         long id = db.insert(TABLE_NAME, null, values);
@@ -84,7 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         Log.d("SQL_HELPER", "\n" +
-                " ADDED NEW DATASET TO LOCAL DB!\n" + decoded + " IN ROW NUMBER " + id);
+                " ADDED NEW DATASET TO LOCAL DB!\n" + jsonString + " IN ROW NUMBER " + id + "\n");
 
         return id;
     }
@@ -92,7 +89,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Returns all Cookies from database
      *
-     * @return
      */
 
     public List<String> getCookieBundle() {
@@ -106,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 sensorData.add(String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
-                Log.d("Database", " " + String.valueOf(cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE))));
+                Log.d("Database", " " + cursor.getString(cursor.getColumnIndex(LocationData.COLUMN_ENCRYPTED_COOKIE)));
             } while (cursor.moveToNext());
         }
 

@@ -1,7 +1,6 @@
 package de.trackcovidcluster.data.network
 
 import android.util.Log
-import com.google.gson.JsonObject
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
 import de.trackcovidcluster.data.entities.RequestClusters
@@ -26,7 +25,7 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
             }
     }
 
-    fun getUUIDs() : Observable<List<String>?> {
+    fun getUUIDs(): Observable<List<String>?> {
         val body = Request(
             command = "UUIDPoll"
         )
@@ -38,7 +37,7 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
     // TODO: Debug the sending process. Does not work
 
-    fun sendBundle(userUUID: String?, clusters: List<String?>) : Observable<String> {
+    fun sendBundle(userUUID: String?, clusters: List<String?>): Observable<String> {
         val body = RequestClusters(
             command = "ClusterSubmission",
             clusters = clusters,
@@ -47,14 +46,17 @@ class NetworkCall(private val trackCovidAPI: TrackCovidClusterAPI) {
 
         return trackCovidAPI.sendBundle(body = body)
             .map { response ->
-                Log.d("Cluster Submission: ",
+                Log.d(
+                    "Cluster Submission: ",
                     "-----------------------------------------\n" +
-                        " Server Answer: "  + response.answer.toString() + "\n" +
-                        " Clusters   : "      + response.answer.encounters.toString() + "\n" +
-                        " Response   : "      + response.toString() +
-                        " Body o Req : "      + body.toString() +
-                        " \n            --------------------------------------------------")
-                response.answer.encounters.toString()
+                            " Server Answer: " + response.answer.toString() + "\n" +
+                            " Clusters   : " + response.answer.encounters.toString() + "\n" +
+                            " Response   : " + response.toString() +
+                            " Body o Req : " + body.toString() +
+                            " \n            --------------------------------------------------"
+                )
+
+                response.answer.status.toString()
             }
     }
 }

@@ -1,17 +1,15 @@
 package de.trackcovidcluster.status
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
-import com.jakewharton.rxrelay2.PublishRelay
 import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
-import io.reactivex.Observable
 import org.altbeacon.beacon.Beacon
 import org.bouncycastle.jcajce.provider.digest.SHA3
 import org.json.JSONObject
-import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -60,24 +58,24 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
-    fun getPublicKeyInInt(): BigInteger {
+    fun getPublicKeyByteArray(): ByteArray {
+        val testArray = ByteArray(8)
 
-        mUserStorageSource.getUserPublicKey()?.let { publicKey ->
+        mUserStorageSource.getUserUUID()?.let { publicKey ->
 
             val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
-            val digest = digestSHA3.digest(publicKey.toByteArray())
+            val digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
 
-            var hex = ""
-            digest.map {
-                hex += String.format("%02X", it)
+            for (i in 0..7) {
+                testArray[i] = digest[i]
             }
 
-            val result: String = hex.substring(32)
-            Log.d("RESULT IN HEX?", result)
-            return BigInteger(result, 16)
+            Log.d("RESULT UR PUBKEY", " Array as Base 64: " + Base64.encode(testArray, Base64.NO_WRAP))
+
+            return testArray
         }
 
-        return BigInteger("0")
+        return testArray
     }
 
     fun getUUIDs(): JSONObject {
@@ -90,7 +88,7 @@ class StatusViewModel @Inject constructor(
         return jsonRep
     }
 
-    fun getServerPubKey(): String {
-        return mUserStorageSource.getUserPublicKey().toString()
+    fun getServerPubKey(): String? {
+        return mUserStorageSource.getUserPublicKey()
     }
 }
