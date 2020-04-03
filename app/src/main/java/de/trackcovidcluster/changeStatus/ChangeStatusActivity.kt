@@ -9,10 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.database.DatabaseHelper
-import de.trackcovidcluster.status.Constants.DEFAULT
-import de.trackcovidcluster.status.Constants.INFECTED
-import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
-import de.trackcovidcluster.status.Constants.STATUS_KEY
+import de.trackcovidcluster.Constants.DEFAULT
+import de.trackcovidcluster.Constants.INFECTED
+import de.trackcovidcluster.Constants.MAYBE_INFECTED
+import de.trackcovidcluster.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import kotlinx.android.synthetic.main.activity_change_status.*
 import javax.inject.Inject
@@ -46,6 +46,7 @@ class ChangeStatusActivity : AppCompatActivity() {
             mViewModel.sendStatus(encounters as ArrayList<String?>) // Send the encrypted cookies to the server
             db.delteAllCookies()                                    // Delete the local encounters
 
+            mViewModel.stopWorker()
             startActivity(
                 Intent(this, StatusActivity::class.java)
                     .putExtra(

@@ -1,5 +1,6 @@
 package de.trackcovidcluster.status
 
+import android.Manifest
 import android.app.AlertDialog
 import android.app.Notification.Builder
 import android.app.PendingIntent
@@ -20,16 +21,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.models.Cookie
-import de.trackcovidcluster.status.Constants.DEFAULT
-import de.trackcovidcluster.status.Constants.INFECTED
-import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
-import de.trackcovidcluster.status.Constants.STATUS_API_KEY
-import de.trackcovidcluster.status.Constants.STATUS_KEY
+import de.trackcovidcluster.Constants.DEFAULT
+import de.trackcovidcluster.Constants.INFECTED
+import de.trackcovidcluster.Constants.MAYBE_INFECTED
+import de.trackcovidcluster.Constants.STATUS_API_KEY
+import de.trackcovidcluster.Constants.STATUS_KEY
 import kotlinx.android.synthetic.main.activity_status.*
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver
@@ -64,6 +67,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mReportTopText: TextView
     private lateinit var mPositiveButton: Button
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -89,6 +93,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroundPowerSaver = BackgroundPowerSaver(this)
+
+        TedPermission.with(this)
+            .setPermissionListener(permissionlistener)
+            .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+            .setPermissions(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.BLUETOOTH_ADMIN
+            )
+            .check();
 
         if (!mBeaconManager.isAnyConsumerBound) {
             val intent = Intent(this, this::class.java)
@@ -122,8 +136,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             statusApi != DEFAULT -> updateStatus(status = statusApi)
             status != DEFAULT -> updateStatus(status = status)
             else -> {
-                val currentStatus = mViewModel.getStatusFromSource()
-                updateStatus(status = currentStatus)
+                updateStatus(status = mViewModel.getStatusFromSource())
             }
         }
 
@@ -165,6 +178,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onResume() {
         super.onResume()
@@ -196,9 +210,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val db = DatabaseHelper(this)
         mStatusTextView.text = "Clustergröße: ${db.profilesCount}"
 
-        val intentFilter = IntentFilter(
-            "android.intent.action.MAYBE_INFECTED"
-        )
+        val intentFilter = IntentFilter("android.intent.action.MAYBE_INFECTED")
 
         mReceiver = object : BroadcastReceiver() {
             override fun onReceive(
@@ -214,12 +226,16 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         this.registerReceiver(mReceiver, intentFilter)
     }
 
+
+    @ExperimentalStdlibApi
     override fun onPause() {
         super.onPause()
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
+        mBeaconManager.unbind(this)
     }
 
+    @ExperimentalStdlibApi
     override fun onDestroy() {
         super.onDestroy()
         if (applicationContext != null) startAdvertising()
@@ -235,6 +251,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * BLE Functions for scanning and creating the encrypted payload
      */
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onBeaconServiceConnect() {
 
@@ -319,6 +336,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     private fun createPayload(contactsAsInteger: ArrayList<Int>) {
         var byteCounter = 1
@@ -402,6 +420,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     private fun startAdvertising() {
 
@@ -463,4 +482,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             mReportBottomText.visibility = View.INVISIBLE
         }
     }
+
+    var permissionlistener: PermissionListener = object : PermissionListener {
+        override fun onPermissionGranted() {
+
+        }
+
+        override fun onPermissionDenied(deniedPermissions: List<String?>) {
+        }
+    }
+
 }
