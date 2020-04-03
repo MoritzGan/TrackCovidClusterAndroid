@@ -18,11 +18,11 @@ class MainActivityViewModel @Inject constructor(
         !mUserStorageSource.isUserExisting()
 
     fun createUser() {
-        mUserStorageSource.createUserKeys()
+        mUserStorageSource.generateAndSaveKeyPair()
         getPublicKey()
     }
 
-    fun generateKeyPair() = mUserStorageSource.createUserKeys()
+    fun generateKeyPair() = mUserStorageSource.generateAndSaveKeyPair()
 
     fun getUUIDsFromServer() {
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())

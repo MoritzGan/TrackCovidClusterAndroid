@@ -39,15 +39,18 @@ class GetStatusWorker @Inject constructor(
         return networkSource.getStatus(
             body = Request(
                 command = "StatePoll",
-                uuid = mUserStorageSource.getUserUUID()
+                uuid = mUserStorageSource.getBase64UserPublicKey()
             )
         ).firstOrError()
             .flatMap { encounters ->
-                if (encounters.toString().isNotEmpty()) {
+                if (encounters!!.isNotEmpty()) {
+
                     if (!isForeground()) {
                         sendPushNotification()
                     }
+
                     mStatusStorageSource.setContactTime(time = encounters.toString().last().toInt())
+
                     applicationContext.sendBroadcast(
                         Intent(
                             "android.intent.action.MAYBE_INFECTED"
@@ -57,6 +60,7 @@ class GetStatusWorker @Inject constructor(
                         )
                     )
                 }
+                Log.i("WORKER", " Answer from Server: $encounters")
                 Single.just(Result.success())
             }
             .onErrorResumeNext {

@@ -26,42 +26,6 @@ class MainActivity : AppCompatActivity() {
     private val PERMISSION_REQUEST_FINE_LOCATION = 1
     private val PERMISSION_REQUEST_BACKGROUND_LOCATION = 2
 
-    private fun onRequestPermissionsResult(
-        statusActivity: StatusActivity, requestCode: Int,
-        permissions: Array<String?>?, grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PERMISSION_REQUEST_FINE_LOCATION -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("TAG", "fine location permission granted")
-                } else {
-                    val builder =
-                        AlertDialog.Builder(statusActivity)
-                    builder.setTitle("Functionality limited")
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
-                    builder.setPositiveButton(android.R.string.ok, null)
-                    builder.setOnDismissListener { }
-                    builder.show()
-                }
-                return
-            }
-            PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("MainActivity", "background location permission granted")
-                } else {
-                    val builder =
-                        AlertDialog.Builder(statusActivity)
-                    builder.setTitle("Functionality limited")
-                    builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
-                    builder.setPositiveButton(android.R.string.ok, null)
-                    builder.setOnDismissListener { }
-                    builder.show()
-                }
-                return
-            }
-        }
-    }
-
     // region members
     private lateinit var mViewModel: MainActivityViewModel
     @Inject
@@ -77,6 +41,34 @@ class MainActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProviders.of(this, mViewModelFactory).get(MainActivityViewModel::class.java)
         
+        checkPermissions()
+        mViewModel.getUUIDsFromServer()
+
+        Handler().postDelayed({
+            // Log User in
+            if (mViewModel.isFirstTimeUser()) {
+                mainScreen.visibility = View.VISIBLE
+                startButtonTop.setOnClickListener {
+
+                    mViewModel.createUser()
+                    mViewModel.generateKeyPair()
+
+                    startActivity(
+                        Intent(this, StatusActivity::class.java)
+                    )
+                    finish()
+                }
+            } else {
+                startActivity(
+                    Intent(this, StatusActivity::class.java)
+                )
+                finish()
+            }
+        }, 5000)
+    }
+
+    private fun checkPermissions() {
+
         val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
@@ -87,7 +79,6 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(enableBtIntent, 100)
         }
 
-        mViewModel.getUUIDsFromServer()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -142,29 +133,40 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Handler().postDelayed({
-            // Log User in
-            if (mViewModel.isFirstTimeUser()) {
-                mainScreen.visibility = View.VISIBLE
-                startButtonTop.setOnClickListener {
-
-                    mViewModel.createUser()
-                    mViewModel.generateKeyPair()
-
-                    startActivity(
-                        Intent(this, StatusActivity::class.java)
-                    )
-                    finish()
+        fun onRequestPermissionsResult(
+            statusActivity: StatusActivity, requestCode: Int,
+            permissions: Array<String?>?, grantResults: IntArray
+        ) {
+            when (requestCode) {
+                PERMISSION_REQUEST_FINE_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d("TAG", "fine location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
                 }
-            } else {
-                startActivity(
-                    Intent(this, StatusActivity::class.java)
-                )
-                finish()
+                PERMISSION_REQUEST_BACKGROUND_LOCATION -> {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d("MainActivity", "background location permission granted")
+                    } else {
+                        val builder =
+                            AlertDialog.Builder(statusActivity)
+                        builder.setTitle("Functionality limited")
+                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons when in the background.")
+                        builder.setPositiveButton(android.R.string.ok, null)
+                        builder.setOnDismissListener { }
+                        builder.show()
+                    }
+                    return
+                }
             }
-        }, 5000)
-
+        }
     }
-
-
 }

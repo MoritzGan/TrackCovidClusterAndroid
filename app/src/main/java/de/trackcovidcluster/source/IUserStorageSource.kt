@@ -6,15 +6,15 @@ interface IUserStorageSource {
 
     fun isUserExisting(): Boolean
 
-    fun createUserKeys()
+    fun generateAndSaveKeyPair()
 
-    fun getUserPublicKey(): String?
+    fun getServerPublicKey(): String?
 
     fun setPublicKey(publicKey: String)
 
-    fun getUUIDsFromUser(): String?
+    fun getUUIDsFromSharedPreferences(): String?
 
-    fun getUserUUID(): String?
+    fun getBase64UserPublicKey(): String?
 
     fun setUUIDsFromServer(uuidsJson: JSONObject)
 }

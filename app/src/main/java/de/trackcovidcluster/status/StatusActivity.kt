@@ -211,12 +211,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         this.registerReceiver(mReceiver, intentFilter)
     }
 
+    @ExperimentalUnsignedTypes
     override fun onPause() {
         super.onPause()
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
     }
 
+    @ExperimentalUnsignedTypes
     override fun onDestroy() {
         super.onDestroy()
         if (applicationContext != null) startAdvertising()

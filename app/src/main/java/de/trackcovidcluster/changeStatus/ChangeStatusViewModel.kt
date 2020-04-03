@@ -24,7 +24,7 @@ class ChangeStatusViewModel @Inject constructor(
     private fun sendClustersToServer(clusters : List<String?>) {
 
         val networkSource = NetworkCall(trackCovidAPI = TrackCovidClusterAPI.create())
-        val uuid: String? = mUserStorageSource.getUserPublicKey()
+        val uuid: String? = mUserStorageSource.getServerPublicKey()
 
         if(clusters.isNotEmpty()){
             networkSource.sendBundle(uuid, clusters)

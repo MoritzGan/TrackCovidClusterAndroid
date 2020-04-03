@@ -61,7 +61,7 @@ class StatusViewModel @Inject constructor(
     fun getPublicKeyByteArray(): ByteArray {
         val testArray = ByteArray(8)
 
-        mUserStorageSource.getUserUUID()?.let { publicKey ->
+        mUserStorageSource.getBase64UserPublicKey()?.let { publicKey ->
 
             val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
             val digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
@@ -79,7 +79,7 @@ class StatusViewModel @Inject constructor(
     }
 
     fun getUUIDs(): JSONObject {
-        val stringRep = mUserStorageSource.getUUIDsFromUser()
+        val stringRep = mUserStorageSource.getUUIDsFromSharedPreferences()
 
         var jsonRep = JSONObject()
 
@@ -89,6 +89,6 @@ class StatusViewModel @Inject constructor(
     }
 
     fun getServerPubKey(): String? {
-        return mUserStorageSource.getUserPublicKey()
+        return mUserStorageSource.getServerPublicKey()
     }
 }
