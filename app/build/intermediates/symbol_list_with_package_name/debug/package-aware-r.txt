@@ -1090,6 +1090,7 @@ string common_signin_button_text
 string common_signin_button_text_long
 string future_status_subtitle_1
 string future_status_subtitle_2
+string i_tested_positive
 string infected_text
 string introText2
 string introTitle2

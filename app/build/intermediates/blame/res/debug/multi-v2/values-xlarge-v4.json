@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-xlarge-v4/values-xlarge-v4.xml",
+            "outputFile": "C:\\Users\\bri\\Documents\\android\\TrackCovidClusterAndroid\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-xlarge-v4\\values-xlarge-v4.xml",
             "map": [
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/153c093b872ce71fbc12cfe7b8584cdf/appcompat-1.1.0/res/values-xlarge-v4/values-xlarge-v4.xml",
+                    "source": "C:\\Users\\bri\\.gradle\\caches\\transforms-2\\files-2.1\\153c093b872ce71fbc12cfe7b8584cdf\\appcompat-1.1.0\\res\\values-xlarge-v4\\values-xlarge-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7",
                         "startColumns": "4,4,4,4,4,4",

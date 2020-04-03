@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/baznar/development/TrackCovidClusterAndroid/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-es-rUS/values-es-rUS.xml",
+            "outputFile": "C:\\Users\\bri\\Documents\\android\\TrackCovidClusterAndroid\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-es-rUS\\values-es-rUS.xml",
             "map": [
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/c4ad2835fa146deb732b8c5b0e98e5c0/jetified-play-services-basement-17.0.0/res/values-es-rUS/values.xml",
+                    "source": "C:\\Users\\bri\\.gradle\\caches\\transforms-2\\files-2.1\\c4ad2835fa146deb732b8c5b0e98e5c0\\jetified-play-services-basement-17.0.0\\res\\values-es-rUS\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/d4e2c990a93746e8625fbcf721f3c4e7/core-1.2.0/res/values-es-rUS/values-es-rUS.xml",
+                    "source": "C:\\Users\\bri\\.gradle\\caches\\transforms-2\\files-2.1\\d4e2c990a93746e8625fbcf721f3c4e7\\core-1.2.0\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/153c093b872ce71fbc12cfe7b8584cdf/appcompat-1.1.0/res/values-es-rUS/values-es-rUS.xml",
+                    "source": "C:\\Users\\bri\\.gradle\\caches\\transforms-2\\files-2.1\\153c093b872ce71fbc12cfe7b8584cdf\\appcompat-1.1.0\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "/Users/baznar/.gradle/caches/transforms-2/files-2.1/1b00a2123395a4e6761a26bb6de64b15/jetified-play-services-base-17.0.0/res/values-es-rUS/values.xml",
+                    "source": "C:\\Users\\bri\\.gradle\\caches\\transforms-2\\files-2.1\\1b00a2123395a4e6761a26bb6de64b15\\jetified-play-services-base-17.0.0\\res\\values-es-rUS\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

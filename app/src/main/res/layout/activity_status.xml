@@ -70,7 +70,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/infectedContainer"
                 android:layout_width="match_parent"
@@ -128,12 +127,10 @@
                     app:layout_constraintTop_toTopOf="@id/maybeInfectedImage" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/currentStatusContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/maybeInfectedContainer">
 
