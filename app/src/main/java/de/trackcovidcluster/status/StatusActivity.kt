@@ -438,7 +438,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 else -> resources.getString(R.string.not_infected)
             }
 
-        if (status == INFECTED) {
+        if (status == MAYBE_INFECTED) {
             mReportTopText.visibility = View.VISIBLE
             mReportBottomText.visibility = View.VISIBLE
         } else {
