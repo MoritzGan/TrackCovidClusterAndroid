@@ -1,5 +1,7 @@
 package de.trackcovidcluster.status
 
+import android.util.Base64
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import de.trackcovidcluster.source.IStatusStorageSource
@@ -57,16 +59,18 @@ class StatusViewModel @Inject constructor(
     }
 
     fun getPublicKeyByteArray(): ByteArray {
-        val testArray = ByteArray(16)
+        val testArray = ByteArray(8)
 
         mUserStorageSource.getUserUUID()?.let { publicKey ->
 
             val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
             val digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
 
-            for (i in 0..15) {
+            for (i in 0..7) {
                 testArray[i] = digest[i]
             }
+
+            Log.d("RESULT UR PUBKEY", " Array as Base 64: " + Base64.encode(testArray, Base64.NO_WRAP))
 
             return testArray
         }

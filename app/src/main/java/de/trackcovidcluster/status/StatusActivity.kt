@@ -228,23 +228,19 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
         var counter = 0
+        var contactsCounter = 0
+        var receivedBytes: ArrayList<Int> = arrayListOf<Int>()
 
         mBeaconManager.addRangeNotifier { beacons, _ ->
             if (beacons.isNotEmpty()) {
 
-                Log.i(
-                    "Details:", "Found :" + beacons.size +
-                            " Beacons. UUID: " + beacons.iterator().next().id1 +
-                            " in ca distance of " + beacons.iterator().next().distance + " m"
-                )
-
                 for (beacon in beacons) {
-
-                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 5) {
-
-                        contacts!![beacon.id1.toString()] =
-                            beacon.id2.toString() + (beacon.id3).toString()
-
+                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 4) {
+                        // Save the minor and major as seperated bytes
+                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
+                        receivedBytes.add(beacon.id2.toInt())
+                        receivedBytes.add(beacon.id3.toInt())
+                        contactsCounter++
                         mShouldCreatePayload = true
 
                     } else {
@@ -256,9 +252,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 if (mShouldCreatePayload) {
                     Log.d(
                         "Counted as Contact!",
-                        "This is saved as a contact!" + beacons.iterator().next().id1
+                        "This is saved as a contact!" + beacons.iterator().next().id1 +
+                                " Payload " + receivedBytes.toString()
                     )
-                    createPayload(contacts!!)
+                    createPayload(receivedBytes)
                     var db = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
                 }
@@ -301,24 +298,28 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    private fun createPayload(contacs: HashMap<String, String>) {
-        var uuidOfContact: String? = ""
-        var beaconCounter = 0
+    @ExperimentalUnsignedTypes
+    private fun createPayload(contacs: ArrayList<Int>) {
+        var byteCounter = 1
+        val resultAsUShoert: ArrayList<UShort> = ArrayList()
+        var resultAsByteArray: ByteArray = byteArrayOf()
         val db = DatabaseHelper(this)
         val publicKey = mViewModel.getServerPubKey()
         val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.NO_WRAP)
 
-        for (beacon in contacs) {
+        for (int in contacs) {
+            resultAsUShoert.add(int.toUShort())
+        }
 
-            for (char in contacs["434c5553-5445-5254-5241-434b3030303$beaconCounter"].toString()) {
-                uuidOfContact += "" + char
-            }
+        for (byteAsShort in resultAsUShoert) {
+           resultAsByteArray += (byteAsShort.toByte())
 
-            beaconCounter++
+            if (byteCounter == 8) {
+                Log.d("SCANNER_RESULT", "Resulted ByteArray   "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
+                Log.d("SCANNER_RESULT", "This users ByteArray "  + Base64.encodeToString(mViewModel.getPublicKeyByteArray(), Base64.NO_WRAP))
+                Log.d("SCANNER_RESULT", "For Comparison: fetched $resultAsUShoert")
 
-            if (beaconCounter == 4) {
-                val uuidByteArray: ByteArray? = uuidOfContact?.toByteArray()
-                val uuidBase64: String = Base64.encodeToString(uuidByteArray, Base64.NO_WRAP)
+                val uuidBase64: String = Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
 
                 if (!contactsUUIDs!!.containsKey(uuidBase64)) {
                     contactsUUIDs!![uuidBase64] = System.currentTimeMillis().toString()
@@ -326,8 +327,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     db.insertDataSet(cookie, publicKeyDecoded)
                 }
             }
+
+            byteCounter++
         }
     }
+
 
     /**
      * Functions for setting the beacons to Advertise themselves
@@ -368,6 +372,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             arrayOfBytesAsShort.add(byte.toUShort())
         }
 
+        // Should create 4 Beacons
         for (i in 1..arrayOfBytesAsShort.size) {
             if (i % 2 == 0) {
                 minor = arrayOfBytesAsShort[i - 2].toString()
@@ -376,16 +381,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 setBeaconTransmitter(minor, major, beaconCounter)
                 beaconCounter++
             }
-            if (i == arrayOfBytesAsShort.size - 1 && i % 2 != 0) {
-                minor = arrayOfBytesAsShort[i - 2].toString()
-                major = ""
-                setBeaconTransmitter(minor, major, beaconCounter)
-                beaconCounter++
-            }
         }
 
         Log.i(
-            "BEACON_SPAWNER",
+            "BEACON_SPAWNER_SCANNER",
             "Spawned $beaconCounter Beacons representing $arrayOfBytesAsShort "
         )
     }
