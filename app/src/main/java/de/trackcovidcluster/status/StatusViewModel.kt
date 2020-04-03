@@ -8,10 +8,11 @@ import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.source.IUserStorageSource
 import de.trackcovidcluster.worker.GetStatusWorker
 import org.altbeacon.beacon.Beacon
-import org.bouncycastle.jcajce.provider.digest.SHA3
+import org.bouncycastle.crypto.digests.SHA3Digest
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
 
 class StatusViewModel @Inject constructor(
     private val mStatusStorageSource: IStatusStorageSource,
@@ -19,7 +20,7 @@ class StatusViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val GET_STATUS_TAG = "GET_STATUS1"
+        private const val GET_STATUS_TAG = "GET_STATUS2"
     }
 
     fun getStatus() {
@@ -58,24 +59,38 @@ class StatusViewModel @Inject constructor(
             .build()
     }
 
+    @ExperimentalStdlibApi
     fun getPublicKeyByteArray(): ByteArray {
-        val testArray = ByteArray(8)
+        val truncatedPublicKeyHash = ByteArray(8)
 
         mUserStorageSource.getUserUUID()?.let { publicKey ->
 
-            val digestSHA3: SHA3.DigestSHA3 = SHA3.Digest256()
-            val digest: ByteArray = digestSHA3.digest(publicKey.toByteArray())
+            val hash: ByteArray = doSha3(Base64.decode(publicKey.toByteArray(),
+                    Base64.NO_WRAP),
+                SHA3Digest(256),
+                true)
 
-            for (i in 0..7) {
-                testArray[i] = digest[i]
+
+            for (i in 0 .. 7) {
+                truncatedPublicKeyHash[i] = hash[i]
             }
 
-            Log.d("RESULT UR PUBKEY", " Array as Base 64: " + Base64.encode(testArray, Base64.NO_WRAP))
+            Log.d("RESULT UR PUBKEY", " Array as Base 64: " + Base64.encodeToString(truncatedPublicKeyHash, Base64.NO_WRAP))
 
-            return testArray
+            return truncatedPublicKeyHash
         }
 
-        return testArray
+        return truncatedPublicKeyHash
+    }
+
+    private fun doSha3(message: ByteArray, digest: SHA3Digest, bouncyencoder: Boolean
+    ): ByteArray {
+        val hash = ByteArray(digest.digestSize)
+        if (message.size != 0) {
+            digest.update(message, 0, message.size)
+        }
+        digest.doFinal(hash, 0)
+        return hash
     }
 
     fun getUUIDs(): JSONObject {

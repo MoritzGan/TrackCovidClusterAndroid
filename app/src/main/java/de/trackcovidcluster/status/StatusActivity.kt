@@ -1,5 +1,6 @@
 package de.trackcovidcluster.status
 
+import android.Manifest
 import android.app.AlertDialog
 import android.app.Notification.Builder
 import android.app.PendingIntent
@@ -12,7 +13,6 @@ import android.os.Handler
 import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
-import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,6 +20,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
@@ -64,6 +66,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mReportBottomText: TextView
     private lateinit var mReportTopText: TextView
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) // Dagger
@@ -88,6 +91,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroundPowerSaver = BackgroundPowerSaver(this)
+
+        TedPermission.with(this)
+            .setPermissionListener(permissionlistener)
+            .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+            .setPermissions(Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_ADMIN)
+            .check();
 
         if (!mBeaconManager.isAnyConsumerBound) {
             val intent = Intent(this, this::class.java)
@@ -164,6 +173,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onResume() {
         super.onResume()
@@ -213,12 +223,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         this.registerReceiver(mReceiver, intentFilter)
     }
 
+    @ExperimentalStdlibApi
     override fun onPause() {
         super.onPause()
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
+        mBeaconManager.unbind(this)
     }
 
+    @ExperimentalStdlibApi
     override fun onDestroy() {
         super.onDestroy()
         if (applicationContext != null) startAdvertising()
@@ -233,6 +246,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
      * BLE Functions for scanning and creating the encrypted payload
      */
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onBeaconServiceConnect() {
 
@@ -317,6 +331,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     private fun createPayload(contactsAsInteger: ArrayList<Int>) {
         var byteCounter = 1
@@ -389,6 +404,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     private fun startAdvertising() {
 
@@ -444,6 +460,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         } else {
             mReportTopText.visibility = View.INVISIBLE
             mReportBottomText.visibility = View.INVISIBLE
+        }
+    }
+
+    var permissionlistener: PermissionListener = object : PermissionListener {
+        override fun onPermissionGranted() {
+
+        }
+
+        override fun onPermissionDenied(deniedPermissions: List<String?>) {
         }
     }
 }
