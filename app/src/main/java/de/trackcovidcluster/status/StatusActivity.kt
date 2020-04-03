@@ -232,7 +232,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         super.onPause()
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
-        mBeaconManager.unbind(this)
     }
 
     @ExperimentalStdlibApi
