@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
-import kotlin.collections.*
 import de.trackcovidcluster.R
 import de.trackcovidcluster.data.api.TrackCovidClusterAPI
 import de.trackcovidcluster.data.entities.Request
@@ -20,8 +19,10 @@ import de.trackcovidcluster.data.network.NetworkCall
 import de.trackcovidcluster.di.IChildRxWorkerFactory
 import de.trackcovidcluster.source.IStatusStorageSource
 import de.trackcovidcluster.source.IUserStorageSource
-import de.trackcovidcluster.status.Constants
-import de.trackcovidcluster.status.Constants.PUSH_NOTIFICATION_CHANNEL
+import de.trackcovidcluster.Constants.MAYBE_INFECTED
+import de.trackcovidcluster.Constants.PUSH_NOTIFICATION_CHANNEL
+import de.trackcovidcluster.Constants.STATUS_API_KEY
+import de.trackcovidcluster.Constants.STATUS_KEY
 import de.trackcovidcluster.status.StatusActivity
 import io.reactivex.Single
 import javax.inject.Inject
@@ -52,8 +53,8 @@ class GetStatusWorker @Inject constructor(
                         Intent(
                             "android.intent.action.MAYBE_INFECTED"
                         ).putExtra(
-                            Constants.STATUS_KEY,
-                            Constants.MAYBE_INFECTED
+                            STATUS_API_KEY,
+                            MAYBE_INFECTED
                         )
                     )
                 }
@@ -70,13 +71,18 @@ class GetStatusWorker @Inject constructor(
         val statusActivity = Intent(applicationContext, StatusActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             putExtra(
-                Constants.STATUS_KEY,
-                Constants.MAYBE_INFECTED
+                STATUS_KEY,
+                MAYBE_INFECTED
             )
         }
 
         val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(applicationContext, 0, statusActivity, 0)
+            PendingIntent.getActivity(
+                applicationContext,
+                0,
+                statusActivity,
+                PendingIntent.FLAG_ONE_SHOT
+            )
 
         val builder =
             NotificationCompat.Builder(applicationContext, PUSH_NOTIFICATION_CHANNEL)
@@ -85,6 +91,7 @@ class GetStatusWorker @Inject constructor(
                 .setContentText(applicationContext.getString(R.string.notification_body))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             // notificationId is a unique int for each notification that you must define
@@ -96,8 +103,8 @@ class GetStatusWorker @Inject constructor(
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "TrackCovidCluster - Infection Risk"
-            val descriptionText = "Notify in case you were in cotact with someone who is infected"
+            val name = "TrackCovidCluster - Infektionrisiko"
+            val descriptionText = "Infektionrisiko"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(PUSH_NOTIFICATION_CHANNEL, name, importance).apply {
                 description = descriptionText

@@ -1,7 +1,7 @@
 package de.trackcovidcluster.source
 
 import android.content.SharedPreferences
-import de.trackcovidcluster.status.Constants
+import de.trackcovidcluster.Constants
 import javax.inject.Inject
 
 class StatusStorageSource @Inject constructor(
