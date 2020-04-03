@@ -34,7 +34,6 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver
 import org.json.JSONObject
 import javax.inject.Inject
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
@@ -191,7 +190,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
 
         val db = DatabaseHelper(this)
-        mStatusTextView.text = "Clustergröße: " + db.profilesCount
+        mStatusTextView.text = "Clustergröße: ${db.profilesCount}"
 
         val intentFilter = IntentFilter(
             "android.intent.action.MAYBE_INFECTED"
