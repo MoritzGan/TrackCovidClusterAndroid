@@ -8,4 +8,4 @@ To secure that your identity and privacy are protected at all times. The app doe
 If one of the users is infected, each contact person from the last two weeks will be notified. Without personal data and references.
 
 # Backend/ Server Repository
-[Server Repository on GitHub](https://www.google.com "Backend")
+[Server Repository on GitHub](https://github.com/kuhlmannmarkus/diseasetrack "Backend")
