@@ -42,7 +42,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
     private var uuids: JSONObject? = null
-    private var contacts: HashMap<String, String>? = null
+    private var contacts: HashMap<String, Beacon>? = null
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
@@ -227,7 +227,9 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onBeaconServiceConnect() {
         mBeaconManager.removeAllRangeNotifiers()
+        val uuidProt = "434c5553-5445-5254-5241-434b3030303"
         var counter = 0
+        var newBeaconFound = false
         var contactsCounter = 0
         var receivedBytes: ArrayList<Int> = arrayListOf<Int>()
 
@@ -235,19 +237,30 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             if (beacons.isNotEmpty()) {
 
                 for (beacon in beacons) {
-                    if (!contacts!!.containsKey(beacon.id1.toString()) && beacon.distance < 2.0 && beacons.size == 4) {
-                        // Save the minor and major as seperated bytes
-                        contacts!![beacon.id1.toString()] = beacon.id2.toString() + (beacon.id3).toString()
-                        receivedBytes.add(beacon.id2.toInt())
-                        receivedBytes.add(beacon.id3.toInt())
+                    if (!contacts!!.containsValue(beacon) && beacon.distance < 2.0 && beacons.size == 4)
+                    {
+                        contacts!![beacon.id1.toString()] = beacon
+                        newBeaconFound = true
                         contactsCounter++
-                        mShouldCreatePayload = true
-
-                    } else {
-                        mShouldCreatePayload = false
                     }
-                    counter++
+
+                    if(contactsCounter == 4 && newBeaconFound) {
+                        for(i in 0 .. 3) {
+                            if (contacts!!.containsKey(uuidProt + i)) {
+                                receivedBytes.add(contacts!![uuidProt + i]!!.id2.toInt())
+                                receivedBytes.add(contacts!![uuidProt + i]!!.id3.toInt())
+                                if(i == 3) {
+                                    mShouldCreatePayload = true
+                                    newBeaconFound = false
+                                }
+                            } else {
+                                mShouldCreatePayload = false
+                                break
+                            }
+                        }
+                    }
                 }
+
 
                 if (mShouldCreatePayload) {
                     Log.d(
@@ -258,6 +271,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                     createPayload(receivedBytes)
                     var db = DatabaseHelper(this)
                     mStatusTextView.text = "Clustergröße: " + db.profilesCount
+                    mShouldCreatePayload = false
                 }
             }
         }
@@ -307,6 +321,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val publicKey = mViewModel.getServerPubKey()
         val publicKeyDecoded: ByteArray = Base64.decode(publicKey, Base64.NO_WRAP)
 
+        // TODO: sort
         for (int in contacs) {
             resultAsUShoert.add(int.toUShort())
         }
