@@ -146,16 +146,6 @@ class MainActivity : AppCompatActivity() {
             // Log User in
             if (mViewModel.isFirstTimeUser()) {
                 mainScreen.visibility = View.VISIBLE
-                startButtonBottom.setOnClickListener {
-
-                    mViewModel.createUser()
-                    mViewModel.generateKeyPair()
-
-                    startActivity(
-                        Intent(this, StatusActivity::class.java)
-                    )
-                    finish()
-                }
                 startButtonTop.setOnClickListener {
 
                     mViewModel.createUser()

@@ -90,7 +90,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         if (!mBeaconManager.isAnyConsumerBound) {
             val intent = Intent(this, this::class.java)
-            val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent: PendingIntent =
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val builder = Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Aktiv und Funktionstüchtig")
@@ -171,7 +172,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             mBackgroundPowerSaver = BackgroundPowerSaver(this)
 
             val intent = Intent(this, this::class.java)
-            val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent: PendingIntent =
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val builder = Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Aktiv und Funktionstüchtig")
@@ -223,6 +225,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         if (applicationContext != null) startAdvertising()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
     /**
      * BLE Functions for scanning and creating the encrypted payload
      */
@@ -239,19 +246,18 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             if (beacons.isNotEmpty()) {
 
                 for (beacon in beacons) {
-                    if (!contacts!!.containsValue(beacon) && beacon.distance < 2.0 && beacons.size == 4)
-                    {
+                    if (!contacts!!.containsValue(beacon) && beacon.distance < 2.0 && beacons.size == 4) {
                         contacts!![beacon.id1.toString()] = beacon
                         newBeaconFound = true
                         contactsCounter++
                     }
 
-                    if(contactsCounter == 4 && newBeaconFound) {
-                        for(i in 0 .. 3) {
+                    if (contactsCounter == 4 && newBeaconFound) {
+                        for (i in 0..3) {
                             if (contacts!!.containsKey(UUID_PROTOTYPE + i)) {
                                 receivedBytes.add(contacts!![UUID_PROTOTYPE + i]!!.id2.toInt())
                                 receivedBytes.add(contacts!![UUID_PROTOTYPE + i]!!.id3.toInt())
-                                if(i == 3) {
+                                if (i == 3) {
                                     mShouldCreatePayload = true
                                     newBeaconFound = false
                                 }
@@ -265,7 +271,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
                 if (mShouldCreatePayload) {
                     Log.d(
-                        SCANNER_TAG,"This is saved as a contact! " +
+                        SCANNER_TAG, "This is saved as a contact! " +
                                 " Payload " + receivedBytes.toString()
                     )
                     createPayload(receivedBytes)
@@ -320,19 +326,24 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         val resultAsUnsignedShort: ArrayList<UShort> = ArrayList()
         val db = DatabaseHelper(this)
         val publicKeyFromServer = mViewModel.getServerPubKey()
-        val publicKeyFromServerDecoded: ByteArray = Base64.decode(publicKeyFromServer, Base64.NO_WRAP)
+        val publicKeyFromServerDecoded: ByteArray =
+            Base64.decode(publicKeyFromServer, Base64.NO_WRAP)
 
         for (int in contactsAsInteger) {
             resultAsUnsignedShort.add(int.toUShort())
         }
 
         for (byteAsShort in resultAsUnsignedShort) {
-           resultAsByteArray += (byteAsShort.toByte())
+            resultAsByteArray += (byteAsShort.toByte())
 
             if (byteCounter == 8) {
-                Log.d(SCANNER_TAG, "Fetched UUID : "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
+                Log.d(
+                    SCANNER_TAG,
+                    "Fetched UUID : " + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
+                )
 
-                val fetchedUUIDDecoded: String = Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
+                val fetchedUUIDDecoded: String =
+                    Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
 
                 if (!contactsUUIDs!!.containsKey(fetchedUUIDDecoded)) {
                     contactsUUIDs!![fetchedUUIDDecoded] = System.currentTimeMillis().toString()
