@@ -718,6 +718,7 @@ drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable infected_big
 drawable infected_small
+drawable logo
 drawable maybe_infected_big
 drawable maybe_infected_small
 drawable not_infected_big
@@ -817,7 +818,6 @@ id adjust_height
 id adjust_width
 id alertTitle
 id always
-id anonymousBottom
 id anonymousTop
 id async
 id auto
@@ -873,7 +873,9 @@ id infectedImage
 id infectedText
 id info
 id introText
+id introText2
 id introTitle
+id introTitle2
 id invisible
 id italic
 id left
@@ -942,7 +944,6 @@ id src_in
 id src_over
 id standard
 id start
-id startButtonBottom
 id startButtonTop
 id statusBody
 id statusTextView
@@ -1090,6 +1091,8 @@ string common_signin_button_text_long
 string future_status_subtitle_1
 string future_status_subtitle_2
 string infected_text
+string introText2
+string introTitle2
 string intro_text
 string intro_text2
 string intro_title

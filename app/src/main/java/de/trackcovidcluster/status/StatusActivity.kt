@@ -12,6 +12,7 @@ import android.os.Handler
 import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -214,14 +215,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onPause() {
         super.onPause()
-        mBeaconManager.unbind(this)
         if (applicationContext != null) startAdvertising()
         this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mBeaconManager.unbind(this)
         if (applicationContext != null) startAdvertising()
     }
 
@@ -337,6 +336,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             resultAsByteArray += (byteAsShort.toByte())
 
             if (byteCounter == 8) {
+                Log.d(SCANNER_TAG, "Fetched UUID : "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
+                Log.i(SCANNER_TAG, "User UUID    : " + Base64.encodeToString(mViewModel.getPublicKeyByteArray(), Base64.NO_WRAP))
                 Log.d(
                     SCANNER_TAG,
                     "Fetched UUID : " + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
@@ -347,7 +348,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
                 if (!contactsUUIDs!!.containsKey(fetchedUUIDDecoded)) {
                     contactsUUIDs!![fetchedUUIDDecoded] = System.currentTimeMillis().toString()
+
                     val cookie = Cookie(fetchedUUIDDecoded, System.currentTimeMillis())
+
+                    Log.d(SCANNER_TAG, "Created Cookie: :\n{\n" +
+                                            "UUID: " + cookie.hashedUUID + "\n" +
+                                            "Time: " + cookie.timestamp + "\n" +
+                                            "}\n")
+
                     db.insertDataSet(cookie, publicKeyFromServerDecoded)
                 }
             }

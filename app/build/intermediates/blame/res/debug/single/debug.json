@@ -216,6 +216,10 @@
         "source": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_launcher_background.png"
     },
     {
+        "merged": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\build\\intermediates\\res\\merged\\debug\\drawable_logo.png.flat",
+        "source": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\src\\main\\res\\drawable\\logo.png"
+    },
+    {
         "merged": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_maybe_infected_small.png.flat",
         "source": "C:\\Users\\Mo\\StudioProjects\\TrackCovidClusterAndroid\\app\\src\\main\\res\\drawable-hdpi\\maybe_infected_small.png"
     },
