@@ -8,13 +8,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainScreen"
-        android:visibility="invisible"
-        tools:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        tools:context=".main.MainActivity">
+        android:visibility="invisible"
+        tools:context=".main.MainActivity"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/wirVsVirus"
@@ -37,8 +37,8 @@
         <Button
             android:id="@+id/startButtonTop"
             style="@style/buttons"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,8 +61,7 @@
             style="@style/subTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="24dp"
             android:text="@string/intro_title"
             android:textAlignment="viewStart"
             android:textStyle="bold"
@@ -76,7 +75,8 @@
             android:id="@+id/introText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/intro_text2"
             android:textColor="#99a5a9"
             android:textSize="16sp"
@@ -101,6 +101,8 @@
             android:id="@+id/introText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/introText2"
             android:textColor="#99a5a9"
             android:textSize="16sp"
@@ -108,8 +110,5 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/introTitle2" />
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

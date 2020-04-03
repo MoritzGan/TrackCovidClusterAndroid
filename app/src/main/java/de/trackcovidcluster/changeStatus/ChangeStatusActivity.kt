@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import dagger.android.AndroidInjection
 import de.trackcovidcluster.R
 import de.trackcovidcluster.database.DatabaseHelper
+import de.trackcovidcluster.status.Constants.DEFAULT
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_KEY
@@ -17,10 +18,6 @@ import kotlinx.android.synthetic.main.activity_change_status.*
 import javax.inject.Inject
 
 class ChangeStatusActivity : AppCompatActivity() {
-    companion object {
-        private const val DEFAULT = -1
-    }
-
     // region members
     private lateinit var mViewModel: ChangeStatusViewModel
 
@@ -39,7 +36,7 @@ class ChangeStatusActivity : AppCompatActivity() {
         val status = this.intent.getIntExtra(STATUS_KEY, DEFAULT)
 
         val db = DatabaseHelper(this)
-        val encounters = db.getCookieBundle()
+        val encounters = db.cookieBundle
         Log.d("Database", " " + db.cookieBundle)
 
         getNextStatus(status)

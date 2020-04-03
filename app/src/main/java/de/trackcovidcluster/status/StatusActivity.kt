@@ -12,8 +12,8 @@ import android.os.Handler
 import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
-import android.view.ScaleGestureDetector
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -25,6 +25,7 @@ import de.trackcovidcluster.R
 import de.trackcovidcluster.changeStatus.ChangeStatusActivity
 import de.trackcovidcluster.database.DatabaseHelper
 import de.trackcovidcluster.models.Cookie
+import de.trackcovidcluster.status.Constants.DEFAULT
 import de.trackcovidcluster.status.Constants.INFECTED
 import de.trackcovidcluster.status.Constants.MAYBE_INFECTED
 import de.trackcovidcluster.status.Constants.STATUS_API_KEY
@@ -38,12 +39,10 @@ import javax.inject.Inject
 open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     companion object {
-        private const val DEFAULT = -1
+        private const val SCANNER_TAG = "Scanning"
+        private const val ADVERTISING_TAG = "Advertising"
+        private const val UUID_PROTOTYPE = "434c5553-5445-5254-5241-434b3030303"
     }
-
-    private val SCANNER_TAG = "Scanning"
-    private val ADVERTISING_TAG = "Advertising"
-    private val UUID_PROTOTYPE = "434c5553-5445-5254-5241-434b3030303"
 
     private var uuids: JSONObject? = null
     private var contacts: HashMap<String, Beacon>? = null
@@ -63,6 +62,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var beaconParser: BeaconParser
     private lateinit var mReportBottomText: TextView
     private lateinit var mReportTopText: TextView
+    private lateinit var mPositiveButton: Button
 
     @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +81,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mCurrentStatusText = currentStatusText
         mReportTopText = reportTop
         mReportBottomText = reportBottom
+        mPositiveButton = positiveButton
 
         /**
          * Setup the beaconService to run in the foreground
@@ -222,6 +223,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     override fun onDestroy() {
         super.onDestroy()
         if (applicationContext != null) startAdvertising()
+        this.unregisterReceiver(this.mReceiver)
     }
 
     override fun onBackPressed() {
@@ -336,8 +338,17 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             resultAsByteArray += (byteAsShort.toByte())
 
             if (byteCounter == 8) {
-                Log.d(SCANNER_TAG, "Fetched UUID : "  + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP))
-                Log.i(SCANNER_TAG, "User UUID    : " + Base64.encodeToString(mViewModel.getPublicKeyByteArray(), Base64.NO_WRAP))
+                Log.d(
+                    SCANNER_TAG,
+                    "Fetched UUID : " + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
+                )
+                Log.i(
+                    SCANNER_TAG,
+                    "User UUID    : " + Base64.encodeToString(
+                        mViewModel.getPublicKeyByteArray(),
+                        Base64.NO_WRAP
+                    )
+                )
                 Log.d(
                     SCANNER_TAG,
                     "Fetched UUID : " + Base64.encodeToString(resultAsByteArray, Base64.NO_WRAP)
@@ -351,10 +362,12 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
                     val cookie = Cookie(fetchedUUIDDecoded, System.currentTimeMillis())
 
-                    Log.d(SCANNER_TAG, "Created Cookie: :\n{\n" +
-                                            "UUID: " + cookie.hashedUUID + "\n" +
-                                            "Time: " + cookie.timestamp + "\n" +
-                                            "}\n")
+                    Log.d(
+                        SCANNER_TAG, "Created Cookie: :\n{\n" +
+                                "UUID: " + cookie.hashedUUID + "\n" +
+                                "Time: " + cookie.timestamp + "\n" +
+                                "}\n"
+                    )
 
                     db.insertDataSet(cookie, publicKeyFromServerDecoded)
                 }
@@ -437,6 +450,10 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
                 MAYBE_INFECTED -> resources.getString(R.string.maybe_infected)
                 else -> resources.getString(R.string.not_infected)
             }
+
+        mPositiveButton.apply {
+            isEnabled = status != INFECTED
+        }
 
         if (status == MAYBE_INFECTED) {
             mReportTopText.visibility = View.VISIBLE

@@ -102,7 +102,7 @@
                 style="@style/buttons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ja, ich wurde positiv auf COVID-19 getestet!"
+                android:text="@string/i_tested_positive"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -115,7 +115,8 @@
             style="@style/body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/change_status_reminder"
+            android:textColor="@android:color/holo_red_dark"
+            android:text="Do not mark yourself as infected without a positive test"
             android:visibility="invisible"
             tools:layout_editor_absoluteY="541dp"
             tools:visibility="visible" />

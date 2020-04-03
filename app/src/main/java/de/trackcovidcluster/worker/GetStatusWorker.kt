@@ -76,7 +76,7 @@ class GetStatusWorker @Inject constructor(
         }
 
         val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(applicationContext, 0, statusActivity, 0)
+            PendingIntent.getActivity(applicationContext, 0, statusActivity, PendingIntent.FLAG_ONE_SHOT)
 
         val builder =
             NotificationCompat.Builder(applicationContext, PUSH_NOTIFICATION_CHANNEL)
@@ -96,8 +96,8 @@ class GetStatusWorker @Inject constructor(
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "TrackCovidCluster - Infection Risk"
-            val descriptionText = "Notify in case you were in cotact with someone who is infected"
+            val name = "TrackCovidCluster - Infektionrisiko"
+            val descriptionText = "Infektionrisiko"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(PUSH_NOTIFICATION_CHANNEL, name, importance).apply {
                 description = descriptionText
