@@ -103,8 +103,8 @@ class GetStatusWorker @Inject constructor(
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "TrackCovidCluster - Infektionrisiko"
-            val descriptionText = "Infektionrisiko"
+            val name = applicationContext.getString(R.string.notification_setting_title)
+            val descriptionText = applicationContext.getString(R.string.notification_setting_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(PUSH_NOTIFICATION_CHANNEL, name, importance).apply {
                 description = descriptionText

@@ -26,4 +26,7 @@
     <string name="introText2">Unser Tracking funktioniert über Bluetooth Low Energy. Damit ihr Smartphone diese Technik nutzen kann, benötigt es auch Zugriff auf den Standort. Dieser wird jedoch nicht abgefragt oder aufgezeichnet.</string>
     <string name="introTitle2">Warum braucht die App einen Standortzugriff, obwohl kein Standort aufgezeichnet wird?</string>
     <string name="i_tested_positive">Ja, ich wurde positiv auf COVID-19 getestet!</string>
+    <string name="warning">Do not mark yourself as infected without a positive test</string>
+    <string name="notification_setting_title">"TrackCovidCluster - Infektionrisiko"</string>
+    <string name="notification_setting_description">"Infektionrisiko"</string>
 </resources>
