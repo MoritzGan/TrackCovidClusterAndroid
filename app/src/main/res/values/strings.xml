@@ -1,32 +1,31 @@
 <resources>
     <string name="app_name">TrackCovidCluster</string>
-    <string name="start">Ja, ich möchte mithelfen!</string>
-    <string name="intro_title">Wieso mitmachen?</string>
-    <string name="anonymous">Das mitmachen ist zu jeder Zeit anonym!</string>
-    <string name="test_positive">Positiv getestet worden?</string>
-    <string name="not_infected">nicht infiziert</string>
-    <string name="maybe_infected">möglicherweise infiziert</string>
-    <string name="infected_text">du hast gemeldet infiziert zu sein</string>
+    <string name="start">Yes, I want to help!</string>
+    <string name="intro_title">Why joining?</string>
+    <string name="anonymous">It’s anonymous – all the time!</string>
+    <string name="test_positive">Tested positive?</string>
+    <string name="not_infected">Not infected.</string>
+    <string name="maybe_infected">Possibly infected.</string>
+    <string name="infected_text">you reported a positive testing.</string>
     <string name="status">Status</string>
-    <string name="status_body">Hier wird dir der Status angezeigt. Falls sich eine Person als Infiziert meldet, die sich in den letzten Tagen in deiner unmittelbaren Nähe auffand, wirst du benachrichtigt.</string>
-    <string name="change_status">Status ändern</string>
-    <string name="change_status_body">Falls du positiv auf das Virus getestet wurden bist, werden alle Menschen Anonym benachrichtigt die sich in den letzten 14 Tagen in deiner Nähe aufhielten.</string>
-    <string name="future_status_subtitle_1">Dein Status wird sich zu</string>
-    <string name="future_status_subtitle_2">ändern!</string>
-    <string name="save_lives">Ja, ich möchte Leben retten</string>
-    <string name="change_status_reminder">Es ist nicht notwendig seinen Status wieder zu ändern. Nach der errechneten Zeit wird dein Status wieder automatisch zurückgesetzt. Falls es ein versehen war kannst du es hier dennoch tun</string>
-    <string name="report">Jemand hat sich positiv testen lassen! Bei Fragen, melden dich bei deinem Hausarzt oder unter: 116117</string>
-    <string name="report_2">Wenn dein Test Positiv ist, bitte melde dies bitte durch das ändern deines Status, damit auch andere die mit dir in Kontakt standen sich testen lassen!</string>
+    <string name="status_body">Status shown. You will be notified, if a person reports a positive test, which was close to you within the last days.</string>
+    <string name="change_status">Change status</string>
+    <string name="change_status_body">If your test result is positive, all people will be notified anonymously which were close to you within the last 14 days.</string>
+    <string name="future_status_subtitle_1">Your status will be changed to</string>
+    <string name="future_status_subtitle_2">change</string>
+    <string name="save_lives">Yes, I want to save lives!</string>
+    <string name="change_status_reminder">It is not necessary to change back status. After calculated time your status will be reset automatically. However, you can change if it happened by måistake.</string>
+    <string name="report">Somebody had a positive result! Please, contact your doctor or 116117 (Germany) for any further question.</string>
+    <string name="report_2">If you are positive, please, change your status that others having been in touch with you can be tested.</string>
     <string name="notification_title">You might be infected</string>
-    <string name="notification_body">Du hattest Kontakt zu einer jetzt Infizierten Person!</string>
-    <string name="intro_text2">Erhalte frühzeitig eine Warnung, falls du mit einer Infiziert gemeldeten Person in Kontakt getreten bist.
-        Damit hast du die Möglichkeit deine Liebsten vor einer Ansteckung zu bewahren, oder im Falle einer eigenen Infektion dies Anderen Leuten zu ermöglichen.</string>
-    <string name="change_status_to_infected">ändern.
-        Deine Kontakte der letzten 14 Tage werden ANONYM benachrichtigt.</string>
-    <string name="introText2">Unser Tracking funktioniert über Bluetooth Low Energy. Damit ihr Smartphone diese Technik nutzen kann, benötigt es auch Zugriff auf den Standort. Dieser wird jedoch nicht abgefragt oder aufgezeichnet.</string>
-    <string name="introTitle2">Warum braucht die App einen Standortzugriff, obwohl kein Standort aufgezeichnet wird?</string>
-    <string name="i_tested_positive">Ja, ich wurde positiv auf COVID-19 getestet!</string>
+    <string name="notification_body">You were in touch with a recently infected person!</string>
+    <string name="intro_text2">Get an early warning if you were in touch with an infected person.
+        With this you will have the chance to save your beloved ones from infection. Or helping others if you get infected yourself.</string>
+    <string name="change_status_to_infected">Your contacts within the last 14 days will be notified ANONYMOUSLY.</string>
+    <string name="introText2">Tracking works with low energy bluetooth. So that it works on your mobile phone, access to your location is required. However, it will NOT be prompted or recorded.</string>
+    <string name="introTitle2">Why does the app require the location although it won’t be recorded?</string>
+    <string name="i_tested_positive">Yes, I got a positive result on a COVID-19 testing!</string>
     <string name="warning">Do not mark yourself as infected without a positive test</string>
-    <string name="notification_setting_title">"TrackCovidCluster - Infektionrisiko"</string>
-    <string name="notification_setting_description">"Infektionrisiko"</string>
+    <string name="notification_setting_title">"TrackCovidCluster - Notify me if I am at risk"</string>
+    <string name="notification_setting_description">"Infection risk"</string>
 </resources>
