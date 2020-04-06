@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">TrackCovidCluster</string>
+    <string name="start">Ja, ich möchte mithelfen!</string>
+    <string name="intro_title">Wieso mitmachen?</string>
+    <string name="anonymous">Das Mitmachen ist zu jeder Zeit anonym!</string>
+    <string name="test_positive">Positiv getestet worden?</string>
+    <string name="not_infected">nicht infiziert</string>
+    <string name="maybe_infected">möglicherweise infiziert</string>
+    <string name="infected_text">du hast gemeldet infiziert zu sein</string>
+    <string name="status">Status</string>
+    <string name="status_body">Hier wird dir der Status angezeigt. Falls sich eine Person als Infiziert meldet, die sich in den letzten Tagen in deiner unmittelbaren Nähe auffand, wirst du benachrichtigt.</string>
+    <string name="change_status">Status ändern</string>
+    <string name="change_status_body">Falls du positiv auf das Virus getestet worden bist, werden alle Menschen anonym benachrichtigt, die sich in den letzten 14 Tagen in deiner Nähe aufhielten.</string>
+    <string name="future_status_subtitle_1">Dein Status wird sich zu</string>
+    <string name="future_status_subtitle_2">ändern!</string>
+    <string name="save_lives">Ja, ich möchte Leben retten</string>
+    <string name="change_status_reminder">Es ist nicht notwendig, seinen Status wieder zu ändern. Nach der errechneten Zeit wird dein Status wieder automatisch zurückgesetzt. Falls es ein Versehen war, kannst du es hier dennoch tun</string>
+    <string name="report">Jemand hat sich positiv testen lassen! Bei Fragen, melde dich bei deinem Hausarzt oder unter: 116117</string>
+    <string name="report_2">Wenn dein Test Positiv ist, melde dies bitte durch das Ändern deines Status, damit auch andere, die mit dir in Kontakt standen, sich testen lassen!</string>
+    <string name="notification_title">Du könntest infiziert sein</string>
+    <string name="notification_body">Du hattest Kontakt zu einer jetzt Infizierten Person!</string>
+    <string name="intro_text2">Erhalte frühzeitig eine Warnung, falls du mit einer Infiziert gemeldeten Person in Kontakt getreten bist.
+        Damit hast du die Möglichkeit, deine Liebsten vor einer Ansteckung zu bewahren, oder im Falle einer eigenen Infektion dies Anderen Leuten zu ermöglichen.</string>
+    <string name="change_status_to_infected">Ändern.
+        Deine Kontakte der letzten 14 Tage werden ANONYM benachrichtigt.</string>
+    <string name="introText2">Unser Tracking funktioniert über Bluetooth Low Energy. Damit dein Smartphone diese Technik nutzen kann, benötigt es auch Zugriff auf den Standort. Dieser wird jedoch nicht abgefragt oder aufgezeichnet.</string>
+    <string name="introTitle2">Warum braucht die App einen Standortzugriff, obwohl kein Standort aufgezeichnet wird?</string>
+    <string name="i_tested_positive">Ja, ich wurde positiv auf COVID-19 getestet!</string>
+    <string name="warning">Markieren Sie sich nicht ohne positiven Test als infiziert</string>
+    <string name="notification_setting_title">"TrackCovidCluster - Infektionrisiko"</string>
+    <string name="notification_setting_description">"Infektionrisiko"</string>
+</resources>

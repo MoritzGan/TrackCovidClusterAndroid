@@ -104,9 +104,10 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/holo_red_dark"
                 app:layout_constraintBottom_toTopOf="@+id/changeStatusButton"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="parent"
-                android:text="Do not mark yourself as infected without a positive test" />
+                android:text="@string/warning" />
 
             <Button
                 android:id="@+id/changeStatusButton"
