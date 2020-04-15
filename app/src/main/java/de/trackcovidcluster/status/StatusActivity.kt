@@ -58,6 +58,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
     private var mShouldCreatePayload: Boolean = false
+    private var isAdvertising: Boolean = false
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -71,6 +72,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private lateinit var mReportBottomText: TextView
     private lateinit var mReportTopText: TextView
     private lateinit var mPositiveButton: Button
+    private lateinit var beaconTransmitter: BeaconTransmitter
 
     @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
@@ -94,6 +96,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroundPowerSaver = BackgroundPowerSaver(this)
+
+        val beaconParser: BeaconParser = BeaconParser()
+            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+        beaconTransmitter =
+            BeaconTransmitter(applicationContext, beaconParser)
 
         /**
          * Setup the beaconService to run in the foreground
@@ -282,7 +289,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private fun createPayload(hashedUUIDReceived: ByteArray) {
 
         val db = DatabaseHelper(this)
-
         val publicKeyFromServer = mViewModel.getServerPubKey()
         val publicKeyFromServerDecoded: ByteArray =
             Base64.decode(publicKeyFromServer, Base64.NO_WRAP)
@@ -305,7 +311,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
     /**
      * Functions for setting the beacons to Advertise themselves
-     * TODO Add identifiers in id1 and 2
      */
 
     private fun setBeaconTransmitter(uuid: String) {
@@ -318,13 +323,11 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             .setTxPower(-59)
             .build()
 
-            val beaconParser: BeaconParser = BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-            val beaconTransmitter =
-                BeaconTransmitter(applicationContext, beaconParser)
-
-            if (applicationContext != null) beaconTransmitter.startAdvertising(beacon)
-            else Toast.makeText(this, "FAILED TO ADVERTISE", Toast.LENGTH_LONG).show()
+            if (applicationContext != null && !isAdvertising){
+                beaconTransmitter.startAdvertising(beacon)
+                isAdvertising = true;
+                Toast.makeText(this, "Ich bin jetzt sichtbar!", Toast.LENGTH_LONG).show()
+            }
     }
 
     @ExperimentalStdlibApi
@@ -333,7 +336,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         val hashedPubKey: ByteArray = mViewModel.getPublicKeyByteArray();
         val hashedPubKeyAsUUID: String = uuidHelper.getUUIDFromBytes(hashedPubKey).toString();
-
         setBeaconTransmitter(hashedPubKeyAsUUID);
     }
 
@@ -378,6 +380,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @ExperimentalUnsignedTypes
     @ExperimentalStdlibApi
     private fun startBeaconService() {
         if (!mBeaconManager.isAnyConsumerBound) {
