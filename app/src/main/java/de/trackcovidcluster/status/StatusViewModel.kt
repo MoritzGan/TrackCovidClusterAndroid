@@ -48,6 +48,10 @@ class StatusViewModel @Inject constructor(
         mStatusStorageSource.setMaybeInfectedStatus()
     }
 
+    /**
+     * Returns the actual public key of the user as a ByteArray.
+     */
+
     @ExperimentalStdlibApi
     fun getPublicKeyByteArray(): ByteArray {
         val truncatedPublicKeyHash = ByteArray(8)
@@ -62,19 +66,6 @@ class StatusViewModel @Inject constructor(
                 digest = SHA3Digest(256)
             )
 
-        /*
-            for (i in 0..7) {
-                truncatedPublicKeyHash[i] = hash[i]
-            }
-
-            Log.d(
-                "RESULT UR PUBKEY",
-                " Array as Base 64: " + Base64.encodeToString(
-                    truncatedPublicKeyHash,
-                    Base64.NO_WRAP
-                )
-            )
-        */
             return hash
         }
 
@@ -90,6 +81,18 @@ class StatusViewModel @Inject constructor(
         return hash
     }
 
+    /**
+     * Returns the public key of the server from the userStorageSource.
+     */
+
+    fun getServerPubKey(): String? {
+        return mUserStorageSource.getUserPublicKey()
+    }
+
+    /**
+     * TODO Check if needed anymore
+     */
+
     fun getUUIDs(): JSONObject {
         val stringRep = mUserStorageSource.getUUIDsFromUser()
 
@@ -98,9 +101,5 @@ class StatusViewModel @Inject constructor(
         if (!stringRep.equals("")) jsonRep = JSONObject(stringRep!!)
 
         return jsonRep
-    }
-
-    fun getServerPubKey(): String? {
-        return mUserStorageSource.getUserPublicKey()
     }
 }

@@ -17,6 +17,9 @@ public final class StatusViewModel extends androidx.lifecycle.ViewModel {
     public final void setMaybeInfected() {
     }
     
+    /**
+     * Returns the actual public key of the user as a ByteArray.
+     */
     @org.jetbrains.annotations.NotNull()
     @kotlin.ExperimentalStdlibApi()
     public final byte[] getPublicKeyByteArray() {
@@ -27,13 +30,19 @@ public final class StatusViewModel extends androidx.lifecycle.ViewModel {
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull()
-    public final org.json.JSONObject getUUIDs() {
+    /**
+     * Returns the public key of the server from the userStorageSource.
+     */
+    @org.jetbrains.annotations.Nullable()
+    public final java.lang.String getServerPubKey() {
         return null;
     }
     
-    @org.jetbrains.annotations.Nullable()
-    public final java.lang.String getServerPubKey() {
+    /**
+     * TODO Check if needed anymore
+     */
+    @org.jetbrains.annotations.NotNull()
+    public final org.json.JSONObject getUUIDs() {
         return null;
     }
     

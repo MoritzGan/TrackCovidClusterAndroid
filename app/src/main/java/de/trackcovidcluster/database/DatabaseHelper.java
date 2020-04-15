@@ -89,7 +89,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Returns all Cookies from database
-     *
      */
 
     public List<String> getCookieBundle() {

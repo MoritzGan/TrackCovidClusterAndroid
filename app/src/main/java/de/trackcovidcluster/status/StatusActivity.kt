@@ -1,6 +1,7 @@
 package de.trackcovidcluster.status
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Notification.Builder
 import android.app.PendingIntent
@@ -49,7 +50,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     companion object {
         private const val SCANNER_TAG = "Scanning"
         private const val ADVERTISING_TAG = "Advertising"
-        private const val UUID_PROTOTYPE = "434c5553-5445-5254-5241-434b3030303"
     }
 
     private var uuids: JSONObject? = null
@@ -57,7 +57,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     private var contactsDistance: HashMap<String, String>? = null
     private var contactsUUIDs: HashMap<String, String>? = null
     private var mReceiver: BroadcastReceiver? = null
-    private var mShouldCreatePayload: Boolean = false
     private var isAdvertising: Boolean = false
 
     @Inject
@@ -93,7 +92,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         mReportTopText = reportTop
         mReportBottomText = reportBottom
         mPositiveButton = positiveButton
-
         mBeaconManager = BeaconManager.getInstanceForApplication(this)
         mBackgroundPowerSaver = BackgroundPowerSaver(this)
 
@@ -103,11 +101,14 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             BeaconTransmitter(applicationContext, beaconParser)
 
         /**
-         * Setup the beaconService to run in the foreground
+         * Get the Permissions for BLE Usage
          */
 
-        startBeaconService()
-        startAdvertising()
+        val permissionlistener: PermissionListener = object : PermissionListener {
+            override fun onPermissionGranted() {}
+
+            override fun onPermissionDenied(deniedPermissions: List<String?>) {}
+        }
 
         TedPermission.with(this)
             .setPermissionListener(permissionlistener)
@@ -146,16 +147,8 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             )
         }
 
-        /**
-         * Check Permissions on Runtime for Location Service
-         */
-
-        verifyBluetooth()
-
-        Handler().postDelayed({
-            startAdvertising()
-            Log.d(ADVERTISING_TAG, " Started Advertising onCreate() after a delay of 5s")
-        }, 5000)
+        startBeaconService()
+        startAdvertising()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -173,6 +166,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     override fun onResume() {
@@ -200,6 +194,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
     }
 
 
+    @ExperimentalUnsignedTypes
     @ExperimentalStdlibApi
     override fun onPause() {
         super.onPause()
@@ -207,6 +202,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         this.unregisterReceiver(this.mReceiver)
     }
 
+    @ExperimentalUnsignedTypes
     @ExperimentalStdlibApi
     override fun onDestroy() {
         super.onDestroy()
@@ -214,6 +210,7 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         this.unregisterReceiver(this.mReceiver)
     }
 
+    @ExperimentalUnsignedTypes
     @ExperimentalStdlibApi
     override fun onBackPressed() {
         super.onBackPressed()
@@ -262,28 +259,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    private fun verifyBluetooth() {
-        try {
-            if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle("Bluetooth not enabled")
-                builder.setMessage("Please enable bluetooth in settings and restart this application.")
-                builder.setPositiveButton(android.R.string.ok, null)
-                builder.setOnDismissListener {
-                }
-                builder.show()
-            }
-        } catch (e: RuntimeException) {
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Bluetooth LE not available")
-            builder.setMessage("Sorry, this device does not support Bluetooth LE.")
-            builder.setPositiveButton(android.R.string.ok, null)
-            builder.setOnDismissListener {
-            }
-            builder.show()
-        }
-    }
-
     @ExperimentalStdlibApi
     @ExperimentalUnsignedTypes
     private fun createPayload(hashedUUIDReceived: ByteArray) {
@@ -298,14 +273,15 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
 
         val cookie = Cookie(fetchedUUIDDecoded, System.currentTimeMillis())
 
-            Log.d(
-                        SCANNER_TAG, "Created Cookie: :\n{\n" +
-                                "UUID: " + cookie.hashedUUID + "\n" +
-                                "Time: " + cookie.timestamp + "\n" +
-                                "}\n"
-            )
+        Log.d(SCANNER_TAG,
+                "Created Cookie: :\n{\n" +
+                    "UUID: " + cookie.hashedUUID + "\n" +
+                    "Time: " + cookie.timestamp + "\n" +
+                    "}\n"
+        )
 
         db.insertDataSet(cookie, publicKeyFromServerDecoded)
+        statusTextView.text = db.cookieBundle.size.toString()
     }
 
 
@@ -371,15 +347,6 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
         }
     }
 
-    var permissionlistener: PermissionListener = object : PermissionListener {
-        override fun onPermissionGranted() {
-
-        }
-
-        override fun onPermissionDenied(deniedPermissions: List<String?>) {
-        }
-    }
-
     @ExperimentalUnsignedTypes
     @ExperimentalStdlibApi
     private fun startBeaconService() {
@@ -405,5 +372,4 @@ open class StatusActivity : AppCompatActivity(), BeaconConsumer {
             startAdvertising()
         }
     }
-
 }
