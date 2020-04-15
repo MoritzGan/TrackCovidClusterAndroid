@@ -1,37 +1,37 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
 	package
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:2:5-40
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:2:5-40
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 	android:versionCode
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:1-2:43
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:11-69
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml:1:11-69
 uses-sdk
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		ADDED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\bri\Documents\android\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Mo\StudioProjects\TrackCovidClusterAndroid\app\data\src\main\AndroidManifest.xml

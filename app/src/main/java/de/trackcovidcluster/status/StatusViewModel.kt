@@ -48,17 +48,6 @@ class StatusViewModel @Inject constructor(
         mStatusStorageSource.setMaybeInfectedStatus()
     }
 
-    fun getBeacon(uuid: String, major: String, minor: String): Beacon? {
-
-        return Beacon.Builder()
-            .setId1(uuid)
-            .setId2(major)
-            .setId3(minor)
-            .setManufacturer(0x004c)
-            .setTxPower(-59)
-            .build()
-    }
-
     @ExperimentalStdlibApi
     fun getPublicKeyByteArray(): ByteArray {
         val truncatedPublicKeyHash = ByteArray(8)
@@ -73,7 +62,7 @@ class StatusViewModel @Inject constructor(
                 digest = SHA3Digest(256)
             )
 
-
+        /*
             for (i in 0..7) {
                 truncatedPublicKeyHash[i] = hash[i]
             }
@@ -85,8 +74,8 @@ class StatusViewModel @Inject constructor(
                     Base64.NO_WRAP
                 )
             )
-
-            return truncatedPublicKeyHash
+        */
+            return hash
         }
 
         return truncatedPublicKeyHash

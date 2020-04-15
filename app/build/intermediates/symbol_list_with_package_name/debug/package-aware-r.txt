@@ -1099,6 +1099,8 @@ string intro_title
 string maybe_infected
 string not_infected
 string notification_body
+string notification_setting_description
+string notification_setting_title
 string notification_title
 string report
 string report_2
@@ -1112,6 +1114,7 @@ string tedpermission_close
 string tedpermission_confirm
 string tedpermission_setting
 string test_positive
+string warning
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog
